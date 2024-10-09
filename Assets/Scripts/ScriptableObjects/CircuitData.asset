@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00d5d25847ef438985af28c4c1c2e329, type: 3}
+  m_Name: CircuitData
+  m_EditorClassIdentifier: 
+  waypoints:
+  - {fileID: 8396210061743979823, guid: 8e9b81b27f76f834dbc8b35f1dcafddd, type: 3}
+  - {fileID: 3483704615181162906, guid: 62675a95b98a9a044b94abc9a9fe794c, type: 3}
+  - {fileID: 1467100512705724177, guid: 76f1d342968a00446a72ff9de12c4047, type: 3}
+  - {fileID: 4342409580571151108, guid: f853650fb0d86b241a71077d634087fa, type: 3}
+  - {fileID: 8692318951842855434, guid: b2397b0c1f407bb4692bc4664dc50da5, type: 3}
+  - {fileID: 3565019252601797114, guid: dada9d9166a57a74ba49b3e682fe7580, type: 3}
+  spawnPoints: []
