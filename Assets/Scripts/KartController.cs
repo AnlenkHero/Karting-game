@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cinemachine;
+using Smooth;
 using TMPro;
-using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
 using UnityUtils;
@@ -21,16 +21,20 @@ namespace Kart
         public WheelFrictionCurve originalForwardFriction;
         public WheelFrictionCurve originalSidewaysFriction;
     }
-
+    
     public struct InputPayload : INetworkSerializable
     {
         public int tick;
+        public DateTime timestamp;
+        public ulong networkObjectId;
         public Vector3 inputVector;
         public Vector3 position;
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref tick);
+            serializer.SerializeValue(ref timestamp);
+            serializer.SerializeValue(ref networkObjectId);
             serializer.SerializeValue(ref inputVector);
             serializer.SerializeValue(ref position);
         }
@@ -39,106 +43,108 @@ namespace Kart
     public struct StatePayload : INetworkSerializable
     {
         public int tick;
+        public ulong networkObjectId;
         public Vector3 position;
         public Quaternion rotation;
         public Vector3 velocity;
         public Vector3 angularVelocity;
+        public float ping;
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref tick);
+            serializer.SerializeValue(ref networkObjectId);
             serializer.SerializeValue(ref position);
             serializer.SerializeValue(ref rotation);
             serializer.SerializeValue(ref velocity);
             serializer.SerializeValue(ref angularVelocity);
+            serializer.SerializeValue(ref ping);
         }
     }
 
     public class KartController : NetworkBehaviour
     {
         [Header("Axle Information")] [SerializeField]
-        private AxleInfo[] axleInfos;
+        AxleInfo[] axleInfos;
 
         [Header("Motor Attributes")] [SerializeField]
-        private float maxMotorTorque = 3000f;
+        float maxMotorTorque = 3000f;
 
-        [SerializeField] private float maxSpeed;
+        [SerializeField] float maxSpeed;
 
         [Header("Steering Attributes")] [SerializeField]
-        private float maxSteeringAngle = 30f;
+        float maxSteeringAngle = 30f;
 
-        [SerializeField] private AnimationCurve turnCurve;
-        [SerializeField] private float turnStrength = 1500f;
+        [SerializeField] AnimationCurve turnCurve;
+        [SerializeField] float turnStrength = 1500f;
 
         [Header("Braking and Drifting")] [SerializeField]
-        private float brakeTorque = 10000f;
+        float driftSteerMultiplier = 1.5f; 
 
-        private float currentBrakeTorque = 0f;
-        [SerializeField] private float brakeTorqueIncreaseRate = 5000f;
-        [SerializeField] private float driftSteerMultiplier = 1.5f;
+        [SerializeField] float brakeTorque = 10000f;
 
-        [Header("Physics")] [SerializeField] private Transform centerOfMass;
-        [SerializeField] private float downForce = 100f;
-        [SerializeField] private float gravity = Physics.gravity.y;
-        [SerializeField] float lateralGScale = 10f;
+        [Header("Physics")] [SerializeField] Transform centerOfMass;
+        [SerializeField] float downForce = 100f;
+        [SerializeField] float gravity = Physics.gravity.y;
+        [SerializeField] float lateralGScale = 10f; 
 
-        [Header("Banking")] [SerializeField] private float maxBankAngle = 5f;
-        [SerializeField] private float bankSpeed = 2f;
+        [Header("Banking")] [SerializeField] float maxBankAngle = 5f;
+        [SerializeField] float bankSpeed = 2f;
 
-        [Header("Refs")] [SerializeField] private InputReader playerInput;
-        [SerializeField] private Circuit circuit;
-        [SerializeField] private AIDriverData driverData;
-        [SerializeField] private CinemachineVirtualCamera playerCamera;
-        [SerializeField] private AudioListener playerAudioListener;
+        [Header("Refs")] [SerializeField] InputReader playerInput;
+        [SerializeField] Circuit circuit;
+        [SerializeField] AIDriverData driverData;
+        [SerializeField] CinemachineVirtualCamera playerCamera;
+        [SerializeField] AudioListener playerAudioListener;
 
-        private IDrive input;
-        private Rigidbody rb;
+        IDrive input;
+        Rigidbody rb;
 
-        private Vector3 kartVelocity;
-        private float brakeVelocity;
-        private float driftVelocity;
+        Vector3 kartVelocity;
+        float brakeVelocity;
+        float driftVelocity;
 
-        private RaycastHit hit;
-        private const float thresholdSpeed = 10f;
-        private const float centerOfMassOffset = -0.5f;
-        private Vector3 originalCenterOfMass;
+        Vector3 originalCenterOfMass;
 
         public bool IsGrounded = true;
         public Vector3 Velocity => kartVelocity;
         public float MaxSpeed => maxSpeed;
 
-        private NetworkTimer timer;
-        private const float k_ServerTickRate = 60f;
-        private const int k_bufferSize = 1024;
 
-        private CircularBuffer<StatePayload> clientStateBuffer;
-        private CircularBuffer<InputPayload> clientInputBuffer;
-        private StatePayload lastServerState;
-        private StatePayload lastProcessedState;
+        NetworkTimer networkTimer;
+        const float k_serverTickRate = 60f; 
+        const int k_bufferSize = 1024;
 
-        private CircularBuffer<StatePayload> serverStateBuffer;
-        private Queue<InputPayload> serverInputQueue;
 
-        [Header("Netcode")] [SerializeField] private float reconciliationCooldownTime = 1f;
-        [SerializeField] private float reconciliationThreshold = 10f;
-        [SerializeField] private GameObject serverCube;
-        [SerializeField] private GameObject clientCube;
+        CircularBuffer<StatePayload> clientStateBuffer;
+        CircularBuffer<InputPayload> clientInputBuffer;
+        StatePayload lastServerState;
+        StatePayload lastProcessedState;
         
-        private CountdownTimer reconciliationCooldown;
+        CircularBuffer<StatePayload> serverStateBuffer;
+        Queue<InputPayload> serverInputQueue;
 
-        [Header("Netcode Debug")]
-        [SerializeField] TextMeshPro networkText;
+        [Header("Netcode")] [SerializeField] float reconciliationCooldownTime = 1f;
+        [SerializeField] float reconciliationThreshold = 10f;
+        [SerializeField] GameObject serverCube;
+        [SerializeField] GameObject clientCube;
+
+        CountdownTimer reconciliationTimer;
+
+        [Header("Netcode Debug")] [SerializeField]
+        TextMeshPro networkText;
+
         [SerializeField] TextMeshPro playerText;
         [SerializeField] TextMeshPro serverRpcText;
         [SerializeField] TextMeshPro clientRpcText;
-        
-        private void Awake()
+
+        void Awake()
         {
             if (playerInput is IDrive driveInput)
             {
                 input = driveInput;
             }
-
+            
             rb = GetComponent<Rigidbody>();
             input.Enable();
 
@@ -151,35 +157,32 @@ namespace Kart
                 axleInfo.originalSidewaysFriction = axleInfo.leftWheel.sidewaysFriction;
             }
 
-            timer = new NetworkTimer(k_ServerTickRate);
+            networkTimer = new NetworkTimer(k_serverTickRate);
             clientStateBuffer = new CircularBuffer<StatePayload>(k_bufferSize);
             clientInputBuffer = new CircularBuffer<InputPayload>(k_bufferSize);
 
             serverStateBuffer = new CircularBuffer<StatePayload>(k_bufferSize);
             serverInputQueue = new Queue<InputPayload>();
 
-            reconciliationCooldown = new CountdownTimer(reconciliationCooldownTime);
+            reconciliationTimer = new CountdownTimer(reconciliationCooldownTime);
+        }
 
-            /*       else
-                   {
-                       Debug.LogError("Using AI INPUT System");
-                       var aiInput = gameObject.GetOrAdd<AIInput>();
-                       aiInput.AddDriverData(driverData);
-                       aiInput.AddCircuit(circuit);
-                       input = aiInput;
-                   }*/
+        public void SetInput(IDrive input)
+        {
+            this.input = input;
         }
 
         public override void OnNetworkSpawn()
         {
             if (!IsOwner)
             {
-                playerCamera.Priority = 0;
                 playerAudioListener.enabled = false;
+                playerCamera.Priority = 0;
                 return;
             }
-            
-            networkText.SetText($"Player {NetworkManager.LocalClientId} Host: {NetworkManager.IsHost} Server: {IsServer} Client: {IsClient}");
+
+            networkText.SetText(
+                $"Player {NetworkManager.LocalClientId} Host: {NetworkManager.IsHost} Server: {IsServer} Client: {IsClient}");
             if (!IsServer) serverRpcText.SetText("Not Server");
             if (!IsClient) clientRpcText.SetText("Not Client");
 
@@ -187,22 +190,22 @@ namespace Kart
             playerAudioListener.enabled = true;
         }
 
-        private void Update()
+        void Update()
         {
-            timer.Update(Time.deltaTime);
-            reconciliationCooldown.Tick(Time.deltaTime);
-            
-            playerText.SetText($"Owner: {IsOwner} NetworkObjectId: {NetworkObjectId} Velocity: {kartVelocity.magnitude:F1}");
+            networkTimer.Update(Time.deltaTime);
+            reconciliationTimer.Tick(Time.deltaTime);
+
+            playerText.SetText(
+                $"Owner: {IsOwner} NetworkObjectId: {NetworkObjectId} Velocity: {kartVelocity.magnitude:F1}");
             if (Input.GetKeyDown(KeyCode.Q))
             {
-                transform.position = transform.forward * 20f;
+                transform.position += transform.forward * 20f;
             }
         }
 
-
-        private void FixedUpdate()
+        void FixedUpdate()
         {
-            while (timer.ShouldTick())
+            while (networkTimer.ShouldTick())
             {
                 HandleClientTick();
                 HandleServerTick();
@@ -212,53 +215,89 @@ namespace Kart
         void HandleServerTick()
         {
             if (!IsServer) return;
-             
-            var bufferIndex = -1;
-            InputPayload inputPayload = default;
-            while (serverInputQueue.Count > 0) {
-                inputPayload = serverInputQueue.Dequeue();
+
+            while (serverInputQueue.Count > 0)
+            {
+                InputPayload inputPayload = serverInputQueue.Dequeue();
+
+                float ping = (float)(DateTime.Now - inputPayload.timestamp).TotalMilliseconds;
+
+                int bufferIndex = inputPayload.tick % k_bufferSize;
+
+                if (inputPayload.networkObjectId == NetworkObjectId && IsOwner)
+                {
+                    StatePayload statePayload = new StatePayload()
+                    {
+                        tick = inputPayload.tick,
+                        networkObjectId = NetworkObjectId,
+                        position = transform.position,
+                        rotation = transform.rotation,
+                        velocity = rb.velocity,
+                        angularVelocity = rb.angularVelocity,
+                        ping = ping
+                    };
+                    serverStateBuffer.Add(statePayload, bufferIndex);
+                    SendToClientRpc(statePayload);
+                    continue;
+                }
                 
-                bufferIndex = inputPayload.tick % k_bufferSize;
-                
-                StatePayload statePayload = ProcessMovement(inputPayload);
-                serverCube.transform.position = statePayload.position.With(y: 4);
-                serverStateBuffer.Add(statePayload, bufferIndex);
+                StatePayload clientStatePayload = ProcessMovement(inputPayload);
+                clientStatePayload.ping = ping;
+                serverStateBuffer.Add(clientStatePayload, bufferIndex);
+                SendToClientRpc(clientStatePayload);
             }
-            
-            if (bufferIndex == -1) return;
-            SendToClientRpc(serverStateBuffer.Get(bufferIndex));
         }
-        
+
+        void HandleClientTick()
+        {
+            if (!IsOwner) return;
+
+            var currentTick = networkTimer.CurrentTick;
+            var bufferIndex = currentTick % k_bufferSize;
+
+            InputPayload inputPayload = new InputPayload()
+            {
+                tick = currentTick,
+                timestamp = DateTime.Now,
+                networkObjectId = NetworkObjectId,
+                inputVector = input.Move,
+                position = transform.position
+            };
+
+            clientInputBuffer.Add(inputPayload, bufferIndex);
+            SendToServerRpc(inputPayload);
+
+            StatePayload statePayload = ProcessMovement(inputPayload);
+            clientStateBuffer.Add(statePayload, bufferIndex);
+
+            HandleServerReconciliation();
+        }
 
         [ClientRpc]
-        void SendToClientRpc(StatePayload statePayload) {
-            clientRpcText.SetText($"Received state from server Tick {statePayload.tick} Server POS: {statePayload.position}"); 
+        void SendToClientRpc(StatePayload statePayload)
+        {
+            clientRpcText.SetText(
+                $"Received state from server Tick {statePayload.tick} Server POS: {statePayload.position} Ping: {statePayload.ping}");
             serverCube.transform.position = statePayload.position.With(y: 4);
             if (!IsOwner) return;
             lastServerState = statePayload;
         }
 
-        void HandleClientTick()
+        [ServerRpc(RequireOwnership = false)]
+        void SendToServerRpc(InputPayload input)
         {
-            if (!IsClient || !IsOwner) return;
+            serverRpcText.SetText($"Received input from client Tick: {input.tick} Client POS: {input.position}");
+            clientCube.transform.position = input.position.With(y: 4);
+            serverInputQueue.Enqueue(input);
+        }
 
-            var currentTick = timer.CurrentTick;
-            var bufferIndex = currentTick % k_bufferSize;
-            
-            InputPayload inputPayload = new InputPayload() {
-                tick = currentTick,
-                inputVector = input.Move,
-                position = transform.position
-            };
-            
-            clientInputBuffer.Add(inputPayload, bufferIndex);
-            SendToServerRpc(inputPayload);
-            
-            StatePayload statePayload = ProcessMovement(inputPayload);
-            clientCube.transform.position = statePayload.position.With(y: 4);
-            clientStateBuffer.Add(statePayload, bufferIndex);
-            
-            HandleServerReconciliation();
+        bool ShouldReconcile()
+        {
+            bool isNewServerState = !lastServerState.Equals(default);
+            bool isLastStateUndefinedOrDifferent = lastProcessedState.Equals(default)
+                                                   || !lastProcessedState.Equals(lastServerState);
+
+            return isNewServerState && isLastStateUndefinedOrDifferent && !reconciliationTimer.IsRunning;
         }
 
         void HandleServerReconciliation()
@@ -267,67 +306,66 @@ namespace Kart
 
             float positionError;
             int bufferIndex;
-            
+
             bufferIndex = lastServerState.tick % k_bufferSize;
-            if (bufferIndex - 1 < 0) return; 
-            
-            StatePayload rewindState = IsHost ? serverStateBuffer.Get(bufferIndex - 1) : lastServerState; 
-            StatePayload clientState = IsHost ? clientStateBuffer.Get(bufferIndex - 1) : clientStateBuffer.Get(bufferIndex);
+            if (bufferIndex < 0) return; 
+
+            StatePayload rewindState = lastServerState;
+            StatePayload clientState = clientStateBuffer.Get(bufferIndex);
             positionError = Vector3.Distance(rewindState.position, clientState.position);
 
-            if (positionError > reconciliationThreshold) {
+            if (positionError > reconciliationThreshold)
+            {
                 ReconcileState(rewindState);
-                reconciliationCooldown.Start();
+                reconciliationTimer.Start();
             }
 
             lastProcessedState = rewindState;
         }
 
-        private void ReconcileState(StatePayload rewindState)
+        void ReconcileState(StatePayload rewindState)
         {
             transform.position = rewindState.position;
             transform.rotation = rewindState.rotation;
             rb.velocity = rewindState.velocity;
             rb.angularVelocity = rewindState.angularVelocity;
 
-            if (!rewindState.Equals(lastServerState)) return;
-            
             clientStateBuffer.Add(rewindState, rewindState.tick % k_bufferSize);
             
-            int tickToReplay = lastServerState.tick;
+            int tickToReplay = rewindState.tick + 1; 
 
-            while (tickToReplay < timer.CurrentTick) {
+            while (tickToReplay <= networkTimer.CurrentTick)
+            {
                 int bufferIndex = tickToReplay % k_bufferSize;
-                StatePayload statePayload = ProcessMovement(clientInputBuffer.Get(bufferIndex));
+                InputPayload inputPayload = clientInputBuffer.Get(bufferIndex);
+                StatePayload statePayload = ProcessMovement(inputPayload);
                 clientStateBuffer.Add(statePayload, bufferIndex);
                 tickToReplay++;
             }
         }
 
-        private bool ShouldReconcile()
+        StatePayload ProcessMovement(InputPayload inputPayload)
         {
-            bool isNewServerState = !lastServerState.Equals(default);
-            bool isLastStateUndefinedOrDifferent = lastProcessedState.Equals(default) 
-                                                   || !lastProcessedState.Equals(lastServerState);
+            bool shouldProcessMovement = false;
 
-            return isNewServerState && isLastStateUndefinedOrDifferent && !reconciliationCooldown.IsRunning;
-        }
+            if (IsOwner)
+            {
+                shouldProcessMovement = true;
+            }
+            else if (IsServer)
+            {
+                shouldProcessMovement = true;
+            }
 
-        [ServerRpc]
-        void SendToServerRpc(InputPayload input)
-        {
-            serverRpcText.SetText($"Received input from client Tick: {input.tick} Client POS: {input.position}");
-            clientCube.transform.position = input.position.With(y: 4);
-            serverInputQueue.Enqueue(input);
-        }
-
-        StatePayload ProcessMovement(InputPayload input)
-        {
-            Move(input.inputVector);
+            if (shouldProcessMovement)
+            {
+                Move(inputPayload.inputVector);
+            }
 
             return new StatePayload()
             {
-                tick = input.tick,
+                tick = inputPayload.tick,
+                networkObjectId = NetworkObjectId,
                 position = transform.position,
                 rotation = transform.rotation,
                 velocity = rb.velocity,
@@ -337,8 +375,8 @@ namespace Kart
 
         void Move(Vector2 inputVector)
         {
-            float verticalInput = AdjustInput(input.Move.y);
-            float horizontalInput = AdjustInput(input.Move.x);
+            float verticalInput = AdjustInput(inputVector.y);
+            float horizontalInput = AdjustInput(inputVector.x);
 
             float motor = maxMotorTorque * verticalInput;
             float steering = maxSteeringAngle * horizontalInput;
@@ -358,46 +396,46 @@ namespace Kart
             }
         }
 
-        private void HandleGroundedMovement(float verticalInput, float horizontalInput)
+        void HandleGroundedMovement(float verticalInput, float horizontalInput)
         {
             if (Mathf.Abs(verticalInput) > 0.1f || Mathf.Abs(kartVelocity.z) > 1)
             {
                 float turnMultiplier = Mathf.Clamp01(turnCurve.Evaluate(kartVelocity.magnitude / maxSpeed));
-                rb.AddTorque(Vector3.up * horizontalInput * Mathf.Sign(kartVelocity.z) * turnStrength * 100f *
-                             turnMultiplier);
+                rb.AddTorque(Vector3.up *
+                             (horizontalInput * Mathf.Sign(kartVelocity.z) * turnStrength * 100f * turnMultiplier));
             }
-
+            
             if (!input.IsBraking)
             {
                 float targetSpeed = verticalInput * maxSpeed;
                 Vector3 forwardWithoutY = transform.forward.With(y: 0).normalized;
-                rb.velocity = Vector3.Lerp(rb.velocity, forwardWithoutY * targetSpeed, timer.MinTimeBetweenTicks);
+                rb.velocity = Vector3.Lerp(rb.velocity, forwardWithoutY * targetSpeed,
+                    networkTimer.MinTimeBetweenTicks);
             }
-
+            
             float speedFactor = Mathf.Clamp01(rb.velocity.magnitude / maxSpeed);
             float lateralG = Mathf.Abs(Vector3.Dot(rb.velocity, transform.right));
             float downForceFactor = Mathf.Max(speedFactor, lateralG / lateralGScale);
-            rb.AddForce(-transform.up * downForce * rb.mass * downForceFactor);
-
+            rb.AddForce(-transform.up * (downForce * rb.mass * downForceFactor));
+            
             float speed = rb.velocity.magnitude;
-            Vector3 centerOfMassAdjustment = (speed > thresholdSpeed)
-                ? new Vector3(0f, 0f,
-                    Mathf.Abs(verticalInput) > 0.1f ? Mathf.Sign(verticalInput) * centerOfMassOffset : 0f)
+            Vector3 centerOfMassAdjustment = (speed > 10f)
+                ? new Vector3(0f, 0f, Mathf.Abs(verticalInput) > 0.1f ? Mathf.Sign(verticalInput) * -0.5f : 0f)
                 : Vector3.zero;
             rb.centerOfMass = originalCenterOfMass + centerOfMassAdjustment;
         }
 
-        private void UpdateBanking(float horizontalInput)
+        void HandleAirborneMovement(float verticalInput, float horizontalInput)
+        {
+            rb.velocity = Vector3.Lerp(rb.velocity, rb.velocity + Vector3.down * gravity, Time.deltaTime * gravity);
+        }
+
+        void UpdateBanking(float horizontalInput)
         {
             float targetBankAngle = horizontalInput * -maxBankAngle;
             Vector3 currentEuler = transform.localEulerAngles;
             currentEuler.z = Mathf.LerpAngle(currentEuler.z, targetBankAngle, Time.deltaTime * bankSpeed);
             transform.localEulerAngles = currentEuler;
-        }
-
-        private void HandleAirborneMovement(float verticalInput, float horizontalInput)
-        {
-            rb.velocity = Vector3.Lerp(rb.velocity, rb.velocity + Vector3.down * gravity, Time.deltaTime * gravity);
         }
 
         void UpdateAxles(float motor, float steering)
@@ -421,11 +459,12 @@ namespace Kart
             Vector3 position;
             Quaternion rotation;
             collider.GetWorldPose(out position, out rotation);
+
             visualWheel.transform.position = position;
             visualWheel.transform.rotation = rotation;
         }
 
-        private void HandleSteering(AxleInfo axleInfo, float steering)
+        void HandleSteering(AxleInfo axleInfo, float steering)
         {
             if (axleInfo.steering)
             {
@@ -435,7 +474,7 @@ namespace Kart
             }
         }
 
-        private void HandleMotor(AxleInfo axleInfo, float motor)
+        void HandleMotor(AxleInfo axleInfo, float motor)
         {
             if (axleInfo.motor)
             {
@@ -444,98 +483,54 @@ namespace Kart
             }
         }
 
-        private void HandleBrakesAndDrift(AxleInfo axleInfo)
+        void HandleBrakesAndDrift(AxleInfo axleInfo)
         {
             if (axleInfo.motor)
             {
                 if (input.IsBraking)
                 {
-                    // Apply ABS to prevent wheel lock-up
-                    axleInfo.leftWheel.brakeTorque = brakeTorque;
-                    axleInfo.rightWheel.brakeTorque = brakeTorque;
+                    rb.constraints = RigidbodyConstraints.FreezeRotationX;
 
-                    // rb.constraints = RigidbodyConstraints.FreezePositionX;
                     float newZ = Mathf.SmoothDamp(rb.velocity.z, 0, ref brakeVelocity, 1f);
                     rb.velocity = rb.velocity.With(z: newZ);
 
+                    axleInfo.leftWheel.brakeTorque = brakeTorque;
+                    axleInfo.rightWheel.brakeTorque = brakeTorque;
                     ApplyDriftFriction(axleInfo.leftWheel);
                     ApplyDriftFriction(axleInfo.rightWheel);
                 }
                 else
                 {
-                    //rb.constraints = RigidbodyConstraints.None;
-                    // Remove brake torque
+                    rb.constraints = RigidbodyConstraints.None;
+
                     axleInfo.leftWheel.brakeTorque = 0;
                     axleInfo.rightWheel.brakeTorque = 0;
-
-                    // Reset friction to original values
                     ResetDriftFriction(axleInfo.leftWheel);
                     ResetDriftFriction(axleInfo.rightWheel);
                 }
             }
         }
 
-        private void ApplyABS(WheelCollider wheel)
-        {
-            WheelHit hit;
-            if (wheel.GetGroundHit(out hit))
-            {
-                float slipRatio = Mathf.Abs(hit.forwardSlip);
-                float absSlipThreshold = 0.3f;
-
-                if (slipRatio >= absSlipThreshold)
-                {
-                    // Reduce brake torque to prevent lock-up
-                    currentBrakeTorque =
-                        Mathf.MoveTowards(currentBrakeTorque, 0, brakeTorqueIncreaseRate * Time.deltaTime);
-                }
-                else
-                {
-                    // Gradually increase brake torque
-                    currentBrakeTorque = Mathf.MoveTowards(currentBrakeTorque, brakeTorque,
-                        brakeTorqueIncreaseRate * Time.deltaTime);
-                }
-
-                wheel.brakeTorque = currentBrakeTorque;
-            }
-            else
-            {
-                wheel.brakeTorque = 0;
-            }
-        }
-
-        private void ApplyDriftFriction(WheelCollider wheel)
-        {
-            WheelFrictionCurve forwardFriction = wheel.forwardFriction;
-            WheelFrictionCurve sidewaysFriction = wheel.sidewaysFriction;
-
-            // Increase stiffness to improve grip
-            forwardFriction.stiffness = Mathf.Lerp(forwardFriction.stiffness, 2.0f, Time.deltaTime * 5f);
-            sidewaysFriction.stiffness = Mathf.Lerp(sidewaysFriction.stiffness, 2.0f, Time.deltaTime * 5f);
-
-            wheel.forwardFriction = forwardFriction;
-            wheel.sidewaysFriction = sidewaysFriction;
-        }
-
-        private void ResetDriftFriction(WheelCollider wheel)
+        void ResetDriftFriction(WheelCollider wheel)
         {
             AxleInfo axleInfo = axleInfos.FirstOrDefault(axle => axle.leftWheel == wheel || axle.rightWheel == wheel);
             if (axleInfo == null) return;
 
-            // Smoothly reset stiffness to original values
-            WheelFrictionCurve forwardFriction = wheel.forwardFriction;
-            WheelFrictionCurve sidewaysFriction = wheel.sidewaysFriction;
-
-            forwardFriction.stiffness = Mathf.Lerp(forwardFriction.stiffness,
-                axleInfo.originalForwardFriction.stiffness, Time.deltaTime * 5f);
-            sidewaysFriction.stiffness = Mathf.Lerp(sidewaysFriction.stiffness,
-                axleInfo.originalSidewaysFriction.stiffness, Time.deltaTime * 5f);
-
-            wheel.forwardFriction = forwardFriction;
-            wheel.sidewaysFriction = sidewaysFriction;
+            wheel.forwardFriction = axleInfo.originalForwardFriction;
+            wheel.sidewaysFriction = axleInfo.originalSidewaysFriction;
         }
 
-        private WheelFrictionCurve UpdateFriction(WheelFrictionCurve friction)
+        void ApplyDriftFriction(WheelCollider wheel)
+        {
+            if (wheel.GetGroundHit(out var hit))
+            {
+                wheel.forwardFriction = UpdateFriction(wheel.forwardFriction);
+                wheel.sidewaysFriction = UpdateFriction(wheel.sidewaysFriction);
+                IsGrounded = true;
+            }
+        }
+
+        WheelFrictionCurve UpdateFriction(WheelFrictionCurve friction)
         {
             friction.stiffness = input.IsBraking
                 ? Mathf.SmoothDamp(friction.stiffness, .5f, ref driftVelocity, Time.deltaTime * 2f)
@@ -543,18 +538,13 @@ namespace Kart
             return friction;
         }
 
-        public void SetInput(IDrive input)
+        float AdjustInput(float inputValue)
         {
-            this.input = input;
-        }
-
-        float AdjustInput(float input)
-        {
-            return input switch
+            return inputValue switch
             {
                 >= .7f => 1f,
                 <= -.7f => -1f,
-                _ => input
+                _ => inputValue
             };
         }
     }

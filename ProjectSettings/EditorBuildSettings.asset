@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Lobby.unity
+    guid: b6672ef67d106284b8ad4b81ffbe0375
+  - enabled: 1
     path: Assets/Scenes/SimpleRacerDemo.unity
     guid: 4817021b6c78d6c4c95b28d5b1926bd9
   - enabled: 1

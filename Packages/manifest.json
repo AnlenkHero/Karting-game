@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.eflatun.scenereference": "git+https://github.com/starikcetin/Eflatun.SceneReference.git#4.1.1",
     "com.gitamend.unityutils": "https://github.com/adammyhre/Unity-Utils.git",
     "com.unity.cinemachine": "2.9.7",
     "com.unity.collab-proxy": "2.5.1",
@@ -11,6 +12,8 @@
     "com.unity.netcode.gameobjects": "1.8.1",
     "com.unity.probuilder": "5.2.3",
     "com.unity.render-pipelines.universal": "14.0.10",
+    "com.unity.services.lobby": "1.2.2",
+    "com.unity.services.relay": "1.1.1",
     "com.unity.test-framework": "1.1.33",
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.timeline": "1.7.6",
