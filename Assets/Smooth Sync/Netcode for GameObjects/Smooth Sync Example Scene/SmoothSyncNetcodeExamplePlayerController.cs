@@ -134,7 +134,7 @@ public class SmoothSyncNetcodeExamplePlayerController : NetworkBehaviour
             // Lose all velocity by pressing '0'
             if (Input.GetKeyDown(KeyCode.Alpha0))
             {
-                rb.velocity = Vector3.zero;
+                rb.linearVelocity = Vector3.zero;
                 rb.angularVelocity = Vector3.zero;
             }
             // Add forces to the parent rigidbody
@@ -160,7 +160,7 @@ public class SmoothSyncNetcodeExamplePlayerController : NetworkBehaviour
             // Lose all velocity by pressing '0'
             if (Input.GetKeyDown(KeyCode.Alpha0))
             {
-                rb2D.velocity = Vector3.zero;
+                rb2D.linearVelocity = Vector3.zero;
                 rb2D.angularVelocity = 0;
             }
             // Add forces to the parent rigidbody

@@ -232,7 +232,7 @@ namespace Kart
                         networkObjectId = NetworkObjectId,
                         position = transform.position,
                         rotation = transform.rotation,
-                        velocity = rb.velocity,
+                        velocity = rb.linearVelocity,
                         angularVelocity = rb.angularVelocity,
                         ping = ping
                     };
@@ -327,7 +327,7 @@ namespace Kart
         {
             transform.position = rewindState.position;
             transform.rotation = rewindState.rotation;
-            rb.velocity = rewindState.velocity;
+            rb.linearVelocity = rewindState.velocity;
             rb.angularVelocity = rewindState.angularVelocity;
 
             clientStateBuffer.Add(rewindState, rewindState.tick % k_bufferSize);
@@ -368,7 +368,7 @@ namespace Kart
                 networkObjectId = NetworkObjectId,
                 position = transform.position,
                 rotation = transform.rotation,
-                velocity = rb.velocity,
+                velocity = rb.linearVelocity,
                 angularVelocity = rb.angularVelocity
             };
         }
@@ -384,7 +384,7 @@ namespace Kart
             UpdateAxles(motor, steering);
             UpdateBanking(horizontalInput);
 
-            kartVelocity = transform.InverseTransformDirection(rb.velocity);
+            kartVelocity = transform.InverseTransformDirection(rb.linearVelocity);
 
             if (IsGrounded)
             {
@@ -409,16 +409,16 @@ namespace Kart
             {
                 float targetSpeed = verticalInput * maxSpeed;
                 Vector3 forwardWithoutY = transform.forward.With(y: 0).normalized;
-                rb.velocity = Vector3.Lerp(rb.velocity, forwardWithoutY * targetSpeed,
+                rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, forwardWithoutY * targetSpeed,
                     networkTimer.MinTimeBetweenTicks);
             }
             
-            float speedFactor = Mathf.Clamp01(rb.velocity.magnitude / maxSpeed);
-            float lateralG = Mathf.Abs(Vector3.Dot(rb.velocity, transform.right));
+            float speedFactor = Mathf.Clamp01(rb.linearVelocity.magnitude / maxSpeed);
+            float lateralG = Mathf.Abs(Vector3.Dot(rb.linearVelocity, transform.right));
             float downForceFactor = Mathf.Max(speedFactor, lateralG / lateralGScale);
             rb.AddForce(-transform.up * (downForce * rb.mass * downForceFactor));
             
-            float speed = rb.velocity.magnitude;
+            float speed = rb.linearVelocity.magnitude;
             Vector3 centerOfMassAdjustment = (speed > 10f)
                 ? new Vector3(0f, 0f, Mathf.Abs(verticalInput) > 0.1f ? Mathf.Sign(verticalInput) * -0.5f : 0f)
                 : Vector3.zero;
@@ -427,7 +427,7 @@ namespace Kart
 
         void HandleAirborneMovement(float verticalInput, float horizontalInput)
         {
-            rb.velocity = Vector3.Lerp(rb.velocity, rb.velocity + Vector3.down * gravity, Time.deltaTime * gravity);
+            rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, rb.linearVelocity + Vector3.down * gravity, Time.deltaTime * gravity);
         }
 
         void UpdateBanking(float horizontalInput)
@@ -491,8 +491,8 @@ namespace Kart
                 {
                     rb.constraints = RigidbodyConstraints.FreezeRotationX;
 
-                    float newZ = Mathf.SmoothDamp(rb.velocity.z, 0, ref brakeVelocity, 1f);
-                    rb.velocity = rb.velocity.With(z: newZ);
+                    float newZ = Mathf.SmoothDamp(rb.linearVelocity.z, 0, ref brakeVelocity, 1f);
+                    rb.linearVelocity = rb.linearVelocity.With(z: newZ);
 
                     axleInfo.leftWheel.brakeTorque = brakeTorque;
                     axleInfo.rightWheel.brakeTorque = brakeTorque;
