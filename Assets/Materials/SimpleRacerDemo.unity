@@ -15873,7 +15873,7 @@ PrefabInstance:
     - target: {fileID: -1587684692493543419, guid: cb2647bb145265c4d806118d55db42ab,
         type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 4189479549
+      value: 1266332713
       objectReference: {fileID: 0}
     - target: {fileID: -1587684692493543419, guid: cb2647bb145265c4d806118d55db42ab,
         type: 3}
@@ -19465,25 +19465,11 @@ PrefabInstance:
     - {fileID: 9147747895499963056, guid: cb2647bb145265c4d806118d55db42ab, type: 3}
     - {fileID: 6119707474902849646, guid: cb2647bb145265c4d806118d55db42ab, type: 3}
     - {fileID: 4536881915317071570, guid: cb2647bb145265c4d806118d55db42ab, type: 3}
+    - {fileID: 3054823069411653405, guid: cb2647bb145265c4d806118d55db42ab, type: 3}
+    - {fileID: 2756646137297412948, guid: cb2647bb145265c4d806118d55db42ab, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6376190465481142727, guid: cb2647bb145265c4d806118d55db42ab,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 6596865736528551314, guid: cb2647bb145265c4d806118d55db42ab,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 6941335588786307102, guid: cb2647bb145265c4d806118d55db42ab,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 7572667019599509108, guid: cb2647bb145265c4d806118d55db42ab,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cb2647bb145265c4d806118d55db42ab, type: 3}
 --- !u!1001 &1060883942
 PrefabInstance:

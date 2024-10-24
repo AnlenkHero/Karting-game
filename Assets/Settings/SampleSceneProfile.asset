@@ -21,7 +21,7 @@ MonoBehaviour:
     m_Value: 1
   intensity:
     m_OverrideState: 1
-    m_Value: 27.48
+    m_Value: 1
   scatter:
     m_OverrideState: 0
     m_Value: 0.7
@@ -91,6 +91,7 @@ MonoBehaviour:
   - {fileID: 849379129802519247}
   - {fileID: -7893295128165547882}
   - {fileID: -7011558710299706105}
+  - {fileID: 8278137899677555501}
 --- !u!114 &849379129802519247
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -106,7 +107,7 @@ MonoBehaviour:
   active: 1
   mode:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0
   neutralHDRRangeReductionMode:
     m_OverrideState: 0
     m_Value: 2
@@ -131,3 +132,70 @@ MonoBehaviour:
   maxNits:
     m_OverrideState: 0
     m_Value: 1000
+--- !u!114 &8278137899677555501
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a074ec59f6e910b4e8c49f57e56cf95a, type: 3}
+  m_Name: VolumetricFogVolumeComponent
+  m_EditorClassIdentifier: 
+  active: 1
+  distance:
+    m_OverrideState: 1
+    m_Value: 512
+  baseHeight:
+    m_OverrideState: 1
+    m_Value: 0
+  maximumHeight:
+    m_OverrideState: 1
+    m_Value: 133.11
+  enableGround:
+    m_OverrideState: 0
+    m_Value: 1
+  groundHeight:
+    m_OverrideState: 0
+    m_Value: -0.11
+  density:
+    m_OverrideState: 0
+    m_Value: 1
+  attenuationDistance:
+    m_OverrideState: 0
+    m_Value: 4
+  enableMainLightContribution:
+    m_OverrideState: 0
+    m_Value: 1
+  mainLightAnisotropy:
+    m_OverrideState: 1
+    m_Value: 0.99
+  mainLightScattering:
+    m_OverrideState: 1
+    m_Value: 1
+  mainLightColorTint:
+    m_OverrideState: 1
+    m_Value: {r: 1024, g: 1024, b: 1024, a: 1}
+  enableAdditionalLightsContribution:
+    m_OverrideState: 1
+    m_Value: 1
+  additionalLightsAnisotropy:
+    m_OverrideState: 1
+    m_Value: 0.99
+  additionalLightsScattering:
+    m_OverrideState: 0
+    m_Value: 1.93
+  additionalLightsRadius:
+    m_OverrideState: 0
+    m_Value: 0
+  maxSteps:
+    m_OverrideState: 0
+    m_Value: 256
+  blurIterations:
+    m_OverrideState: 1
+    m_Value: 4
+  enabled:
+    m_OverrideState: 1
+    m_Value: 1
