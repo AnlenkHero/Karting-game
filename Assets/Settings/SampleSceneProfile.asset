@@ -23,8 +23,8 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 1
   scatter:
-    m_OverrideState: 0
-    m_Value: 0.7
+    m_OverrideState: 1
+    m_Value: 0.282
   clamp:
     m_OverrideState: 0
     m_Value: 65472
@@ -147,7 +147,7 @@ MonoBehaviour:
   active: 1
   distance:
     m_OverrideState: 1
-    m_Value: 512
+    m_Value: 2048
   baseHeight:
     m_OverrideState: 1
     m_Value: 0
@@ -162,10 +162,10 @@ MonoBehaviour:
     m_Value: -0.11
   density:
     m_OverrideState: 0
-    m_Value: 1
+    m_Value: 0.017
   attenuationDistance:
     m_OverrideState: 0
-    m_Value: 4
+    m_Value: 0.05
   enableMainLightContribution:
     m_OverrideState: 0
     m_Value: 1
@@ -185,13 +185,13 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 0.99
   additionalLightsScattering:
-    m_OverrideState: 0
-    m_Value: 1.93
+    m_OverrideState: 1
+    m_Value: 0.24
   additionalLightsRadius:
     m_OverrideState: 0
     m_Value: 0
   maxSteps:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 256
   blurIterations:
     m_OverrideState: 1

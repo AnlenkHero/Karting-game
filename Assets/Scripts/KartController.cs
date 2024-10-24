@@ -490,9 +490,36 @@ namespace Kart
                 if (input.IsBraking)
                 {
                     rb.constraints = RigidbodyConstraints.FreezeRotationX;
+// Forward direction on the XZ plane
+                    Vector3 forwardDirection = new Vector3(transform.forward.x, 0f, transform.forward.z).normalized;
 
-                    float newZ = Mathf.SmoothDamp(rb.linearVelocity.z, 0, ref brakeVelocity, 1f);
-                    rb.linearVelocity = rb.linearVelocity.With(z: newZ);
+// Current velocity
+                    Vector3 currentVelocity = rb.linearVelocity;
+
+// Decompose the velocity into forward and sideways components
+                    Vector3 forwardVelocity = Vector3.Project(currentVelocity, forwardDirection);
+                    Vector3 sidewaysVelocity = currentVelocity - forwardVelocity;
+                    forwardVelocity = Vector3.Lerp(forwardVelocity, Vector3.zero, Time.fixedDeltaTime);
+
+                    // Smoothly reduce the sideways velocity to 50%
+                    sidewaysVelocity = Vector3.Lerp(sidewaysVelocity, sidewaysVelocity * 0.5f, Time.fixedDeltaTime);
+                    rb.linearVelocity = forwardVelocity + sidewaysVelocity;
+                    
+                    /*
+                     // Forward direction on the XZ plane
+                    Vector3 forwardDirection = new Vector3(transform.forward.x, 0f, transform.forward.z).normalized;
+
+// Current velocity
+                    Vector3 currentVelocity = rb.linearVelocity;
+
+// Decompose the velocity into forward and sideways components
+                    Vector3 forwardVelocity = Vector3.Project(currentVelocity, forwardDirection);
+                    Vector3 sidewaysVelocity = currentVelocity - forwardVelocity;
+
+                        Vector3 brakingForceVector = -forwardVelocity.normalized * 30;
+                        rb.AddForce(brakingForceVector, ForceMode.Acceleration);
+                     */
+                    Debug.Log(rb.linearVelocity);
 
                     axleInfo.leftWheel.brakeTorque = brakeTorque;
                     axleInfo.rightWheel.brakeTorque = brakeTorque;

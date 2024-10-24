@@ -9,8 +9,8 @@ namespace Kart {
     
     [DisallowMultipleComponent]
     public class ClientNetworkTransform : NetworkTransform {
-        public AuthorityMode authorityMode = AuthorityMode.Client;
+        public AuthorityMode authorityMode = Kart.AuthorityMode.Client;
 
-        protected override bool OnIsServerAuthoritative() => authorityMode == AuthorityMode.Server;
+        protected override bool OnIsServerAuthoritative() => authorityMode == Kart.AuthorityMode.Server;
     }
 }
