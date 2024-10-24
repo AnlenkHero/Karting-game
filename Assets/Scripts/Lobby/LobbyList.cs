@@ -1,19 +1,24 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Kart
 {
     public class LobbyList : MonoBehaviour
     {
-        [SerializeField] LobbyListElement lobbyListElementPrefab;
+        [SerializeField] private LobbyListElement lobbyListElementPrefab;
         [SerializeField] private Transform lobbyListElementParent;
+        [SerializeField] private Button refreshButton;
 
         private void OnEnable()
         {
             Multiplayer.OnAuthenticated += CreateLobbyList;
+            refreshButton.onClick.AddListener(RefreshLobbyList);
         }
+
         private void OnDisable()
         {
             Multiplayer.OnAuthenticated -= CreateLobbyList;
@@ -44,6 +49,23 @@ namespace Kart
             {
                 Debug.LogError("Error listing lobbies: " + e.Message);
             }
+        }
+
+        private async void RefreshLobbyList()
+        {
+            await ClearLobbyList();
+            CreateLobbyList();
+        }
+
+        private async Task ClearLobbyList()
+        {
+            if (lobbyListElementParent.childCount == 0) return;
+            foreach (Transform child in lobbyListElementParent)
+            {
+                Destroy(child.gameObject);
+            }
+
+            await Task.Delay(100);
         }
 
         private async void JoinLobbyAsync(string lobbyId)

@@ -39,7 +39,7 @@ namespace Kart
         string connectionType => encryption == EncryptionType.DTLS ? k_dtlsEncryption : k_udpEncryption;
 
         const float k_lobbyHeartbeatInterval = 20f;
-        const float k_lobbyPollInterval = 65f;
+        const float k_lobbyPollInterval = 20f;
         const string k_keyJoinCode = "RelayJoinCode";
         const string k_dtlsEncryption = "dtls";
         const string k_udpEncryption = "udp";
@@ -47,6 +47,7 @@ namespace Kart
         CountdownTimer heartbeatTimer = new CountdownTimer(k_lobbyHeartbeatInterval);
         CountdownTimer pollForUpdatesTimer = new CountdownTimer(k_lobbyPollInterval);
         public static Action OnAuthenticated;
+        private List<Player> players;
 
         async void Start()
         {
@@ -262,6 +263,9 @@ namespace Kart
                 {
                     Lobby lobby = await LobbyService.Instance.GetLobbyAsync(currentLobby.Id);
                     Debug.Log("Polled for updates on lobby: " + lobby.Name);
+                    players = lobby.Players;
+                    Debug.Log(players.Count);
+                    await LobbyService.Instance.RemovePlayerAsync(lobby.Id, lobby.Players[1].Id);
                 }
             }
             catch (LobbyServiceException e)
@@ -269,5 +273,6 @@ namespace Kart
                 Debug.LogError("Failed to poll for updates on lobby: " + e.Message);
             }
         }
+        
     }
 }

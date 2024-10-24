@@ -1,4 +1,5 @@
-using Cinemachine;
+
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityUtils;
 using Utilities;
@@ -12,7 +13,7 @@ namespace Kart
         [SerializeField] GameObject[] aiKartPrefabs;
 
         [SerializeField] GameObject playerKartPrefab;
-        [SerializeField] CinemachineVirtualCamera playerCamera;
+        [SerializeField] CinemachineCamera playerCamera;
 
         void Start()
         {

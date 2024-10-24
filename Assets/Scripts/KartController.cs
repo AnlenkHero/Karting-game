@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cinemachine;
 using Smooth;
 using TMPro;
+using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
 using UnityUtils;
@@ -94,7 +94,7 @@ namespace Kart
         [Header("Refs")] [SerializeField] InputReader playerInput;
         [SerializeField] Circuit circuit;
         [SerializeField] AIDriverData driverData;
-        [SerializeField] CinemachineVirtualCamera playerCamera;
+        [SerializeField] CinemachineCamera playerCamera;
         [SerializeField] AudioListener playerAudioListener;
 
         IDrive input;
