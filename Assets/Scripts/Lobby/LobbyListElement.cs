@@ -15,5 +15,10 @@ namespace Kart
             lobbyText.text = lobbyInfo;
             joinButton.onClick.AddListener(() => joinAction());
         }
+
+        public void SetUIInteraction(bool state)
+        {
+            joinButton.interactable = state;
+        }
     }
 }

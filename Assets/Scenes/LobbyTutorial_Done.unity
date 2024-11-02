@@ -2024,6 +2024,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &530541473 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3275604381764842377, guid: 8a2917d3ce187824fad93ad7e3795753,
+    type: 3}
+  m_PrefabInstance: {fileID: 1425032489}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &642824230
 GameObject:
   m_ObjectHideFlags: 0
@@ -2853,6 +2865,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 593a2fe42fa9d37498c96f9a383b6521, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NetworkManagerExpanded: 0
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 818158580}
@@ -2876,6 +2889,11 @@ MonoBehaviour:
     LoadSceneTimeOut: 120
     SpawnTimeout: 10
     EnableNetworkLogs: 1
+    NetworkTopology: 0
+    UseCMBService: 0
+    AutoSpawnPlayerPrefabClientSide: 1
+    NetworkMessageMetrics: 1
+    NetworkProfilingMetrics: 1
     OldPrefabList: []
   RunInBackground: 1
   LogLevel: 1
@@ -5067,6 +5085,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI_InputWindow
       objectReference: {fileID: 0}
+    - target: {fileID: 3275604382287273222, guid: 8a2917d3ce187824fad93ad7e3795753,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3275604382287273273, guid: 8a2917d3ce187824fad93ad7e3795753,
         type: 3}
       propertyPath: m_Pivot.x
@@ -5171,6 +5194,41 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3275604383437136129, guid: 8a2917d3ce187824fad93ad7e3795753,
+        type: 3}
+      propertyPath: text
+      value: 
+      objectReference: {fileID: 530541473}
+    - target: {fileID: 3275604383437136129, guid: 8a2917d3ce187824fad93ad7e3795753,
+        type: 3}
+      propertyPath: targetTextColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3275604383437136129, guid: 8a2917d3ce187824fad93ad7e3795753,
+        type: 3}
+      propertyPath: targetTextColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3275604383437136129, guid: 8a2917d3ce187824fad93ad7e3795753,
+        type: 3}
+      propertyPath: targetTextColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3275604383437136129, guid: 8a2917d3ce187824fad93ad7e3795753,
+        type: 3}
+      propertyPath: hoverBehaviourType
+      value: 120
+      objectReference: {fileID: 0}
+    - target: {fileID: 3275604383437136129, guid: 8a2917d3ce187824fad93ad7e3795753,
+        type: 3}
+      propertyPath: textColorPingPongRepeat
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3275604383437136129, guid: 8a2917d3ce187824fad93ad7e3795753,
+        type: 3}
+      propertyPath: imageColorPingPongRepeat
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

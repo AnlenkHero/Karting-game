@@ -11,6 +11,7 @@
  */
 
 using System;
+using Kart.UI;
 using UnityEngine;
 using UnityEngine.UI;
 

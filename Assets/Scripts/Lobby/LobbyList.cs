@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Kart
 {
@@ -11,12 +11,13 @@ namespace Kart
     {
         [SerializeField] private LobbyListElement lobbyListElementPrefab;
         [SerializeField] private Transform lobbyListElementParent;
-        [SerializeField] private Button refreshButton;
+        [SerializeField] private List<LobbyListElement> lobbies;
+
+        public List<LobbyListElement> Lobbies => lobbies;
 
         private void OnEnable()
         {
             Multiplayer.OnAuthenticated += CreateLobbyList;
-            refreshButton.onClick.AddListener(RefreshLobbyList);
         }
 
         private void OnDisable()
@@ -38,6 +39,7 @@ namespace Kart
                         lobbyListElement.SetupLobbyListElement(
                             $"Lobby: {lobby.Name}, ID: {lobby.Id}, Players: {lobby.Players.Count}/{lobby.MaxPlayers}",
                             () => JoinLobbyAsync(lobby.Id));
+                        lobbies.Add(lobbyListElement);
                     }
                 }
                 else
@@ -51,7 +53,7 @@ namespace Kart
             }
         }
 
-        private async void RefreshLobbyList()
+        public async void RefreshLobbyList()
         {
             await ClearLobbyList();
             CreateLobbyList();
@@ -59,6 +61,7 @@ namespace Kart
 
         private async Task ClearLobbyList()
         {
+            lobbies.Clear();
             if (lobbyListElementParent.childCount == 0) return;
             foreach (Transform child in lobbyListElementParent)
             {

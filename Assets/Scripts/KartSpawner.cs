@@ -11,7 +11,6 @@ namespace Kart
         [SerializeField] Circuit circuit;
         [SerializeField] AIDriverData aiDriverData;
         [SerializeField] GameObject[] aiKartPrefabs;
-
         [SerializeField] GameObject playerKartPrefab;
         [SerializeField] CinemachineCamera playerCamera;
 

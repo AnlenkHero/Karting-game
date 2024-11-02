@@ -117,7 +117,7 @@ namespace Kart
             catch (LobbyServiceException e)
             {
                 Debug.LogError("Failed to list lobbies: " + e.Message);
-                return new QueryResponse();
+                return null;
             }
         }
 

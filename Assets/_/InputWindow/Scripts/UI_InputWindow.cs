@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using CodeMonkey.Utils;
+using Kart.UI;
 using TMPro;
 
 public class UI_InputWindow : MonoBehaviour {
