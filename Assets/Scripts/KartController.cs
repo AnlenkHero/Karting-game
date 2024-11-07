@@ -21,7 +21,15 @@ namespace Kart
         public WheelFrictionCurve originalForwardFriction;
         public WheelFrictionCurve originalSidewaysFriction;
     }
-    
+
+    [System.Serializable]
+    public class Gear
+    {
+        public int gearNumber;
+        public float gearRatio;   // Ratio affecting torque
+        public float maxSpeed;    // Max speed achievable in this gear
+    }
+
     public struct InputPayload : INetworkSerializable
     {
         public int tick;
@@ -64,38 +72,45 @@ namespace Kart
 
     public class KartController : NetworkBehaviour
     {
-        [Header("Axle Information")] [SerializeField]
-        AxleInfo[] axleInfos;
+        [Header("Axle Information")]
+        [SerializeField] AxleInfo[] axleInfos;
 
-        [Header("Motor Attributes")] [SerializeField]
-        float maxMotorTorque = 3000f;
-
+        [Header("Motor Attributes")]
+        [SerializeField] float maxMotorTorque = 3000f;
         [SerializeField] float maxSpeed;
 
-        [Header("Steering Attributes")] [SerializeField]
-        float maxSteeringAngle = 30f;
-
+        [Header("Steering Attributes")]
+        [SerializeField] float maxSteeringAngle = 30f;
         [SerializeField] AnimationCurve turnCurve;
         [SerializeField] float turnStrength = 1500f;
 
-        [Header("Braking and Drifting")] [SerializeField]
-        float driftSteerMultiplier = 1.5f; 
-
+        [Header("Braking and Drifting")]
+        [SerializeField] float driftSteerMultiplier = 1.5f;
         [SerializeField] float brakeTorque = 10000f;
 
-        [Header("Physics")] [SerializeField] Transform centerOfMass;
+        [Header("Physics")]
+        [SerializeField] Transform centerOfMass;
         [SerializeField] float downForce = 100f;
         [SerializeField] float gravity = Physics.gravity.y;
-        [SerializeField] float lateralGScale = 10f; 
+        [SerializeField] float lateralGScale = 10f;
 
-        [Header("Banking")] [SerializeField] float maxBankAngle = 5f;
+        [Header("Banking")]
+        [SerializeField] float maxBankAngle = 5f;
         [SerializeField] float bankSpeed = 2f;
 
-        [Header("Refs")] [SerializeField] InputReader playerInput;
+        [Header("Input")]
+        [SerializeField] InputReader playerInput;
+
+        [Header("References")]
         [SerializeField] Circuit circuit;
         [SerializeField] AIDriverData driverData;
         [SerializeField] CinemachineCamera playerCamera;
         [SerializeField] AudioListener playerAudioListener;
+
+        [Header("Gears")]
+        [SerializeField] List<Gear> gears;
+
+        private int currentGear = 1;
 
         IDrive input;
         Rigidbody rb;
@@ -110,30 +125,28 @@ namespace Kart
         public Vector3 Velocity => kartVelocity;
         public float MaxSpeed => maxSpeed;
 
-
         NetworkTimer networkTimer;
-        const float k_serverTickRate = 60f; 
+        const float k_serverTickRate = 60f;
         const int k_bufferSize = 1024;
-
 
         CircularBuffer<StatePayload> clientStateBuffer;
         CircularBuffer<InputPayload> clientInputBuffer;
         StatePayload lastServerState;
         StatePayload lastProcessedState;
-        
+
         CircularBuffer<StatePayload> serverStateBuffer;
         Queue<InputPayload> serverInputQueue;
 
-        [Header("Netcode")] [SerializeField] float reconciliationCooldownTime = 1f;
+        [Header("Netcode")]
+        [SerializeField] float reconciliationCooldownTime = 1f;
         [SerializeField] float reconciliationThreshold = 10f;
         [SerializeField] GameObject serverCube;
         [SerializeField] GameObject clientCube;
 
         CountdownTimer reconciliationTimer;
 
-        [Header("Netcode Debug")] [SerializeField]
-        TextMeshPro networkText;
-
+        [Header("Netcode Debug")]
+        [SerializeField] TextMeshPro networkText;
         [SerializeField] TextMeshPro playerText;
         [SerializeField] TextMeshPro serverRpcText;
         [SerializeField] TextMeshPro clientRpcText;
@@ -144,7 +157,7 @@ namespace Kart
             {
                 input = driveInput;
             }
-            
+
             rb = GetComponent<Rigidbody>();
             input.Enable();
 
@@ -165,6 +178,19 @@ namespace Kart
             serverInputQueue = new Queue<InputPayload>();
 
             reconciliationTimer = new CountdownTimer(reconciliationCooldownTime);
+
+            // Initialize gears if not set in inspector
+            if (gears == null || gears.Count == 0)
+            {
+                gears = new List<Gear>
+                {
+                    new Gear { gearNumber = 1, gearRatio = 2.5f, maxSpeed = 20f },
+                    new Gear { gearNumber = 2, gearRatio = 2.0f, maxSpeed = 40f },
+                    new Gear { gearNumber = 3, gearRatio = 1.5f, maxSpeed = 60f },
+                    new Gear { gearNumber = 4, gearRatio = 1.0f, maxSpeed = 80f },
+                    new Gear { gearNumber = 5, gearRatio = 0.8f, maxSpeed = 100f }
+                };
+            }
         }
 
         public void SetInput(IDrive input)
@@ -181,8 +207,7 @@ namespace Kart
                 return;
             }
 
-            networkText.SetText(
-                $"Player {NetworkManager.LocalClientId} Host: {NetworkManager.IsHost} Server: {IsServer} Client: {IsClient}");
+            networkText.SetText($"Player {NetworkManager.LocalClientId} Host: {NetworkManager.IsHost} Server: {IsServer} Client: {IsClient}");
             if (!IsServer) serverRpcText.SetText("Not Server");
             if (!IsClient) clientRpcText.SetText("Not Client");
 
@@ -195,12 +220,26 @@ namespace Kart
             networkTimer.Update(Time.deltaTime);
             reconciliationTimer.Tick(Time.deltaTime);
 
-            playerText.SetText(
-                $"Owner: {IsOwner} NetworkObjectId: {NetworkObjectId} Velocity: {kartVelocity.magnitude:F1}");
+            playerText.SetText($"Owner: {IsOwner} NetworkObjectId: {NetworkObjectId} Velocity: {kartVelocity.magnitude:F1}");
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 transform.position += transform.forward * 20f;
             }
+
+            // Manual gear shifting (Optional)
+            /*
+            if (IsOwner)
+            {
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    ShiftUp();
+                }
+                if (Input.GetKeyDown(KeyCode.Q))
+                {
+                    ShiftDown();
+                }
+            }
+            */
         }
 
         void FixedUpdate()
@@ -240,7 +279,7 @@ namespace Kart
                     SendToClientRpc(statePayload);
                     continue;
                 }
-                
+
                 StatePayload clientStatePayload = ProcessMovement(inputPayload);
                 clientStatePayload.ping = ping;
                 serverStateBuffer.Add(clientStatePayload, bufferIndex);
@@ -276,8 +315,7 @@ namespace Kart
         [ClientRpc]
         void SendToClientRpc(StatePayload statePayload)
         {
-            clientRpcText.SetText(
-                $"Received state from server Tick {statePayload.tick} Server POS: {statePayload.position} Ping: {statePayload.ping}");
+            clientRpcText.SetText($"Received state from server Tick {statePayload.tick} Server POS: {statePayload.position} Ping: {statePayload.ping}");
             serverCube.transform.position = statePayload.position.With(y: 4);
             if (!IsOwner) return;
             lastServerState = statePayload;
@@ -308,7 +346,7 @@ namespace Kart
             int bufferIndex;
 
             bufferIndex = lastServerState.tick % k_bufferSize;
-            if (bufferIndex < 0) return; 
+            if (bufferIndex < 0) return;
 
             StatePayload rewindState = lastServerState;
             StatePayload clientState = clientStateBuffer.Get(bufferIndex);
@@ -331,8 +369,8 @@ namespace Kart
             rb.angularVelocity = rewindState.angularVelocity;
 
             clientStateBuffer.Add(rewindState, rewindState.tick % k_bufferSize);
-            
-            int tickToReplay = rewindState.tick + 1; 
+
+            int tickToReplay = rewindState.tick + 1;
 
             while (tickToReplay <= networkTimer.CurrentTick)
             {
@@ -378,7 +416,12 @@ namespace Kart
             float verticalInput = AdjustInput(inputVector.y);
             float horizontalInput = AdjustInput(inputVector.x);
 
-            float motor = maxMotorTorque * verticalInput;
+            UpdateGear();
+
+            Gear currentGearData = gears[currentGear - 1];
+
+            float randomTorqueFactor = UnityEngine.Random.Range(0.95f, 1.05f);
+            float motor = maxMotorTorque * verticalInput * currentGearData.gearRatio * randomTorqueFactor;
             float steering = maxSteeringAngle * horizontalInput;
 
             UpdateAxles(motor, steering);
@@ -388,7 +431,7 @@ namespace Kart
 
             if (IsGrounded)
             {
-                HandleGroundedMovement(verticalInput, horizontalInput);
+                HandleGroundedMovement(verticalInput, horizontalInput, currentGearData, motor);
             }
             else
             {
@@ -396,28 +439,62 @@ namespace Kart
             }
         }
 
-        void HandleGroundedMovement(float verticalInput, float horizontalInput)
+        void UpdateGear()
+        {
+            float speed = rb.linearVelocity.magnitude;
+
+            if (currentGear < gears.Count && speed > gears[currentGear - 1].maxSpeed)
+            {
+                ShiftUp();
+            }
+            else if (currentGear > 1 && speed < gears[currentGear - 2].maxSpeed)
+            {
+                ShiftDown();
+            }
+        }
+
+        void ShiftUp()
+        {
+            if (currentGear < gears.Count)
+            {
+                currentGear++;
+                // Optionally, play a gear shift sound or animation
+            }
+        }
+
+        void ShiftDown()
+        {
+            if (currentGear > 1)
+            {
+                currentGear--;
+                // Optionally, play a gear shift sound or animation
+            }
+        }
+
+        void HandleGroundedMovement(float verticalInput, float horizontalInput, Gear currentGearData, float motor)
         {
             if (Mathf.Abs(verticalInput) > 0.1f || Mathf.Abs(kartVelocity.z) > 1)
             {
-                float turnMultiplier = Mathf.Clamp01(turnCurve.Evaluate(kartVelocity.magnitude / maxSpeed));
-                rb.AddTorque(Vector3.up *
-                             (horizontalInput * Mathf.Sign(kartVelocity.z) * turnStrength * 100f * turnMultiplier));
+                float turnMultiplier = Mathf.Clamp01(turnCurve.Evaluate(kartVelocity.magnitude / currentGearData.maxSpeed));
+                rb.AddTorque(Vector3.up * (horizontalInput * Mathf.Sign(kartVelocity.z) * turnStrength * 100f * turnMultiplier));
             }
-            
+
             if (!input.IsBraking)
             {
-                float targetSpeed = verticalInput * maxSpeed;
+                float targetSpeed = verticalInput * currentGearData.maxSpeed;
                 Vector3 forwardWithoutY = transform.forward.With(y: 0).normalized;
-                rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, forwardWithoutY * targetSpeed,
-                    networkTimer.MinTimeBetweenTicks);
+
+                if (rb.linearVelocity.magnitude < targetSpeed)
+                {
+                    rb.AddForce(transform.forward * motor, ForceMode.Acceleration);
+                }
             }
-            
+
             float speedFactor = Mathf.Clamp01(rb.linearVelocity.magnitude / maxSpeed);
             float lateralG = Mathf.Abs(Vector3.Dot(rb.linearVelocity, transform.right));
             float downForceFactor = Mathf.Max(speedFactor, lateralG / lateralGScale);
             rb.AddForce(-transform.up * (downForce * rb.mass * downForceFactor));
-            
+
             float speed = rb.linearVelocity.magnitude;
             Vector3 centerOfMassAdjustment = (speed > 10f)
                 ? new Vector3(0f, 0f, Mathf.Abs(verticalInput) > 0.1f ? Mathf.Sign(verticalInput) * -0.5f : 0f)
@@ -490,36 +567,13 @@ namespace Kart
                 if (input.IsBraking)
                 {
                     rb.constraints = RigidbodyConstraints.FreezeRotationX;
-// Forward direction on the XZ plane
                     Vector3 forwardDirection = new Vector3(transform.forward.x, 0f, transform.forward.z).normalized;
-
-// Current velocity
                     Vector3 currentVelocity = rb.linearVelocity;
-
-// Decompose the velocity into forward and sideways components
                     Vector3 forwardVelocity = Vector3.Project(currentVelocity, forwardDirection);
                     Vector3 sidewaysVelocity = currentVelocity - forwardVelocity;
                     forwardVelocity = Vector3.Lerp(forwardVelocity, Vector3.zero, Time.fixedDeltaTime);
-
-                    // Smoothly reduce the sideways velocity to 50%
                     sidewaysVelocity = Vector3.Lerp(sidewaysVelocity, sidewaysVelocity * 0.5f, Time.fixedDeltaTime);
                     rb.linearVelocity = forwardVelocity + sidewaysVelocity;
-                    
-                    /*
-                     // Forward direction on the XZ plane
-                    Vector3 forwardDirection = new Vector3(transform.forward.x, 0f, transform.forward.z).normalized;
-
-// Current velocity
-                    Vector3 currentVelocity = rb.linearVelocity;
-
-// Decompose the velocity into forward and sideways components
-                    Vector3 forwardVelocity = Vector3.Project(currentVelocity, forwardDirection);
-                    Vector3 sidewaysVelocity = currentVelocity - forwardVelocity;
-
-                        Vector3 brakingForceVector = -forwardVelocity.normalized * 30;
-                        rb.AddForce(brakingForceVector, ForceMode.Acceleration);
-                     */
-                    Debug.Log(rb.linearVelocity);
 
                     axleInfo.leftWheel.brakeTorque = brakeTorque;
                     axleInfo.rightWheel.brakeTorque = brakeTorque;
