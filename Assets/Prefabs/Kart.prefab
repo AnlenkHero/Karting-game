@@ -495,15 +495,18 @@ MonoBehaviour:
     motor: 1
     steering: 0
   maxMotorTorque: 10
-  turnPersistenceTorque: 0.005
   maxSpeed: 100
+  speedRatio: 5
+  engineBrakingForce: 50
+  turnPersistenceTorque: 0.002
   maxSteeringAngle: 45
+  reverseSteeringAngle: 10
   turnCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.32657003
-      value: 0.03731537
+      time: 0.003227234
+      value: 10.725853
       inSlope: -0.441032
       outSlope: -0.441032
       tangentMode: 0
@@ -535,18 +538,25 @@ MonoBehaviour:
   driftSteerMultiplier: 1.5
   brakeTorque: 10000
   centerOfMass: {fileID: 2635398307977155696}
-  downForce: 10
+  downForce: 1
   gravity: -9.81
   lateralGScale: 2
   maxBankAngle: 5
   bankSpeed: 2
   playerInput: {fileID: 11400000, guid: d64638e4f0f6ab4438403808c01f1c24, type: 2}
+  circuit: {fileID: 0}
+  driverData: {fileID: 0}
+  playerCamera: {fileID: 0}
   playerAudioListener: {fileID: 45326721118962872}
-  gears:
-  - gearNumber: 1
-    gearRatio: 5
-    maxSpeed: 100
   IsGrounded: 1
+  reconciliationCooldownTime: 1
+  reconciliationThreshold: 10
+  serverCube: {fileID: 0}
+  clientCube: {fileID: 0}
+  networkText: {fileID: 0}
+  playerText: {fileID: 0}
+  serverRpcText: {fileID: 0}
+  clientRpcText: {fileID: 0}
 --- !u!114 &4911408304765601384
 MonoBehaviour:
   m_ObjectHideFlags: 0
