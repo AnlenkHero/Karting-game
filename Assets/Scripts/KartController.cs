@@ -79,7 +79,8 @@ namespace Kart
         [SerializeField] float maxMotorTorque = 3000f;
         [SerializeField] float maxSpeed;
 
-        [Header("Steering Attributes")]
+        [Header("Steering Attributes")] 
+        [SerializeField] private float turnPersistenceTorque = 0.005f;
         [SerializeField] float maxSteeringAngle = 30f;
         [SerializeField] AnimationCurve turnCurve;
         [SerializeField] float turnStrength = 1500f;
@@ -221,25 +222,6 @@ namespace Kart
             reconciliationTimer.Tick(Time.deltaTime);
 
             playerText.SetText($"Owner: {IsOwner} NetworkObjectId: {NetworkObjectId} Velocity: {kartVelocity.magnitude:F1}");
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                transform.position += transform.forward * 20f;
-            }
-
-            // Manual gear shifting (Optional)
-            /*
-            if (IsOwner)
-            {
-                if (Input.GetKeyDown(KeyCode.E))
-                {
-                    ShiftUp();
-                }
-                if (Input.GetKeyDown(KeyCode.Q))
-                {
-                    ShiftDown();
-                }
-            }
-            */
         }
 
         void FixedUpdate()
@@ -423,7 +405,7 @@ namespace Kart
             float randomTorqueFactor = UnityEngine.Random.Range(0.95f, 1.05f);
             float motor = maxMotorTorque * verticalInput * currentGearData.gearRatio * randomTorqueFactor;
             float steering = maxSteeringAngle * horizontalInput;
-
+            
             UpdateAxles(motor, steering);
             UpdateBanking(horizontalInput);
 
@@ -476,7 +458,7 @@ namespace Kart
             if (Mathf.Abs(verticalInput) > 0.1f || Mathf.Abs(kartVelocity.z) > 1)
             {
                 float turnMultiplier = Mathf.Clamp01(turnCurve.Evaluate(kartVelocity.magnitude / currentGearData.maxSpeed));
-                rb.AddTorque(Vector3.up * (horizontalInput * Mathf.Sign(kartVelocity.z) * turnStrength * 100f * turnMultiplier));
+            //    rb.AddTorque(Vector3.up * (horizontalInput * Mathf.Sign(kartVelocity.z) * turnStrength * 100f * turnMultiplier));
             }
 
             if (!input.IsBraking)
@@ -484,9 +466,10 @@ namespace Kart
                 float targetSpeed = verticalInput * currentGearData.maxSpeed;
                 Vector3 forwardWithoutY = transform.forward.With(y: 0).normalized;
 
-                if (rb.linearVelocity.magnitude < targetSpeed)
+                if (rb.linearVelocity.magnitude < Mathf.Abs(targetSpeed))
                 {
                     rb.AddForce(transform.forward * motor, ForceMode.Acceleration);
+                    Debug.Log("add" + rb.linearVelocity + " " + targetSpeed);
                 }
             }
 
@@ -541,15 +524,49 @@ namespace Kart
             visualWheel.transform.rotation = rotation;
         }
 
-        void HandleSteering(AxleInfo axleInfo, float steering)
+        void HandleSteering(AxleInfo axleInfo, float steeringInput)
         {
+            float speed = axleInfo.rightWheel.rpm * axleInfo.rightWheel.radius * 2f * Mathf.PI / 10f;
+            float speedFactor = Mathf.Clamp01(speed / maxSpeed);
+
+            // Modify steering angle based on speed using turnCurve
+            float adjustedTurnFactor = turnCurve.Evaluate(speedFactor); // Scales between 0 and 1
+            float targetSteeringAngle = steeringInput * maxSteeringAngle * adjustedTurnFactor;
+
+            // Adjust for direction of movement
+            targetSteeringAngle += Vector3.SignedAngle(transform.forward, rb.linearVelocity + transform.forward, Vector3.up);
+            targetSteeringAngle = Mathf.Clamp(targetSteeringAngle, -maxSteeringAngle, maxSteeringAngle);
+
             if (axleInfo.steering)
             {
                 float steeringMultiplier = input.IsBraking ? driftSteerMultiplier : 1f;
-                axleInfo.leftWheel.steerAngle = steering * steeringMultiplier;
-                axleInfo.rightWheel.steerAngle = steering * steeringMultiplier;
+                axleInfo.leftWheel.steerAngle = targetSteeringAngle * steeringMultiplier;
+                axleInfo.rightWheel.steerAngle = targetSteeringAngle * steeringMultiplier;
             }
+
+            if (Mathf.Abs(steeringInput) > 0.1f && kartVelocity.magnitude > 22f) // Only apply torque when steering input is active and moving
+            {
+                // Calculate the angle between the forward direction and velocity
+                float angleBetween = Vector3.Angle(transform.forward, rb.linearVelocity);
+
+                // Define an angle threshold and range for drifting behavior
+                float driftAngleThreshold = 90f; // Adjust as needed for when the blend starts
+                float maxDriftAngle = 150f;      // Maximum angle at which we fully reverse steering
+
+                // Check if kart is moving backward
+                float baseDirectionMultiplier = Vector3.Dot(transform.forward, rb.linearVelocity) < 0 ? -1f : 1f;
+
+                // Blend the direction multiplier based on drift angle
+                float driftBlendFactor = Mathf.InverseLerp(driftAngleThreshold, maxDriftAngle, angleBetween);
+                float directionMultiplier = Mathf.Lerp(baseDirectionMultiplier, -baseDirectionMultiplier, driftBlendFactor);
+
+                // Apply steering torque with smoothly adjusted direction multiplier
+                Vector3 desiredTurnDirection = Vector3.up * steeringInput * turnPersistenceTorque * adjustedTurnFactor * directionMultiplier;
+                rb.AddTorque(desiredTurnDirection, ForceMode.Acceleration);
+            }
+
         }
+
 
         void HandleMotor(AxleInfo axleInfo, float motor)
         {

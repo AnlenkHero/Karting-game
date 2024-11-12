@@ -407,7 +407,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4227640847454813226}
   serializedVersion: 4
-  m_Mass: 1500
+  m_Mass: 1000
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -459,7 +459,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 80483885
+  GlobalObjectIdHash: 1619887398
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -494,56 +494,59 @@ MonoBehaviour:
     rightWheel: {fileID: 2891797379577304948}
     motor: 1
     steering: 0
-  maxMotorTorque: 3000
+  maxMotorTorque: 10
+  turnPersistenceTorque: 0.005
   maxSpeed: 100
-  maxSteeringAngle: 20
+  maxSteeringAngle: 45
   turnCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.0049438477
-      value: 0.7964134
-      inSlope: 2
-      outSlope: 2
+      time: 0.32657003
+      value: 0.03731537
+      inSlope: -0.441032
+      outSlope: -0.441032
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.28640845
     - serializedVersion: 3
-      time: 0.9682617
-      value: 0.29569626
-      inSlope: 0
-      outSlope: 0
+      time: 4.5944314
+      value: 60.337303
+      inSlope: -0.55566424
+      outSlope: -0.55566424
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 82.59024
+      value: 15.46351
+      inSlope: 0.06614871
+      outSlope: 0.06614871
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.39996764
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  turnStrength: 750
+  turnStrength: 500
   driftSteerMultiplier: 1.5
   brakeTorque: 10000
   centerOfMass: {fileID: 2635398307977155696}
-  downForce: 50
+  downForce: 10
   gravity: -9.81
-  lateralGScale: 10
+  lateralGScale: 2
   maxBankAngle: 5
   bankSpeed: 2
   playerInput: {fileID: 11400000, guid: d64638e4f0f6ab4438403808c01f1c24, type: 2}
-  circuit: {fileID: 11400000, guid: e2b6a75fbfbc2f248abafc95e8332801, type: 2}
-  driverData: {fileID: 11400000, guid: d6a21ab54fef9224f96b9cf915f9a6eb, type: 2}
-  playerCamera: {fileID: 5832279103688892861}
   playerAudioListener: {fileID: 45326721118962872}
+  gears:
+  - gearNumber: 1
+    gearRatio: 5
+    maxSpeed: 100
   IsGrounded: 1
-  reconciliationCooldownTime: 1
-  reconciliationThreshold: 400
-  serverCube: {fileID: 4559393524916814101}
-  clientCube: {fileID: 3796366700376973252}
-  networkText: {fileID: 8066177292411126428}
-  playerText: {fileID: 3467204900170528272}
-  serverRpcText: {fileID: 5397516889243536583}
-  clientRpcText: {fileID: 1813271504772553594}
 --- !u!114 &4911408304765601384
 MonoBehaviour:
   m_ObjectHideFlags: 0
