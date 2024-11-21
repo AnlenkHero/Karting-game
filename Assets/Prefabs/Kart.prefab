@@ -56,13 +56,13 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
     m_AsymptoteValue: 0.5
-    m_Stiffness: 1
+    m_Stiffness: 5
   m_SidewaysFriction:
     m_ExtremumSlip: 0.2
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 1
+    m_Stiffness: 5
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -459,7 +459,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1619887398
+  GlobalObjectIdHash: 80483885
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -551,12 +551,12 @@ MonoBehaviour:
   IsGrounded: 1
   reconciliationCooldownTime: 1
   reconciliationThreshold: 10
-  serverCube: {fileID: 0}
-  clientCube: {fileID: 0}
-  networkText: {fileID: 0}
-  playerText: {fileID: 0}
-  serverRpcText: {fileID: 0}
-  clientRpcText: {fileID: 0}
+  serverCube: {fileID: 4559393524916814101}
+  clientCube: {fileID: 3796366700376973252}
+  networkText: {fileID: 8066177292411126428}
+  playerText: {fileID: 3467204900170528272}
+  serverRpcText: {fileID: 5397516889243536583}
+  clientRpcText: {fileID: 1813271504772553594}
 --- !u!114 &4911408304765601384
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -830,7 +830,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 1
+    m_Stiffness: 5
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -973,7 +973,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5755392577719091793}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.11436518, y: -1e-45, z: -0, w: 0.9934388}
+  m_LocalRotation: {x: 0.11436518, y: -0, z: -0, w: 0.9934388}
   m_LocalPosition: {x: 0, y: 7, z: -30}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1732,7 +1732,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 1
+    m_Stiffness: 5
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1989,7 +1989,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 1
+    m_Stiffness: 5
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -2027,7 +2027,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8643064055651652264}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.11436518, y: -1e-45, z: -0, w: 0.9934388}
+  m_LocalRotation: {x: 0.11436518, y: -0, z: -0, w: 0.9934388}
   m_LocalPosition: {x: 0, y: 7, z: -30}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

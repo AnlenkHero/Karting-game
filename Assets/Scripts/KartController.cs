@@ -73,7 +73,7 @@ namespace Kart
         [SerializeField] float maxSpeed;
         [SerializeField] private float speedRatio = 5f;
         [SerializeField] private float engineBrakingForce = 50f;
-        
+
         [Header("Steering Attributes")] [SerializeField]
         private float turnPersistenceTorque = 0.005f;
 
@@ -91,6 +91,8 @@ namespace Kart
         [SerializeField] float downForce = 100f;
         [SerializeField] float gravity = Physics.gravity.y;
         [SerializeField] float lateralGScale = 10f;
+        [SerializeField] float gravityMultiplierForAirborne = 5f;
+        [SerializeField] float airControlMultiplier = 0.5f;
 
         [Header("Banking")] [SerializeField] float maxBankAngle = 5f;
         [SerializeField] float bankSpeed = 2f;
@@ -116,7 +118,7 @@ namespace Kart
 
         Vector3 originalCenterOfMass;
 
-        public bool IsGrounded = true;
+        public bool IsGrounded = false;
         public Vector3 Velocity => kartVelocity;
         public float MaxSpeed => maxSpeed;
 
@@ -200,6 +202,7 @@ namespace Kart
 
         void Update()
         {
+            UpdateIsGrounded();
             networkTimer.Update(Time.deltaTime);
             reconciliationTimer.Tick(Time.deltaTime);
 
@@ -209,11 +212,7 @@ namespace Kart
 
         void FixedUpdate()
         {
-            while (networkTimer.ShouldTick())
-            {
-                HandleClientTick();
-                HandleServerTick();
-            }
+            Move(input.Move);
         }
 
         void HandleServerTick()
@@ -394,6 +393,7 @@ namespace Kart
 
             if (IsGrounded)
             {
+                Debug.Log("negr");
                 HandleGroundedMovement(verticalInput, motor);
             }
             else
@@ -409,7 +409,7 @@ namespace Kart
             {
                 ApplyEngineBraking();
             }
-            
+
             float currentSpeed = Vector3.Dot(rb.linearVelocity, transform.forward);
             float targetSpeed = verticalInput * maxSpeed * (verticalInput < 0 ? 1 / speedRatio : 1);
             if (verticalInput < 0 && currentSpeed > 0)
@@ -424,7 +424,7 @@ namespace Kart
             {
                 targetSpeed = verticalInput * maxSpeed;
             }
-            
+
             if (!input.IsBraking)
             {
                 if (rb.linearVelocity.magnitude < Mathf.Abs(targetSpeed))
@@ -447,9 +447,15 @@ namespace Kart
 
         void HandleAirborneMovement(float verticalInput, float horizontalInput)
         {
-            rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, rb.linearVelocity + Vector3.down * gravity,
-                Time.deltaTime * gravity);
+            Vector3 downwardForce = Vector3.down * gravity * gravityMultiplierForAirborne;
+
+            rb.AddForce(downwardForce, ForceMode.Acceleration);
+
+            Vector3 airControlForce = new Vector3(horizontalInput, 0, verticalInput) * airControlMultiplier;
+
+            rb.AddForce(transform.TransformDirection(airControlForce), ForceMode.Acceleration);
         }
+
 
         void ApplyEngineBraking()
         {
@@ -492,42 +498,45 @@ namespace Kart
             visualWheel.transform.rotation = rotation;
         }
 
-    void HandleSteering(AxleInfo axleInfo, float steeringInput)
-    {
-        float speed = axleInfo.rightWheel.rpm * axleInfo.rightWheel.radius * 2f * Mathf.PI / 10f;
-        float speedFactor = Mathf.Clamp01(speed / maxSpeed);
-
-
-        float adjustedTurnFactor = turnCurve.Evaluate(speedFactor);
-        
-        bool isMovingForward = Vector3.Dot(transform.forward, rb.linearVelocity) > 0;
-        float effectiveSteeringAngle = isMovingForward ? maxSteeringAngle : reverseSteeringAngle;
-
-        float targetSteeringAngle = steeringInput * effectiveSteeringAngle * adjustedTurnFactor;
-        
-        targetSteeringAngle +=
-            Vector3.SignedAngle(transform.forward, rb.linearVelocity + transform.forward, Vector3.up);
-        targetSteeringAngle = Mathf.Clamp(targetSteeringAngle, -effectiveSteeringAngle, effectiveSteeringAngle);
-
-        if (axleInfo.steering)
+        void HandleSteering(AxleInfo axleInfo, float steeringInput)
         {
-            float steeringMultiplier = input.IsBraking ? driftSteerMultiplier : 1f;
-            axleInfo.leftWheel.steerAngle = targetSteeringAngle * steeringMultiplier;
-            axleInfo.rightWheel.steerAngle = targetSteeringAngle * steeringMultiplier;
+            float speed = axleInfo.rightWheel.rpm * axleInfo.rightWheel.radius * 2f * Mathf.PI / 10f;
+            float speedFactor = Mathf.Clamp01(speed / maxSpeed);
+
+
+            float adjustedTurnFactor = turnCurve.Evaluate(speedFactor);
+
+            bool isMovingForward = Vector3.Dot(transform.forward, rb.linearVelocity) > 0;
+            float effectiveSteeringAngle = isMovingForward ? maxSteeringAngle : reverseSteeringAngle;
+
+            float targetSteeringAngle = steeringInput * effectiveSteeringAngle * adjustedTurnFactor;
+
+            targetSteeringAngle +=
+                Vector3.SignedAngle(transform.forward, rb.linearVelocity + transform.forward, Vector3.up);
+            targetSteeringAngle = Mathf.Clamp(targetSteeringAngle, -effectiveSteeringAngle, effectiveSteeringAngle);
+
+            if (axleInfo.steering)
+            {
+                float steeringMultiplier = input.IsBraking ? driftSteerMultiplier : 1f;
+                axleInfo.leftWheel.steerAngle = targetSteeringAngle * steeringMultiplier;
+                axleInfo.rightWheel.steerAngle = targetSteeringAngle * steeringMultiplier;
+            }
+
+            if (Mathf.Abs(steeringInput) > 0.1f && kartVelocity.magnitude > 22f && IsGrounded)
+            {
+                float angleBetween = Vector3.Angle(transform.forward, rb.linearVelocity);
+                float driftAngleThreshold = 90f;
+                float maxDriftAngle = 150f;
+                float baseDirectionMultiplier = isMovingForward ? 1f : -1f;
+                float driftBlendFactor = Mathf.InverseLerp(driftAngleThreshold, maxDriftAngle, angleBetween);
+                float directionMultiplier =
+                    Mathf.Lerp(baseDirectionMultiplier, -baseDirectionMultiplier, driftBlendFactor);
+                Vector3 desiredTurnDirection = Vector3.up *
+                                               (steeringInput * turnPersistenceTorque * adjustedTurnFactor *
+                                                directionMultiplier);
+                rb.AddTorque(desiredTurnDirection, ForceMode.Acceleration);
+            }
         }
-        
-        if (Mathf.Abs(steeringInput) > 0.1f && kartVelocity.magnitude > 22f)
-        {
-            float angleBetween = Vector3.Angle(transform.forward, rb.linearVelocity);
-            float driftAngleThreshold = 90f;
-            float maxDriftAngle = 150f;
-            float baseDirectionMultiplier = isMovingForward ? 1f : -1f;
-            float driftBlendFactor = Mathf.InverseLerp(driftAngleThreshold, maxDriftAngle, angleBetween);
-            float directionMultiplier = Mathf.Lerp(baseDirectionMultiplier, -baseDirectionMultiplier, driftBlendFactor);
-            Vector3 desiredTurnDirection = Vector3.up * (steeringInput * turnPersistenceTorque * adjustedTurnFactor * directionMultiplier);
-            rb.AddTorque(desiredTurnDirection, ForceMode.Acceleration);
-        }
-    }
 
 
         void HandleMotor(AxleInfo axleInfo, float motor)
@@ -586,7 +595,6 @@ namespace Kart
             {
                 wheel.forwardFriction = UpdateFriction(wheel.forwardFriction);
                 wheel.sidewaysFriction = UpdateFriction(wheel.sidewaysFriction);
-                IsGrounded = true;
             }
         }
 
@@ -606,6 +614,26 @@ namespace Kart
                 <= -.7f => -1f,
                 _ => inputValue
             };
+        }
+
+        void UpdateIsGrounded()
+        {
+            foreach (AxleInfo axleInfo in axleInfos.Where(x => x.motor))
+            {
+                if (IsWheelGrounded(axleInfo.leftWheel) || IsWheelGrounded(axleInfo.rightWheel))
+                {
+                    IsGrounded = true;
+                }
+                else
+                {
+                    IsGrounded = false;
+                }
+            }
+        }
+
+        bool IsWheelGrounded(WheelCollider wheel)
+        {
+            return wheel.GetGroundHit(out _);
         }
     }
 }
