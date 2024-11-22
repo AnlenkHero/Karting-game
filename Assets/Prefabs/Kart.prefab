@@ -56,13 +56,13 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
     m_AsymptoteValue: 0.5
-    m_Stiffness: 1
+    m_Stiffness: 5
   m_SidewaysFriction:
     m_ExtremumSlip: 0.2
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 1
+    m_Stiffness: 5
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -407,7 +407,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4227640847454813226}
   serializedVersion: 4
-  m_Mass: 1500
+  m_Mass: 1000
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -494,50 +494,63 @@ MonoBehaviour:
     rightWheel: {fileID: 2891797379577304948}
     motor: 1
     steering: 0
-  maxMotorTorque: 3000
+  maxMotorTorque: 10
   maxSpeed: 100
-  maxSteeringAngle: 20
+  speedRatio: 5
+  engineBrakingForce: 50
+  turnPersistenceTorque: 0.002
+  maxSteeringAngle: 45
+  reverseSteeringAngle: 10
   turnCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.0049438477
-      value: 0.7964134
-      inSlope: 2
-      outSlope: 2
+      time: 0.003227234
+      value: 10.725853
+      inSlope: -0.441032
+      outSlope: -0.441032
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.28640845
     - serializedVersion: 3
-      time: 0.9682617
-      value: 0.29569626
-      inSlope: 0
-      outSlope: 0
+      time: 4.5944314
+      value: 60.337303
+      inSlope: -0.55566424
+      outSlope: -0.55566424
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 82.59024
+      value: 15.46351
+      inSlope: 0.06614871
+      outSlope: 0.06614871
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.39996764
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  turnStrength: 750
+  turnStrength: 500
   driftSteerMultiplier: 1.5
   brakeTorque: 10000
   centerOfMass: {fileID: 2635398307977155696}
-  downForce: 50
+  downForce: 1
   gravity: -9.81
-  lateralGScale: 10
+  lateralGScale: 2
   maxBankAngle: 5
   bankSpeed: 2
   playerInput: {fileID: 11400000, guid: d64638e4f0f6ab4438403808c01f1c24, type: 2}
-  circuit: {fileID: 11400000, guid: e2b6a75fbfbc2f248abafc95e8332801, type: 2}
-  driverData: {fileID: 11400000, guid: d6a21ab54fef9224f96b9cf915f9a6eb, type: 2}
-  playerCamera: {fileID: 5832279103688892861}
+  circuit: {fileID: 0}
+  driverData: {fileID: 0}
+  playerCamera: {fileID: 0}
   playerAudioListener: {fileID: 45326721118962872}
   IsGrounded: 1
   reconciliationCooldownTime: 1
-  reconciliationThreshold: 400
+  reconciliationThreshold: 10
   serverCube: {fileID: 4559393524916814101}
   clientCube: {fileID: 3796366700376973252}
   networkText: {fileID: 8066177292411126428}
@@ -817,7 +830,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 1
+    m_Stiffness: 5
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -960,7 +973,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5755392577719091793}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.11436518, y: -1e-45, z: -0, w: 0.9934388}
+  m_LocalRotation: {x: 0.11436518, y: -0, z: -0, w: 0.9934388}
   m_LocalPosition: {x: 0, y: 7, z: -30}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1719,7 +1732,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 1
+    m_Stiffness: 5
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1976,7 +1989,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 1
+    m_Stiffness: 5
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -2014,7 +2027,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8643064055651652264}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.11436518, y: -1e-45, z: -0, w: 0.9934388}
+  m_LocalRotation: {x: 0.11436518, y: -0, z: -0, w: 0.9934388}
   m_LocalPosition: {x: 0, y: 7, z: -30}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
