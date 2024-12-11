@@ -447,7 +447,7 @@ namespace Kart
 
         void HandleAirborneMovement(float verticalInput, float horizontalInput)
         {
-            Vector3 downwardForce = Vector3.down * gravity * gravityMultiplierForAirborne;
+            Vector3 downwardForce = Vector3.down * -gravity * gravityMultiplierForAirborne;
 
             rb.AddForce(downwardForce, ForceMode.Acceleration);
 
