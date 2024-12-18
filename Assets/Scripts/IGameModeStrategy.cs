@@ -8,8 +8,9 @@ namespace Kart
         bool CheckForWinCondition(out KartController winner);
         bool IsGameOver();
         void UpdateModeLogic();
-
-        static IGameModeStrategy CreateStrategyFromGameType(GameType gameType)
+        
+        
+        static IGameModeStrategy GetGameMode(GameType gameType)
         {
             switch (gameType.modeType)
             {

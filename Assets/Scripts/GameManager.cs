@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-
+using Kart.TrackPackage;
 namespace Kart
 {
     public class GameManager : MonoBehaviour
     {
         public static GameManager Instance { get; private set; }
+
         public GameType currentGameType;
+        public Track currentTrack; 
         public List<KartController> Players = new List<KartController>();
         public float ElapsedTime { get; private set; }
 
@@ -25,21 +26,31 @@ namespace Kart
             DontDestroyOnLoad(gameObject);
         }
 
-        void Start()
+        private void Start()
         {
-            Strategy = CreateStrategyFromGameType(currentGameType);
+            // Initialize the track (which spawns checkpoints & finish line from its TrackData)
+            if (currentTrack != null)
+            {
+                currentTrack.Initialize();
+            }
+            else
+            {
+                Debug.LogWarning("No Track assigned to the GameManager.");
+            }
+
+            // Set up the strategy
+            Strategy = IGameModeStrategy.GetGameMode(currentGameType);
             Strategy.InitializeMode(currentGameType);
         }
 
-        void Update()
+        private void Update()
         {
             ElapsedTime += Time.deltaTime;
 
             // Update the strategy every frame if needed
             Strategy.UpdateModeLogic();
 
-            KartController winner;
-            if (Strategy.CheckForWinCondition(out winner))
+            if (Strategy.CheckForWinCondition(out KartController winner))
             {
                 EndGame(winner);
             }
@@ -49,27 +60,16 @@ namespace Kart
             }
         }
 
-        private IGameModeStrategy CreateStrategyFromGameType(GameType gameType)
-        {
-            switch (gameType.modeType)
-            {
-                case GameModeType.Laps:
-                    return new LapsGameModeStrategy();
-                default:
-                    throw new Exception("Unsupported Game Mode Type");
-            }
-        }
-
-        private void EndGame(KartController winner)
+        public void EndGame(KartController winner)
         {
             Debug.Log("Game Ended! Winner: " + (winner != null ? winner.name : "No winner"));
-            // Handle end game UI, network events, etc.
+            // handle end game logic, UI, etc.
         }
 
         private void HandleNoWinnerScenario()
         {
             Debug.Log("Game Ended with no winner.");
-            // Handle tie or no-winner logic here
+            // handle tie scenario
         }
     }
 }
