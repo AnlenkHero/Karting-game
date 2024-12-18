@@ -1,17 +1,23 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Kart.TrackPackage
 {
     public class Track : MonoBehaviour
     {
-        [Header("Track Setup")]
+        [Header("Track Setup")] 
         public TrackData trackData;
         public LapCheckpoint lapCheckpointPrefab;
         public FinishLine finishLinePrefab;
 
-        [Header("Runtime References")]
-        public LapCheckpoint[] checkpoints;  // actual checkpoint GameObjects in the scene
-        public FinishLine finishLine;        // actual finish line GameObject in the scene
+        [Header("Runtime References")] 
+        public LapCheckpoint[] checkpoints; 
+        public FinishLine finishLine; 
+
+        private void Awake()
+        {
+            Initialize();
+        }
 
         /// <summary>
         /// Instantiates and enumerates checkpoints & finish line from TrackData.
@@ -23,22 +29,19 @@ namespace Kart.TrackPackage
                 Debug.LogError("TrackData is not assigned to Track.");
                 return;
             }
-
-            // Clean up any existing references first (if re-initializing)
+            
             ClearExistingCheckpoints();
-
-            // Instantiate checkpoints from TrackData
+            
             checkpoints = new LapCheckpoint[trackData.checkpoints.Length];
             for (int i = 0; i < trackData.checkpoints.Length; i++)
             {
                 var data = trackData.checkpoints[i];
                 var checkpointObj = Instantiate(lapCheckpointPrefab, data.position, data.rotation, transform);
                 checkpointObj.transform.localScale = data.scale;
-                checkpointObj.index = data.index;  // Assign the index
+                checkpointObj.index = data.index; 
                 checkpoints[i] = checkpointObj;
             }
-
-            // Instantiate finish line
+            
             if (finishLinePrefab != null)
             {
                 var finishObj = Instantiate(
@@ -56,19 +59,22 @@ namespace Kart.TrackPackage
 
         private void ClearExistingCheckpoints()
         {
-            // Destroy old checkpoint objects if they exist
-            if (checkpoints != null)
+            var otherCheckpoint =
+                FindObjectsByType<LapCheckpoint>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+            if (otherCheckpoint != null)
             {
-                foreach (var checkpoint in checkpoints)
+                foreach (var checkpoint in otherCheckpoint)
                 {
                     if (checkpoint != null)
-                        DestroyImmediate(checkpoint.gameObject);
+                        Destroy(checkpoint.gameObject);
                 }
             }
-            // Destroy old finish line if it exists
-            if (finishLine != null)
+
+            var otherFinishLine = FindFirstObjectByType<FinishLine>();
+            if (otherFinishLine != null)
             {
-                DestroyImmediate(finishLine.gameObject);
+                Destroy(otherFinishLine.gameObject);
             }
         }
     }
