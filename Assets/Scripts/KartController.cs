@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using Smooth;
 using TMPro;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
-using UnityUtils;
-using Utilities;
 
 namespace Kart
 {
@@ -20,46 +15,6 @@ namespace Kart
         public bool steering;
         public WheelFrictionCurve originalForwardFriction;
         public WheelFrictionCurve originalSidewaysFriction;
-    }
-
-    public struct InputPayload : INetworkSerializable
-    {
-        public int tick;
-        public DateTime timestamp;
-        public ulong networkObjectId;
-        public Vector3 inputVector;
-        public Vector3 position;
-
-        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-        {
-            serializer.SerializeValue(ref tick);
-            serializer.SerializeValue(ref timestamp);
-            serializer.SerializeValue(ref networkObjectId);
-            serializer.SerializeValue(ref inputVector);
-            serializer.SerializeValue(ref position);
-        }
-    }
-
-    public struct StatePayload : INetworkSerializable
-    {
-        public int tick;
-        public ulong networkObjectId;
-        public Vector3 position;
-        public Quaternion rotation;
-        public Vector3 velocity;
-        public Vector3 angularVelocity;
-        public float ping;
-
-        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-        {
-            serializer.SerializeValue(ref tick);
-            serializer.SerializeValue(ref networkObjectId);
-            serializer.SerializeValue(ref position);
-            serializer.SerializeValue(ref rotation);
-            serializer.SerializeValue(ref velocity);
-            serializer.SerializeValue(ref angularVelocity);
-            serializer.SerializeValue(ref ping);
-        }
     }
 
     public class KartController : NetworkBehaviour
@@ -77,6 +32,9 @@ namespace Kart
         [Header("Steering Attributes")] [SerializeField]
         private float turnPersistenceTorque = 0.005f;
 
+        [SerializeField] float driftAngleThreshold = 90f;
+        [SerializeField] float maxDriftAngle = 150f;
+        [SerializeField] private float lowSpeedTurnThreshold = 22f;
         [SerializeField] float maxSteeringAngle = 30f;
         [SerializeField] private float reverseSteeringAngle = 15f;
         [SerializeField] AnimationCurve turnCurve;
@@ -106,9 +64,6 @@ namespace Kart
         [SerializeField] CinemachineCamera playerCamera;
         [SerializeField] AudioListener playerAudioListener;
 
-
-        private int currentGear = 1;
-
         IDrive input;
         Rigidbody rb;
 
@@ -122,31 +77,12 @@ namespace Kart
         public Vector3 Velocity => kartVelocity;
         public float MaxSpeed => maxSpeed;
 
-        NetworkTimer networkTimer;
-        const float k_serverTickRate = 60f;
-        const int k_bufferSize = 1024;
-
-        CircularBuffer<StatePayload> clientStateBuffer;
-        CircularBuffer<InputPayload> clientInputBuffer;
-        StatePayload lastServerState;
-        StatePayload lastProcessedState;
-
-        CircularBuffer<StatePayload> serverStateBuffer;
-        Queue<InputPayload> serverInputQueue;
-
-        [Header("Netcode")] [SerializeField] float reconciliationCooldownTime = 1f;
-        [SerializeField] float reconciliationThreshold = 10f;
         [SerializeField] GameObject serverCube;
         [SerializeField] GameObject clientCube;
 
-        CountdownTimer reconciliationTimer;
+        [Header("Player Debug Info")] [SerializeField]
+        TextMeshPro playerText;
 
-        [Header("Netcode Debug")] [SerializeField]
-        TextMeshPro networkText;
-
-        [SerializeField] TextMeshPro playerText;
-        [SerializeField] TextMeshPro serverRpcText;
-        [SerializeField] TextMeshPro clientRpcText;
 
         void Awake()
         {
@@ -166,15 +102,6 @@ namespace Kart
                 axleInfo.originalForwardFriction = axleInfo.leftWheel.forwardFriction;
                 axleInfo.originalSidewaysFriction = axleInfo.leftWheel.sidewaysFriction;
             }
-
-            networkTimer = new NetworkTimer(k_serverTickRate);
-            clientStateBuffer = new CircularBuffer<StatePayload>(k_bufferSize);
-            clientInputBuffer = new CircularBuffer<InputPayload>(k_bufferSize);
-
-            serverStateBuffer = new CircularBuffer<StatePayload>(k_bufferSize);
-            serverInputQueue = new Queue<InputPayload>();
-
-            reconciliationTimer = new CountdownTimer(reconciliationCooldownTime);
         }
 
         public void SetInput(IDrive input)
@@ -191,11 +118,6 @@ namespace Kart
                 return;
             }
 
-            networkText.SetText(
-                $"Player {NetworkManager.LocalClientId} Host: {NetworkManager.IsHost} Server: {IsServer} Client: {IsClient}");
-            if (!IsServer) serverRpcText.SetText("Not Server");
-            if (!IsClient) clientRpcText.SetText("Not Client");
-
             playerCamera.Priority = 100;
             playerAudioListener.enabled = true;
         }
@@ -203,8 +125,7 @@ namespace Kart
         void Update()
         {
             UpdateIsGrounded();
-            networkTimer.Update(Time.deltaTime);
-            reconciliationTimer.Tick(Time.deltaTime);
+
 
             playerText.SetText(
                 $"Owner: {IsOwner} NetworkObjectId: {NetworkObjectId} Velocity: {kartVelocity.magnitude:F1}");
@@ -215,166 +136,6 @@ namespace Kart
             Move(input.Move);
         }
 
-        void HandleServerTick()
-        {
-            if (!IsServer) return;
-
-            while (serverInputQueue.Count > 0)
-            {
-                InputPayload inputPayload = serverInputQueue.Dequeue();
-
-                float ping = (float)(DateTime.Now - inputPayload.timestamp).TotalMilliseconds;
-
-                int bufferIndex = inputPayload.tick % k_bufferSize;
-
-                if (inputPayload.networkObjectId == NetworkObjectId && IsOwner)
-                {
-                    StatePayload statePayload = new StatePayload()
-                    {
-                        tick = inputPayload.tick,
-                        networkObjectId = NetworkObjectId,
-                        position = transform.position,
-                        rotation = transform.rotation,
-                        velocity = rb.linearVelocity,
-                        angularVelocity = rb.angularVelocity,
-                        ping = ping
-                    };
-                    serverStateBuffer.Add(statePayload, bufferIndex);
-                    SendToClientRpc(statePayload);
-                    continue;
-                }
-
-                StatePayload clientStatePayload = ProcessMovement(inputPayload);
-                clientStatePayload.ping = ping;
-                serverStateBuffer.Add(clientStatePayload, bufferIndex);
-                SendToClientRpc(clientStatePayload);
-            }
-        }
-
-        void HandleClientTick()
-        {
-            if (!IsOwner) return;
-
-            var currentTick = networkTimer.CurrentTick;
-            var bufferIndex = currentTick % k_bufferSize;
-
-            InputPayload inputPayload = new InputPayload()
-            {
-                tick = currentTick,
-                timestamp = DateTime.Now,
-                networkObjectId = NetworkObjectId,
-                inputVector = input.Move,
-                position = transform.position
-            };
-
-            clientInputBuffer.Add(inputPayload, bufferIndex);
-            SendToServerRpc(inputPayload);
-
-            StatePayload statePayload = ProcessMovement(inputPayload);
-            clientStateBuffer.Add(statePayload, bufferIndex);
-
-            HandleServerReconciliation();
-        }
-
-        [ClientRpc]
-        void SendToClientRpc(StatePayload statePayload)
-        {
-            clientRpcText.SetText(
-                $"Received state from server Tick {statePayload.tick} Server POS: {statePayload.position} Ping: {statePayload.ping}");
-            serverCube.transform.position = statePayload.position.With(y: 4);
-            if (!IsOwner) return;
-            lastServerState = statePayload;
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        void SendToServerRpc(InputPayload input)
-        {
-            serverRpcText.SetText($"Received input from client Tick: {input.tick} Client POS: {input.position}");
-            clientCube.transform.position = input.position.With(y: 4);
-            serverInputQueue.Enqueue(input);
-        }
-
-        bool ShouldReconcile()
-        {
-            bool isNewServerState = !lastServerState.Equals(default);
-            bool isLastStateUndefinedOrDifferent = lastProcessedState.Equals(default)
-                                                   || !lastProcessedState.Equals(lastServerState);
-
-            return isNewServerState && isLastStateUndefinedOrDifferent && !reconciliationTimer.IsRunning;
-        }
-
-        void HandleServerReconciliation()
-        {
-            if (!ShouldReconcile()) return;
-
-            float positionError;
-            int bufferIndex;
-
-            bufferIndex = lastServerState.tick % k_bufferSize;
-            if (bufferIndex < 0) return;
-
-            StatePayload rewindState = lastServerState;
-            StatePayload clientState = clientStateBuffer.Get(bufferIndex);
-            positionError = Vector3.Distance(rewindState.position, clientState.position);
-
-            if (positionError > reconciliationThreshold)
-            {
-                ReconcileState(rewindState);
-                reconciliationTimer.Start();
-            }
-
-            lastProcessedState = rewindState;
-        }
-
-        void ReconcileState(StatePayload rewindState)
-        {
-            transform.position = rewindState.position;
-            transform.rotation = rewindState.rotation;
-            rb.linearVelocity = rewindState.velocity;
-            rb.angularVelocity = rewindState.angularVelocity;
-
-            clientStateBuffer.Add(rewindState, rewindState.tick % k_bufferSize);
-
-            int tickToReplay = rewindState.tick + 1;
-
-            while (tickToReplay <= networkTimer.CurrentTick)
-            {
-                int bufferIndex = tickToReplay % k_bufferSize;
-                InputPayload inputPayload = clientInputBuffer.Get(bufferIndex);
-                StatePayload statePayload = ProcessMovement(inputPayload);
-                clientStateBuffer.Add(statePayload, bufferIndex);
-                tickToReplay++;
-            }
-        }
-
-        StatePayload ProcessMovement(InputPayload inputPayload)
-        {
-            bool shouldProcessMovement = false;
-
-            if (IsOwner)
-            {
-                shouldProcessMovement = true;
-            }
-            else if (IsServer)
-            {
-                shouldProcessMovement = true;
-            }
-
-            if (shouldProcessMovement)
-            {
-                Move(inputPayload.inputVector);
-            }
-
-            return new StatePayload()
-            {
-                tick = inputPayload.tick,
-                networkObjectId = NetworkObjectId,
-                position = transform.position,
-                rotation = transform.rotation,
-                velocity = rb.linearVelocity,
-                angularVelocity = rb.angularVelocity
-            };
-        }
 
         void Move(Vector2 inputVector)
         {
@@ -522,11 +283,10 @@ namespace Kart
                 axleInfo.rightWheel.steerAngle = targetSteeringAngle * steeringMultiplier;
             }
 
-            if (Mathf.Abs(steeringInput) > 0.1f && kartVelocity.magnitude > 22f && IsGrounded)
+
+            if (Mathf.Abs(steeringInput) > 0.1f && kartVelocity.magnitude > lowSpeedTurnThreshold && IsGrounded)
             {
                 float angleBetween = Vector3.Angle(transform.forward, rb.linearVelocity);
-                float driftAngleThreshold = 90f;
-                float maxDriftAngle = 150f;
                 float baseDirectionMultiplier = isMovingForward ? 1f : -1f;
                 float driftBlendFactor = Mathf.InverseLerp(driftAngleThreshold, maxDriftAngle, angleBetween);
                 float directionMultiplier =

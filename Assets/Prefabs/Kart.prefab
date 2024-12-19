@@ -356,12 +356,9 @@ GameObject:
   - component: {fileID: 2795512119072793685}
   - component: {fileID: 6928867683519373489}
   - component: {fileID: 8129233359064257640}
-  - component: {fileID: -1587684692493543419}
+  - component: {fileID: -2017651994315311775}
   - component: {fileID: 5012061265976231298}
   - component: {fileID: 4911408304765601384}
-  - component: {fileID: -2457830702981053495}
-  - component: {fileID: 8433245658979754018}
-  - component: {fileID: 8807612615332275977}
   m_Layer: 0
   m_Name: Kart
   m_TagString: Player
@@ -447,7 +444,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 7, y: 3, z: 14}
   m_Center: {x: 0, y: 1.8, z: 0}
---- !u!114 &-1587684692493543419
+--- !u!114 &-2017651994315311775
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -459,7 +456,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 80483885
+  GlobalObjectIdHash: 507759472
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -499,6 +496,9 @@ MonoBehaviour:
   speedRatio: 5
   engineBrakingForce: 50
   turnPersistenceTorque: 0.002
+  driftAngleThreshold: 90
+  maxDriftAngle: 150
+  lowSpeedTurnThreshold: 22
   maxSteeringAngle: 45
   reverseSteeringAngle: 10
   turnCurve:
@@ -541,6 +541,8 @@ MonoBehaviour:
   downForce: 1
   gravity: -9.81
   lateralGScale: 2
+  gravityMultiplierForAirborne: 5
+  airControlMultiplier: 0.5
   maxBankAngle: 5
   bankSpeed: 2
   playerInput: {fileID: 11400000, guid: d64638e4f0f6ab4438403808c01f1c24, type: 2}
@@ -549,14 +551,9 @@ MonoBehaviour:
   playerCamera: {fileID: 0}
   playerAudioListener: {fileID: 45326721118962872}
   IsGrounded: 1
-  reconciliationCooldownTime: 1
-  reconciliationThreshold: 10
   serverCube: {fileID: 4559393524916814101}
   clientCube: {fileID: 3796366700376973252}
-  networkText: {fileID: 8066177292411126428}
   playerText: {fileID: 3467204900170528272}
-  serverRpcText: {fileID: 5397516889243536583}
-  clientRpcText: {fileID: 1813271504772553594}
 --- !u!114 &4911408304765601384
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -572,116 +569,6 @@ MonoBehaviour:
   slipThreshold: 0.4
   skidMarkPrefab: {fileID: 3034559999754878407, guid: a21d39e222986e845a98a37600905955,
     type: 3}
---- !u!114 &-2457830702981053495
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4227640847454813226}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0d889db27804635ada6f9fa36c8e9ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  NetworkTransformExpanded: 0
-  AuthorityMode: 0
-  TickSyncChildren: 0
-  UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
-  SyncRotAngleX: 1
-  SyncRotAngleY: 1
-  SyncRotAngleZ: 1
-  SyncScaleX: 1
-  SyncScaleY: 1
-  SyncScaleZ: 1
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 0
-  InLocalSpace: 0
-  SwitchTransformSpaceWhenParented: 0
-  Interpolate: 1
-  SlerpPosition: 0
-  authorityMode: 1
---- !u!114 &8433245658979754018
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4227640847454813226}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  NetworkRigidbodyBaseExpanded: 0
-  UseRigidBodyForMotion: 0
-  AutoUpdateKinematicState: 1
-  AutoSetKinematicOnDespawn: 1
---- !u!114 &8807612615332275977
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4227640847454813226}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cca18b1aff5bb3e498b69d39cea4db5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  interpolationBackTime: 0.1
-  extrapolationMode: 1
-  useExtrapolationTimeLimit: 1
-  extrapolationTimeLimit: 5
-  useExtrapolationDistanceLimit: 0
-  extrapolationDistanceLimit: 20
-  sendPositionThreshold: 0
-  sendRotationThreshold: 0
-  sendScaleThreshold: 0
-  sendVelocityThreshold: 0
-  sendAngularVelocityThreshold: 0
-  receivedPositionThreshold: 0
-  receivedRotationThreshold: 0
-  snapPositionThreshold: 0
-  snapRotationThreshold: 0
-  snapScaleThreshold: 0
-  positionLerpSpeed: 0.85
-  rotationLerpSpeed: 0.85
-  scaleLerpSpeed: 0.85
-  timeCorrectionSpeed: 0.1
-  snapTimeThreshold: 0.6
-  syncPosition: 0
-  syncRotation: 0
-  syncScale: 0
-  syncVelocity: 0
-  syncAngularVelocity: 0
-  isPositionCompressed: 0
-  isRotationCompressed: 0
-  isScaleCompressed: 0
-  isVelocityCompressed: 0
-  isAngularVelocityCompressed: 0
-  automaticallyResetTime: 1
-  isSmoothingAuthorityChanges: 0
-  transformSource: 0
-  whenToUpdateTransform: 1
-  sendRate: 30
-  networkChannel: 
-  childObjectToSync: {fileID: 0}
-  setVelocityInsteadOfPositionOnNonOwners: 0
-  maxPositionDifferenceForVelocitySyncing: 10
-  useLocalTransformOnly: 0
-  ownerChangeIndicator: 1
-  receivedStatesCounter: 0
 --- !u!1 &4559393524916814101
 GameObject:
   m_ObjectHideFlags: 0
