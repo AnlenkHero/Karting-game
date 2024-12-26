@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Kart.TrackPackage;
+
 namespace Kart
 {
     public class GameManager : MonoBehaviour
@@ -8,7 +9,7 @@ namespace Kart
         public static GameManager Instance { get; private set; }
 
         public GameType currentGameType;
-        public Track currentTrack; 
+        public Track currentTrack;
         public List<KartController> Players = new List<KartController>();
         public float ElapsedTime { get; private set; }
 
@@ -50,13 +51,12 @@ namespace Kart
             // Update the strategy every frame if needed
             Strategy.UpdateModeLogic();
 
-            if (Strategy.CheckForWinCondition(out KartController winner))
+            // If your design says the game ends as soon as Strategy says "game over"...
+            if (Strategy.IsGameOver())
             {
-                EndGame(winner);
-            }
-            else if (Strategy.IsGameOver())
-            {
-                HandleNoWinnerScenario();
+                // We can directly get standings:
+                var standings = Strategy.GetFinalStandings();
+                EndGameWithStandings(standings);
             }
         }
 
@@ -70,6 +70,18 @@ namespace Kart
         {
             Debug.Log("Game Ended with no winner.");
             // handle tie scenario
+        }
+
+        public void EndGameWithStandings(List<StandingsEntry> standings)
+        {
+            Debug.Log("Game Ended! Final Standings:");
+            foreach (var entry in standings)
+            {
+                // "Rank. PlayerName - Info"
+                Debug.Log($"{entry.Rank}. {entry.Player.name} - {entry.Info}");
+            }
+
+            // Or build a UI panel with this data, etc.
         }
     }
 }

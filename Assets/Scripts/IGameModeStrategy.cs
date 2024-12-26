@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Kart
 {
@@ -8,6 +9,8 @@ namespace Kart
         bool CheckForWinCondition(out KartController winner);
         bool IsGameOver();
         void UpdateModeLogic();
+        
+        List<StandingsEntry> GetFinalStandings();
         
         
         static IGameModeStrategy GetGameMode(GameType gameType)

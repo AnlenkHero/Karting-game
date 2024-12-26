@@ -4,7 +4,7 @@ namespace Kart.TrackPackage
 {
     public class FinishLine : MonoBehaviour
     {
-        private void OnTriggerStay(Collider other)
+        private void OnTriggerEnter(Collider other)
         {
             if (other.TryGetComponent(out KartController kart)) {
                 switch (GameManager.Instance.Strategy)
@@ -15,5 +15,6 @@ namespace Kart.TrackPackage
                 }
             }
         }
+        
     }
 }
