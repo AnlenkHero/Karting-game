@@ -154,7 +154,6 @@ namespace Kart
 
             if (IsGrounded)
             {
-                Debug.Log("negr");
                 HandleGroundedMovement(verticalInput, motor);
             }
             else

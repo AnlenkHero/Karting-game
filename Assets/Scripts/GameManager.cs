@@ -14,6 +14,7 @@ namespace Kart
         public float ElapsedTime { get; private set; }
 
         public IGameModeStrategy Strategy { get; private set; }
+        public GameState CurrentGameState { get; private set; }
 
         private void Awake()
         {
@@ -29,7 +30,8 @@ namespace Kart
 
         private void Start()
         {
-            // Initialize the track (which spawns checkpoints & finish line from its TrackData)
+            CurrentGameState = GameState.PreGame;
+
             if (currentTrack != null)
             {
                 currentTrack.Initialize();
@@ -38,24 +40,28 @@ namespace Kart
             {
                 Debug.LogWarning("No Track assigned to the GameManager.");
             }
-
-            // Set up the strategy
+            
             Strategy = IGameModeStrategy.GetGameMode(currentGameType);
             Strategy.InitializeMode(currentGameType);
+            CurrentGameState = GameState.Running;
         }
 
         private void Update()
         {
+            if (CurrentGameState is GameState.Finished or GameState.PreGame)
+            {
+                return;
+            }
+            
             ElapsedTime += Time.deltaTime;
-
-            // Update the strategy every frame if needed
+            
             Strategy.UpdateModeLogic();
 
-            // If your design says the game ends as soon as Strategy says "game over"...
+            ShowCurrentStandings();
+
             if (Strategy.IsGameOver())
             {
-                // We can directly get standings:
-                var standings = Strategy.GetFinalStandings();
+                var standings = Strategy.GetStandings();
                 EndGameWithStandings(standings);
             }
         }
@@ -63,13 +69,12 @@ namespace Kart
         public void EndGame(KartController winner)
         {
             Debug.Log("Game Ended! Winner: " + (winner != null ? winner.name : "No winner"));
-            // handle end game logic, UI, etc.
         }
 
         private void HandleNoWinnerScenario()
         {
             Debug.Log("Game Ended with no winner.");
-            // handle tie scenario
+
         }
 
         public void EndGameWithStandings(List<StandingsEntry> standings)
@@ -77,11 +82,24 @@ namespace Kart
             Debug.Log("Game Ended! Final Standings:");
             foreach (var entry in standings)
             {
-                // "Rank. PlayerName - Info"
-                Debug.Log($"{entry.Rank}. {entry.Player.name} - {entry.Info}");
+                Debug.Log($"{entry.rank}. {entry.player.name} - {entry.additionalInfo["Status"]}");
             }
+            CurrentGameState = GameState.Finished;
+        }
+        
+        public void ShowCurrentStandings()
+        {
+            var standings = Strategy.GetStandings();
 
-            // Or build a UI panel with this data, etc.
+            Debug.Log("Current Standings:");
+            foreach (var entry in standings)
+            {
+                Debug.Log($"{entry.rank}. {entry.player.name}");
+                foreach (var info in entry.additionalInfo)
+                {
+                    Debug.Log($"   {info.Key}: {info.Value}");
+                }
+            }
         }
     }
 }

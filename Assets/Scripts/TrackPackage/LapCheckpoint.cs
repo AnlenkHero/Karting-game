@@ -8,7 +8,6 @@ namespace Kart.TrackPackage
         public int index = -1;
         private void Reset()
         {
-            // Ensure the Collider is set as a trigger
             Collider collider = GetComponent<Collider>();
             if (!collider.isTrigger)
             {
@@ -26,7 +25,7 @@ namespace Kart.TrackPackage
             var allCheckpoints = FindObjectsByType<LapCheckpoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             index = allCheckpoints.Length - 1; 
         }
-        private void OnTriggerStay(Collider other)
+        private void OnTriggerEnter(Collider other)
         {
             if (other.TryGetComponent(out KartController kart)) {
                 switch (GameManager.Instance.Strategy)

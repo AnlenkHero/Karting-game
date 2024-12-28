@@ -18,10 +18,7 @@ namespace Kart.TrackPackage
         {
             Initialize();
         }
-
-        /// <summary>
-        /// Instantiates and enumerates checkpoints & finish line from TrackData.
-        /// </summary>
+        
         public void Initialize()
         {
             if (trackData == null)

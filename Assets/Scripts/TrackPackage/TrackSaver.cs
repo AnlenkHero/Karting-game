@@ -6,7 +6,7 @@ namespace Kart.TrackPackage
 {
     public class TrackSaver : MonoBehaviour
     {
-        public TrackData trackData; // The ScriptableObject to save into
+        public TrackData trackData; 
 
         [ContextMenu("Save Track to TrackData")]
         public void SaveTrack()
@@ -16,8 +16,7 @@ namespace Kart.TrackPackage
                 Debug.LogError("No TrackData assigned!");
                 return;
             }
-
-            // Gather all LapCheckpoint objects in the scene
+            
             var lapCheckpoints = FindObjectsOfType<LapCheckpoint>();
             trackData.checkpoints = new TrackData.CheckpointData[lapCheckpoints.Length];
             for (int i = 0; i < lapCheckpoints.Length; i++)
@@ -31,8 +30,7 @@ namespace Kart.TrackPackage
                     scale = cp.transform.localScale
                 };
             }
-
-            // Gather FinishLine
+            
             var finish = FindObjectOfType<FinishLine>();
             if (finish != null)
             {
