@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Kart
+namespace Kart.Controls
 {
     public interface IDrive
     {

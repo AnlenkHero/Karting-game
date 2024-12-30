@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Kart.Controls;
+using Kart.ModeStrategy;
 using UnityEngine;
 using Kart.TrackPackage;
 
@@ -10,7 +12,7 @@ namespace Kart
 
         public GameType currentGameType;
         public Track currentTrack;
-        public List<KartController> Players = new List<KartController>();
+        public List<KartController> Players = new();
         public float ElapsedTime { get; private set; }
 
         public IGameModeStrategy Strategy { get; private set; }
@@ -40,9 +42,9 @@ namespace Kart
             {
                 Debug.LogWarning("No Track assigned to the GameManager.");
             }
-            
+
             Strategy = IGameModeStrategy.GetGameMode(currentGameType);
-            Strategy.InitializeMode(currentGameType);
+            Strategy.InitializeMode();
             CurrentGameState = GameState.Running;
         }
 
@@ -52,9 +54,9 @@ namespace Kart
             {
                 return;
             }
-            
+
             ElapsedTime += Time.deltaTime;
-            
+
             Strategy.UpdateModeLogic();
 
             ShowCurrentStandings();
@@ -74,31 +76,28 @@ namespace Kart
         private void HandleNoWinnerScenario()
         {
             Debug.Log("Game Ended with no winner.");
-
         }
 
         public void EndGameWithStandings(List<StandingsEntry> standings)
         {
             Debug.Log("Game Ended! Final Standings:");
+            
             foreach (var entry in standings)
             {
                 Debug.Log($"{entry.rank}. {entry.player.name} - {entry.additionalInfo["Status"]}");
             }
+
             CurrentGameState = GameState.Finished;
         }
-        
+
         public void ShowCurrentStandings()
         {
             var standings = Strategy.GetStandings();
-
             Debug.Log("Current Standings:");
+            
             foreach (var entry in standings)
             {
-                Debug.Log($"{entry.rank}. {entry.player.name}");
-                foreach (var info in entry.additionalInfo)
-                {
-                    Debug.Log($"   {info.Key}: {info.Value}");
-                }
+                Debug.Log($"{entry.rank}. {entry.player.name} - {entry.additionalInfo["LastLapTime"]}");
             }
         }
     }

@@ -1,6 +1,7 @@
-﻿using Kart.TrackPackage;
+﻿using Kart.Controls;
+using Kart.TrackPackage;
 
-namespace Kart
+namespace Kart.ModeStrategy
 {
     public interface ICheckpointGameModeStrategy : IGameModeStrategy
     {

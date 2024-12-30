@@ -1,24 +1,21 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Kart.TrackPackage
 {
     public class Track : MonoBehaviour
     {
-        [Header("Track Setup")] 
-        public TrackData trackData;
+        [Header("Track Setup")] public TrackData trackData;
         public LapCheckpoint lapCheckpointPrefab;
         public FinishLine finishLinePrefab;
 
-        [Header("Runtime References")] 
-        public LapCheckpoint[] checkpoints; 
-        public FinishLine finishLine; 
+        [Header("Runtime References")] public LapCheckpoint[] checkpoints;
+        public FinishLine finishLine;
 
         private void Awake()
         {
             Initialize();
         }
-        
+
         public void Initialize()
         {
             if (trackData == null)
@@ -26,19 +23,20 @@ namespace Kart.TrackPackage
                 Debug.LogError("TrackData is not assigned to Track.");
                 return;
             }
-            
+
             ClearExistingCheckpoints();
-            
+
             checkpoints = new LapCheckpoint[trackData.checkpoints.Length];
+
             for (int i = 0; i < trackData.checkpoints.Length; i++)
             {
                 var data = trackData.checkpoints[i];
                 var checkpointObj = Instantiate(lapCheckpointPrefab, data.position, data.rotation, transform);
                 checkpointObj.transform.localScale = data.scale;
-                checkpointObj.index = data.index; 
+                checkpointObj.index = data.index;
                 checkpoints[i] = checkpointObj;
             }
-            
+
             if (finishLinePrefab != null)
             {
                 var finishObj = Instantiate(
@@ -47,6 +45,7 @@ namespace Kart.TrackPackage
                     trackData.finishLineRotation,
                     transform
                 );
+
                 finishObj.transform.localScale = trackData.finishLineScale;
                 finishLine = finishObj;
             }
@@ -69,6 +68,7 @@ namespace Kart.TrackPackage
             }
 
             var otherFinishLine = FindFirstObjectByType<FinishLine>();
+            
             if (otherFinishLine != null)
             {
                 Destroy(otherFinishLine.gameObject);

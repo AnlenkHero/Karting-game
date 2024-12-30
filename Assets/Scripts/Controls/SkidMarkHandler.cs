@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Kart {
+namespace Kart.Controls {
     public class SkidMarkHandler : MonoBehaviour {
         [SerializeField] float slipThreshold = 0.4f;
         [SerializeField] Transform skidMarkPrefab;

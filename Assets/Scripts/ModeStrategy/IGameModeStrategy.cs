@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Kart.Controls;
 
-namespace Kart
+namespace Kart.ModeStrategy
 {
     public interface IGameModeStrategy
     {
-        void InitializeMode(GameType gameType);
+        void InitializeMode();
         bool CheckForWinCondition(out KartController winner);
         bool IsGameOver();
         void UpdateModeLogic();
@@ -17,7 +18,7 @@ namespace Kart
             switch (gameType.modeType)
             {
                 case GameModeType.Laps:
-                    return new LapsGameModeStrategy();
+                    return new LapsGameModeStrategy(gameType);
                 default:
                     throw new Exception("Unsupported Game Mode Type");
             }

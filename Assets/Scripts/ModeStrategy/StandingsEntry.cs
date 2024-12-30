@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Kart.Controls;
 
-namespace Kart
+namespace Kart.ModeStrategy
 {
     public class StandingsEntry
     {

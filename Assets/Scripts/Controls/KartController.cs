@@ -4,7 +4,7 @@ using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace Kart
+namespace Kart.Controls
 {
     [System.Serializable]
     public class AxleInfo

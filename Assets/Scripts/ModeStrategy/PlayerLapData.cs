@@ -1,4 +1,4 @@
-﻿namespace Kart
+﻿namespace Kart.ModeStrategy
 {
     public class PlayerLapData
     {
@@ -9,5 +9,4 @@
         public bool hasFinished;
         public float finishTime;
     }
-
 }
