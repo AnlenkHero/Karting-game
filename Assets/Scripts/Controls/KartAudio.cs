@@ -41,32 +41,35 @@ namespace Kart.Controls
             // HandleOffroadAudio(kartController.Velocity.magnitude);
             HandleDriveAudio(speed);
 
-            IdleSound.volume = Mathf.Lerp(IdleSoundMaxVolume, 0.0f, kartController.Velocity.magnitude * 4);
+            IdleSound.volume = Mathf.Lerp(IdleSoundMaxVolume, 0.0f, kartController.Velocity.magnitude);
         }
 
         private void HandleDriveAudio(float speed)
         {
+            float forwardVolume = 0.0f;
+            float reverseVolume = 0.0f;
+
             if (speed < 0.0f)
             {
-                RunningSound.volume = 0.0f;
-                ApplyDriveAudio(ReverseSound, 0.1f, 0.1f, ReverseSoundMaxVolume, ReverseSoundMaxPitch, speed, kartController.MaxReverseSpeed);
+                ApplyDriveAudio(ReverseSound, 0.1f, 0.1f, ReverseSoundMaxVolume, ReverseSoundMaxPitch, speed, kartController.MaxReverseSpeed, out reverseVolume);
             }
             else
             {
-                ReverseSound.volume = 0.0f;
-                ApplyDriveAudio(RunningSound, 0.1f, 0.3f, RunningSoundMaxVolume, RunningSoundMaxPitch, speed, kartController.MaxSpeed);
+                ApplyDriveAudio(RunningSound, 0.1f, 0.3f, RunningSoundMaxVolume, RunningSoundMaxPitch, speed, kartController.MaxSpeed, out forwardVolume);
             }
+            
+            RunningSound.volume = Mathf.Lerp(RunningSound.volume, forwardVolume, Time.deltaTime * 5f);
+            ReverseSound.volume = Mathf.Lerp(ReverseSound.volume, reverseVolume, Time.deltaTime * 5f);
         }
+
 
         private void ApplyDriveAudio(AudioSource audioSource, float minVolume, float minPitch, float maxVolume,
-            float maxPitch, float speed, float maxSpeed)
+            float maxPitch, float speed, float maxSpeed, out float targetVolume)
         {
-            float targetVolume = Mathf.Lerp(minVolume, maxVolume, Mathf.Abs(speed / maxSpeed));
-            audioSource.volume = Mathf.MoveTowards(audioSource.volume, targetVolume, Time.deltaTime);
-
-            float targetPitch = Mathf.Lerp(minPitch, maxPitch, Mathf.Abs(speed / maxSpeed + (Mathf.Sin(Time.time) * .1f)));
-            audioSource.pitch = Mathf.MoveTowards(audioSource.pitch, targetPitch, Time.deltaTime);
+            targetVolume = Mathf.Lerp(minVolume, maxVolume, Mathf.Abs(speed / maxSpeed));
+            audioSource.pitch = Mathf.Lerp(minPitch, maxPitch, Mathf.Abs(speed / maxSpeed + (Mathf.Sin(Time.time) * 0.1f)));
         }
+
 
         private void HandleDriftAudio(float speed)
         {

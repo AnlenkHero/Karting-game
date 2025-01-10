@@ -23,14 +23,14 @@ namespace Kart.Controls
         private AxleInfo[] axleInfos;
 
         [Header("Motor Attributes")] [SerializeField]
-        private float maxMotorTorque = 3000f;
+        private float maxMotorTorque = 10f;
 
         [SerializeField] private float maxSpeed = 100;
         [SerializeField] private float speedRatio = 5f;
         [SerializeField] private float engineBrakingForce = 50f;
 
         [Header("Steering Attributes")] [SerializeField]
-        private float turnPersistenceTorque = 0.002f;
+        private float turnPersistenceTorque = 0.09f;
 
         [SerializeField] private float driftAngleThreshold = 90f;
         [SerializeField] private float maxDriftAngle = 150f;
@@ -42,9 +42,7 @@ namespace Kart.Controls
 
         [Header("Braking and Drifting")] [SerializeField]
         private float driftSteerMultiplier = 1.5f;
-
         [SerializeField] private float slipThreshold = 0.9f;
-
         [SerializeField] private float brakeTorque = 10000f;
 
         [Header("Physics")] [SerializeField] private Transform centerOfMass;
@@ -77,6 +75,7 @@ namespace Kart.Controls
         private float driftVelocity;
         private float currentSteeringAngle;
         private float steeringVelocity;
+        public float VerticalInput => input.Move.y;
         public Vector3 Velocity => kartVelocity;
         public float MaxSpeed => maxSpeed;
         public float MaxReverseSpeed => maxSpeed / speedRatio;
