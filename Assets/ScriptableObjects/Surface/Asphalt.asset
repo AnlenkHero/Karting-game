@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c61d18ef5ae4cdd82e1470042e53dde, type: 3}
+  m_Name: Asphalt
+  m_EditorClassIdentifier: 
+  surfaceName: Sand
+  frictionMultiplier: 1
+  slowdownMultiplier: 0.3
+  steeringSensitivityMultiplier: 0.19
+  customBehavior: {fileID: 11400000, guid: bb4f6e91117369c4f8ca4f27dbb44776, type: 2}

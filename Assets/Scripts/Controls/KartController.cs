@@ -42,6 +42,7 @@ namespace Kart.Controls
 
         [Header("Braking and Drifting")] [SerializeField]
         private float driftSteerMultiplier = 1.5f;
+
         [SerializeField] private float slipThreshold = 0.9f;
         [SerializeField] private float brakeTorque = 10000f;
 
@@ -54,6 +55,10 @@ namespace Kart.Controls
 
         [Header("Banking")] [SerializeField] private float maxBankAngle = 5f;
         [SerializeField] private float bankSpeed = 2f;
+
+        [Header("Surface Modifiers")] public float frictionMultiplier = 1.0f;
+        public float slowdownMultiplier = 1.0f;
+        public float steeringSensitivityMultiplier = 1.0f;
 
         [Header("Input")] [SerializeField] private InputReader playerInput;
 
@@ -213,9 +218,9 @@ namespace Kart.Controls
         {
             float targetSpeed = verticalInput switch
             {
-                < 0 when SignedVelocityMagnitude > 0 => verticalInput * maxSpeed * speedRatio / 2,
-                < 0 => verticalInput * maxSpeed * 1 / speedRatio,
-                _ => verticalInput * maxSpeed
+                < 0 when SignedVelocityMagnitude > 0 => verticalInput * maxSpeed * slowdownMultiplier * speedRatio / 2,
+                < 0 => verticalInput * maxSpeed * slowdownMultiplier * 1 / speedRatio,
+                _ => verticalInput * maxSpeed * slowdownMultiplier
             };
             return targetSpeed;
         }
@@ -270,7 +275,7 @@ namespace Kart.Controls
         {
             float speedFactor = Mathf.Clamp01(kartVelocity.magnitude / maxSpeed);
             float adjustedTurnFactor = turnCurve.Evaluate(speedFactor);
-            float effectiveSteeringAngle = Direction > 0 ? maxSteeringAngle : reverseSteeringAngle;
+            float effectiveSteeringAngle = (Direction > 0 ? maxSteeringAngle : reverseSteeringAngle) * steeringSensitivityMultiplier;
             float targetSteeringAngle = steeringInput * effectiveSteeringAngle * adjustedTurnFactor;
 
             targetSteeringAngle = ApplyCounterSteering(targetSteeringAngle);
@@ -289,9 +294,8 @@ namespace Kart.Controls
             float baseDirectionMultiplier = Direction > 0 ? 1f : -1f;
             float driftBlendFactor = Mathf.InverseLerp(driftAngleThreshold, maxDriftAngle, angleBetween);
             float directionMultiplier = Mathf.Lerp(baseDirectionMultiplier, -baseDirectionMultiplier, driftBlendFactor);
-            Vector3 desiredTurnDirection = Vector3.up *
-                                           (steeringInput * turnPersistenceTorque * adjustedTurnFactor *
-                                            directionMultiplier);
+            Vector3 desiredTurnDirection = Vector3.up * (steeringInput * turnPersistenceTorque * adjustedTurnFactor *
+                                                         directionMultiplier * steeringSensitivityMultiplier);
             rb.AddTorque(desiredTurnDirection, ForceMode.Acceleration);
         }
 
@@ -313,11 +317,11 @@ namespace Kart.Controls
         {
             Vector3 referenceForward = Direction > 0 ? transform.forward : -transform.forward;
             float angleBetween = Vector3.SignedAngle(referenceForward, rb.linearVelocity, Vector3.up);
-            if (Mathf.Abs(angleBetween ) > 1)
+            if (Mathf.Abs(angleBetween) > 1)
             {
                 targetSteeringAngle += angleBetween;
             }
-            
+
             return targetSteeringAngle;
         }
 
