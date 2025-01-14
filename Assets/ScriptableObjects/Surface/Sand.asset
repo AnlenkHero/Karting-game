@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Sand
   m_EditorClassIdentifier: 
   surfaceName: Sand
-  frictionMultiplier: 1
-  slowdownMultiplier: 0.3
-  steeringSensitivityMultiplier: 0.19
+  forwardFriction: 1
+  sidewaysFriction: 1
+  frictionMultiplier: 5
+  brakeMultiplier: 50
+  slowdownMultiplier: 2
+  steeringSensitivityMultiplier: 1
   customBehavior: {fileID: 11400000, guid: bb4f6e91117369c4f8ca4f27dbb44776, type: 2}

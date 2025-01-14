@@ -6,7 +6,10 @@ namespace Kart.Surface
     public class SurfaceType : ScriptableObject
     {
         public string surfaceName;
+        public float forwardFriction = 1.0f;
+        public float sidewaysFriction = 1.0f;
         public float frictionMultiplier = 1.0f;
+        public float brakeMultiplier = 1.0f;
         public float slowdownMultiplier = 1.0f;
         public float steeringSensitivityMultiplier = 1.0f;
         

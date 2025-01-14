@@ -14,8 +14,6 @@ namespace Kart.Surface
 
         private void FixedUpdate()
         {
-            ApplySurfaceModifiers();
-            
             if (isContinuousEffect)
             {
                 ApplySurfaceBehavior();
@@ -30,6 +28,7 @@ namespace Kart.Surface
             isContinuousEffect = currentSurface.customBehavior.IsContinuous;
             
             Debug.Log($"Entered surface: {currentSurface.surfaceName}");
+            ApplySurfaceModifiers();
             ApplySurfaceBehavior();
         }
 
@@ -40,6 +39,7 @@ namespace Kart.Surface
             isContinuousEffect = false;
             currentSurface = defaultSurface;
             Debug.Log($"Exited surface: {surfaceArea.surface.surfaceName}");
+            ApplySurfaceModifiers();
         }
 
         public void ApplySurfaceBehavior()
@@ -52,6 +52,8 @@ namespace Kart.Surface
             kartController.slowdownMultiplier = currentSurface.slowdownMultiplier;
             kartController.frictionMultiplier = currentSurface.frictionMultiplier;
             kartController.steeringSensitivityMultiplier = currentSurface.steeringSensitivityMultiplier;
+            kartController.brakeMultiplier = currentSurface.brakeMultiplier;
+            kartController.SetSurfaceFriction(currentSurface.forwardFriction, currentSurface.sidewaysFriction);
         }
     }
 }

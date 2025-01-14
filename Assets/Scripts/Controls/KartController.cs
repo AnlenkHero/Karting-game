@@ -43,8 +43,10 @@ namespace Kart.Controls
         [Header("Braking and Drifting")] [SerializeField]
         private float driftSteerMultiplier = 1.5f;
 
+        [SerializeField] private float driftFriction = 0.5f;
         [SerializeField] private float slipThreshold = 0.9f;
         [SerializeField] private float brakeTorque = 10000f;
+        public float brakeMultiplier = 1.0f;
 
         [Header("Physics")] [SerializeField] private Transform centerOfMass;
         [SerializeField] private float downForce = 100f;
@@ -218,8 +220,8 @@ namespace Kart.Controls
         {
             float targetSpeed = verticalInput switch
             {
-                < 0 when SignedVelocityMagnitude > 0 => verticalInput * maxSpeed * slowdownMultiplier * speedRatio / 2,
-                < 0 => verticalInput * maxSpeed * slowdownMultiplier * 1 / speedRatio,
+                < 0 when SignedVelocityMagnitude > 0 => verticalInput * maxSpeed * brakeMultiplier * speedRatio / 2,
+                < 0 => verticalInput * maxSpeed * 1 / speedRatio,
                 _ => verticalInput * maxSpeed * slowdownMultiplier
             };
             return targetSpeed;
@@ -237,7 +239,8 @@ namespace Kart.Controls
         private void ApplyEngineBraking()
         {
             float speedFactor = rb.linearVelocity.magnitude / maxSpeed;
-            Vector3 deceleration = -rb.linearVelocity.normalized * (engineBrakingForce * speedFactor) / speedRatio;
+            Vector3 deceleration = -rb.linearVelocity.normalized *
+                (brakeMultiplier * (engineBrakingForce * speedFactor)) / speedRatio;
             rb.AddForce(deceleration, ForceMode.Acceleration);
         }
 
@@ -275,7 +278,8 @@ namespace Kart.Controls
         {
             float speedFactor = Mathf.Clamp01(kartVelocity.magnitude / maxSpeed);
             float adjustedTurnFactor = turnCurve.Evaluate(speedFactor);
-            float effectiveSteeringAngle = (Direction > 0 ? maxSteeringAngle : reverseSteeringAngle) * steeringSensitivityMultiplier;
+            float effectiveSteeringAngle = (Direction > 0 ? maxSteeringAngle : reverseSteeringAngle) *
+                                           steeringSensitivityMultiplier;
             float targetSteeringAngle = steeringInput * effectiveSteeringAngle * adjustedTurnFactor;
 
             targetSteeringAngle = ApplyCounterSteering(targetSteeringAngle);
@@ -373,10 +377,21 @@ namespace Kart.Controls
             Vector3 currentVelocity = rb.linearVelocity;
             Vector3 forwardVelocity = Vector3.Project(currentVelocity, forwardDirection);
             Vector3 sidewaysVelocity = currentVelocity - forwardVelocity;
-            forwardVelocity = Vector3.Lerp(forwardVelocity, Vector3.zero, Time.fixedDeltaTime);
-            sidewaysVelocity = Vector3.Lerp(sidewaysVelocity, sidewaysVelocity * 0.5f, Time.fixedDeltaTime);
+
+            float stiffness = axleInfos.FirstOrDefault()?.originalSidewaysFriction.stiffness ?? 1f;
+            if (Mathf.Approximately(stiffness, 0f))
+            {
+                stiffness = 0.0001f;
+            }
+
+            float lerpFactor = Time.fixedDeltaTime * stiffness * 0.1f * brakeMultiplier;
+
+            forwardVelocity = Vector3.Lerp(forwardVelocity, Vector3.zero, lerpFactor);
+            sidewaysVelocity = Vector3.Lerp(sidewaysVelocity, sidewaysVelocity * 0.5f, lerpFactor);
+
             rb.linearVelocity = forwardVelocity + sidewaysVelocity;
         }
+
 
         private void ResetDriftFriction(WheelCollider wheel)
         {
@@ -387,6 +402,22 @@ namespace Kart.Controls
             wheel.sidewaysFriction = axleInfo.originalSidewaysFriction;
         }
 
+        public void SetSurfaceFriction(float forwardFriction, float sidewaysFriction)
+        {
+            foreach (var axleInfo in axleInfos)
+            {
+                axleInfo.originalForwardFriction = SetFriction(axleInfo.originalForwardFriction, forwardFriction);
+                axleInfo.originalSidewaysFriction = SetFriction(axleInfo.originalSidewaysFriction, sidewaysFriction);
+
+                axleInfo.leftWheel.forwardFriction = SetFriction(axleInfo.leftWheel.forwardFriction, forwardFriction);
+                axleInfo.leftWheel.sidewaysFriction =
+                    SetFriction(axleInfo.leftWheel.sidewaysFriction, sidewaysFriction);
+                axleInfo.rightWheel.forwardFriction = SetFriction(axleInfo.rightWheel.forwardFriction, forwardFriction);
+                axleInfo.rightWheel.sidewaysFriction =
+                    SetFriction(axleInfo.rightWheel.sidewaysFriction, sidewaysFriction);
+            }
+        }
+
         private void ApplyDriftFriction(WheelCollider wheel)
         {
             if (!wheel.GetGroundHit(out _)) return;
@@ -395,10 +426,17 @@ namespace Kart.Controls
             wheel.sidewaysFriction = UpdateFriction(wheel.sidewaysFriction);
         }
 
+        private WheelFrictionCurve SetFriction(WheelFrictionCurve wheelFrictionCurve, float friction)
+        {
+            wheelFrictionCurve.stiffness = friction;
+            return wheelFrictionCurve;
+        }
+
         private WheelFrictionCurve UpdateFriction(WheelFrictionCurve friction)
         {
             friction.stiffness = input.IsBraking
-                ? Mathf.SmoothDamp(friction.stiffness, .5f, ref driftVelocity, Time.deltaTime * 2f)
+                ? Mathf.SmoothDamp(friction.stiffness, driftFriction * frictionMultiplier, ref driftVelocity,
+                    Time.deltaTime * 2f)
                 : 1f;
             return friction;
         }

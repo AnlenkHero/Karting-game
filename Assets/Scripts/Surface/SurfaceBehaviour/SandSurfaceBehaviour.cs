@@ -11,7 +11,6 @@ namespace Kart.Surface.SurfaceBehaviour
 
         public override void ApplyBehavior(KartController kart, SurfaceType surface)
         {
-                Debug.Log("NIGGA");
           //  kart.ReduceSpeed(surface.slowdownMultiplier * 0.8f);
 
 /*            if (sandEffectPrefab)
