@@ -12,6 +12,7 @@ namespace Kart.Surface
         public float brakeMultiplier = 1.0f;
         public float slowdownMultiplier = 1.0f;
         public float steeringSensitivityMultiplier = 1.0f;
+        public bool isContinuousEffect;
         
         public SurfaceBehavior customBehavior;
     }

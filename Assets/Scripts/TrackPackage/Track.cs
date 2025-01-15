@@ -10,12 +10,7 @@ namespace Kart.TrackPackage
 
         [Header("Runtime References")] public LapCheckpoint[] checkpoints;
         public FinishLine finishLine;
-
-        private void Awake()
-        {
-            Initialize();
-        }
-
+        
         public void Initialize()
         {
             if (trackData == null)

@@ -19,4 +19,5 @@ MonoBehaviour:
   brakeMultiplier: 50
   slowdownMultiplier: 2
   steeringSensitivityMultiplier: 1
+  isContinuousEffect: 1
   customBehavior: {fileID: 11400000, guid: bb4f6e91117369c4f8ca4f27dbb44776, type: 2}

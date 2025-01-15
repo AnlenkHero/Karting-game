@@ -7,10 +7,10 @@ namespace Kart.Surface.SurfaceBehaviour
     public class SandSurfaceBehavior : SurfaceBehavior
     {
         public ParticleSystem sandEffectPrefab;
-        public override bool IsContinuous { get; set; } = true;
 
         public override void ApplyBehavior(KartController kart, SurfaceType surface)
         {
+            Debug.Log("NIGGA");
           //  kart.ReduceSpeed(surface.slowdownMultiplier * 0.8f);
 
 /*            if (sandEffectPrefab)
