@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Kart.Controls;
 
@@ -7,105 +7,128 @@ namespace Kart.Surface
 {
     public class SurfaceDetector : MonoBehaviour
     {
-        [Header("References")]
-        [SerializeField] private KartController kartController;
-        
-        [Header("Surface Settings")]
-        [SerializeField] private SurfaceType defaultSurface;
+        [Header("References")] [SerializeField]
+        private KartController kartController;
 
-        // Keep track of ALL SurfaceArea objects currently overlapping
-        private List<SurfaceArea> overlappingSurfaceAreas = new List<SurfaceArea>();
+        [SerializeField] private KartAudio kartAudio;
 
-        // Which surface are we currently using?
+        [Header("Surface Settings")] [SerializeField]
+        private SurfaceType defaultSurface;
+
+        private List<SurfaceArea> overlappingSurfaceAreas = new();
         private SurfaceType currentSurface;
+
+        private Coroutine transitionRoutine;
+
         private bool isContinuousEffect;
 
         public SurfaceType CurrentSurface => currentSurface ?? defaultSurface;
 
         private void Start()
         {
-            // Start with the default surface
             currentSurface = defaultSurface;
+            ApplySurfaceModifiersInstant(currentSurface);
         }
 
         private void FixedUpdate()
         {
             if (isContinuousEffect)
             {
-                ApplySurfaceBehavior();
+                currentSurface?.customBehavior?.ApplyBehavior(kartController, currentSurface);
             }
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!other.TryGetComponent<SurfaceArea>(out var surfaceArea) || overlappingSurfaceAreas.Contains(surfaceArea)) return;
-            
-            Debug.Log($"{name} (ScriptName) triggered by {other.name}", this);
+            if (!other.TryGetComponent<SurfaceArea>(out var surfaceArea) ||
+                overlappingSurfaceAreas.Contains(surfaceArea)) return;
+
+            Debug.Log($"Entered {surfaceArea.surface.name} surface");
             overlappingSurfaceAreas.Add(surfaceArea);
             UpdateCurrentSurface();
         }
 
         private void OnTriggerExit(Collider other)
         {
-            // If we exit a known SurfaceArea, remove it from the list
-            if (other.TryGetComponent<SurfaceArea>(out var surfaceArea))
-            {
-                if (overlappingSurfaceAreas.Contains(surfaceArea))
-                {
-                    overlappingSurfaceAreas.Remove(surfaceArea);
-                }
-                UpdateCurrentSurface();
-            }
+            if (!other.TryGetComponent<SurfaceArea>(out var surfaceArea) ||
+                !overlappingSurfaceAreas.Contains(surfaceArea)) return;
+
+            Debug.Log($"Exited {surfaceArea.surface.name} surface");
+            overlappingSurfaceAreas.Remove(surfaceArea);
+            UpdateCurrentSurface();
         }
 
-        /// <summary>
-        /// Recomputes which surface has the highest priority and applies it.
-        /// </summary>
         private void UpdateCurrentSurface()
         {
-            // Pick the SurfaceArea with the highest priority
-            var highestPrioritySurfaceArea = overlappingSurfaceAreas
-                .OrderByDescending(sa => sa.priority)
-                .FirstOrDefault();
-
-            // Use the found surface, or default if none
-            var newSurface = (highestPrioritySurfaceArea != null)
-                ? highestPrioritySurfaceArea.surface
+            var newSurface = (overlappingSurfaceAreas.Count > 0)
+                ? overlappingSurfaceAreas[^1].surface
                 : defaultSurface;
 
-            // If the surface changed, update everything
-            if (newSurface != currentSurface)
+            if (newSurface == currentSurface) return;
+
+            if (transitionRoutine != null)
             {
-                currentSurface = newSurface;
-                ApplySurfaceModifiers();
-                ApplySurfaceBehavior();
+                StopCoroutine(transitionRoutine);
+                transitionRoutine = null;
+            }
 
-                // Decide if we apply this surface behavior continuously in FixedUpdate
-                isContinuousEffect = currentSurface.customBehavior != null 
-                                     && currentSurface.isContinuousEffect;
+            transitionRoutine = StartCoroutine(SmoothTransitionRoutine(currentSurface, newSurface));
 
-                Debug.Log($"Switched to surface: {currentSurface.surfaceName}");
+            isContinuousEffect = newSurface.isContinuousEffect && newSurface.customBehavior != null;
+            currentSurface = newSurface;
+
+            ApplyOneShotSurfaceBehaviour();
+
+            if (kartAudio != null)
+            {
+                kartAudio.PlaySurfaceAudioCrossFade(currentSurface);
             }
         }
 
-        /// <summary>
-        /// Apply the custom behavior of the current surface (if any).
-        /// </summary>
-        private void ApplySurfaceBehavior()
+        private IEnumerator SmoothTransitionRoutine(SurfaceType oldSurface, SurfaceType newSurface)
         {
-            currentSurface?.customBehavior?.ApplyBehavior(kartController, currentSurface);
+            if (newSurface.smoothTime <= 0f)
+            {
+                ApplySurfaceModifiersInstant(newSurface);
+                yield break;
+            }
+
+            float elapsed = 0f;
+            while (elapsed < newSurface.smoothTime)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / newSurface.smoothTime);
+
+                float currentForwardFriction = Mathf.Lerp(oldSurface.forwardFriction, newSurface.forwardFriction, t);
+                float currentSidewaysFriction = Mathf.Lerp(oldSurface.sidewaysFriction, newSurface.sidewaysFriction, t);
+
+                kartController.slowdownMultiplier = Mathf.Lerp(kartController.slowdownMultiplier, newSurface.slowdownMultiplier, t);
+                kartController.frictionMultiplier = Mathf.Lerp(kartController.frictionMultiplier, newSurface.frictionMultiplier, t);
+                kartController.steeringSensitivityMultiplier = Mathf.Lerp(kartController.steeringSensitivityMultiplier, newSurface.steeringSensitivityMultiplier, t);
+                kartController.brakeMultiplier = Mathf.Lerp(kartController.brakeMultiplier, newSurface.brakeMultiplier, t);
+                kartController.SetSurfaceFriction(currentForwardFriction, currentSidewaysFriction);
+
+                yield return null;
+            }
+
+            ApplySurfaceModifiersInstant(newSurface);
+
+            transitionRoutine = null;
         }
 
-        /// <summary>
-        /// Update all of the kart's multipliers based on the current surface.
-        /// </summary>
-        private void ApplySurfaceModifiers()
+        private void ApplySurfaceModifiersInstant(SurfaceType surface)
         {
-            kartController.slowdownMultiplier = currentSurface.slowdownMultiplier;
-            kartController.frictionMultiplier = currentSurface.frictionMultiplier;
-            kartController.steeringSensitivityMultiplier = currentSurface.steeringSensitivityMultiplier;
-            kartController.brakeMultiplier = currentSurface.brakeMultiplier;
-            kartController.SetSurfaceFriction(currentSurface.forwardFriction, currentSurface.sidewaysFriction);
+            kartController.slowdownMultiplier = surface.slowdownMultiplier;
+            kartController.frictionMultiplier = surface.frictionMultiplier;
+            kartController.steeringSensitivityMultiplier = surface.steeringSensitivityMultiplier;
+            kartController.brakeMultiplier = surface.brakeMultiplier;
+            kartController.SetSurfaceFriction(surface.forwardFriction, surface.sidewaysFriction);
+        }
+
+        private void ApplyOneShotSurfaceBehaviour()
+        {
+            if (isContinuousEffect) return;
+            currentSurface?.customBehavior?.ApplyBehavior(kartController, currentSurface);
         }
     }
 }

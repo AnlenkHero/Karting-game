@@ -16,6 +16,10 @@ MonoBehaviour:
   forwardFriction: 1
   sidewaysFriction: 5
   frictionMultiplier: 1
+  brakeMultiplier: 1
   slowdownMultiplier: 1
   steeringSensitivityMultiplier: 1
+  audioClip: {fileID: 8300000, guid: d87248181b41a294f97df221d89ab6b7, type: 3}
+  smoothTime: 1
+  isContinuousEffect: 1
   customBehavior: {fileID: 0}
