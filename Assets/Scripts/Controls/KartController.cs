@@ -89,6 +89,8 @@ namespace Kart.Controls
         public float Direction => Mathf.Sign(Vector3.Dot(transform.forward, rb.linearVelocity));
         public float SignedVelocityMagnitude => Velocity.magnitude * Direction;
 
+        #region Unity Lifecycle
+
         private void Awake()
         {
             InitializeComponents();
@@ -118,30 +120,9 @@ namespace Kart.Controls
             playerAudioListener.enabled = true;
         }
 
-        private void InitializeComponents()
-        {
-            if (playerInput is IDrive driveInput)
-            {
-                input = driveInput;
-            }
-
-            input.Enable();
-
-            rb.centerOfMass = centerOfMass.localPosition;
-            originalCenterOfMass = centerOfMass.localPosition;
-
-            foreach (AxleInfo axleInfo in axleInfos)
-            {
-                axleInfo.originalForwardFriction = axleInfo.leftWheel.forwardFriction;
-                axleInfo.originalSidewaysFriction = axleInfo.leftWheel.sidewaysFriction;
-            }
-        }
-
-        public void SetInput(IDrive driveInput)
-        {
-            input = driveInput;
-        }
-
+        #endregion
+        
+        #region CoreMethods
 
         private void Move(Vector2 inputVector)
         {
@@ -168,14 +149,21 @@ namespace Kart.Controls
             }
         }
 
-        private void ApplyLowSpeedStop()
+        private void UpdateAxles(float motor, float steeringInput)
         {
-            if (rb.linearVelocity.magnitude < 0.2f)
+            foreach (AxleInfo axleInfo in axleInfos)
             {
-                rb.linearVelocity = Vector3.zero;
+                HandleSteering(axleInfo, steeringInput);
+                HandleMotor(axleInfo, motor);
+                HandleBrakesAndDrift(axleInfo);
+                UpdateWheelVisuals(axleInfo.leftWheel);
+                UpdateWheelVisuals(axleInfo.rightWheel);
             }
         }
 
+        #endregion
+
+        #region Acceleration
 
         private void HandleGroundedMovement(float verticalInput, float motor)
         {
@@ -188,22 +176,6 @@ namespace Kart.Controls
             AccelerateGroundMovement(motor, targetSpeed);
             ApplyDownforce();
             AdjustCenterOfMass(verticalInput);
-        }
-
-        private void AdjustCenterOfMass(float verticalInput)
-        {
-            Vector3 centerOfMassAdjustment = Velocity.magnitude > 10f
-                ? new Vector3(0f, 0f, Mathf.Abs(verticalInput) > 0.1f ? Mathf.Sign(verticalInput) * -0.5f : 0f)
-                : Vector3.zero;
-            rb.centerOfMass = originalCenterOfMass + centerOfMassAdjustment;
-        }
-
-        private void ApplyDownforce()
-        {
-            float speedFactor = Mathf.Clamp01(rb.linearVelocity.magnitude / maxSpeed);
-            float lateralG = Mathf.Abs(Vector3.Dot(rb.linearVelocity, transform.right));
-            float downForceFactor = Mathf.Max(speedFactor, lateralG / lateralGScale);
-            rb.AddForce(-transform.up * (downForce * rb.mass * downForceFactor));
         }
 
         private void AccelerateGroundMovement(float motor, float targetSpeed)
@@ -235,44 +207,17 @@ namespace Kart.Controls
             rb.AddForce(transform.TransformDirection(airControlForce), ForceMode.Acceleration);
         }
 
-
-        private void ApplyEngineBraking()
+        private void HandleMotor(AxleInfo axleInfo, float motor)
         {
-            float speedFactor = rb.linearVelocity.magnitude / maxSpeed;
-            Vector3 deceleration = -rb.linearVelocity.normalized *
-                (brakeMultiplier * (engineBrakingForce * speedFactor)) / speedRatio;
-            rb.AddForce(deceleration, ForceMode.Acceleration);
+            if (!axleInfo.motor) return;
+
+            axleInfo.leftWheel.motorTorque = motor;
+            axleInfo.rightWheel.motorTorque = motor;
         }
 
-        private void UpdateBanking(float horizontalInput)
-        {
-            float targetBankAngle = horizontalInput * -maxBankAngle;
-            Vector3 currentEuler = transform.localEulerAngles;
-            currentEuler.z = Mathf.LerpAngle(currentEuler.z, targetBankAngle, Time.deltaTime * bankSpeed);
-            transform.localEulerAngles = currentEuler;
-        }
+        #endregion
 
-        private void UpdateAxles(float motor, float steeringInput)
-        {
-            foreach (AxleInfo axleInfo in axleInfos)
-            {
-                HandleSteering(axleInfo, steeringInput);
-                HandleMotor(axleInfo, motor);
-                HandleBrakesAndDrift(axleInfo);
-                UpdateWheelVisuals(axleInfo.leftWheel);
-                UpdateWheelVisuals(axleInfo.rightWheel);
-            }
-        }
-
-        private void UpdateWheelVisuals(WheelCollider wheelCollider)
-        {
-            if (wheelCollider.transform.childCount == 0) return;
-
-            Transform visualWheel = wheelCollider.transform.GetChild(0);
-            wheelCollider.GetWorldPose(out var position, out var rotation);
-            visualWheel.transform.position = position;
-            visualWheel.transform.rotation = rotation;
-        }
+        #region Steering
 
         private void HandleSteering(AxleInfo axleInfo, float steeringInput)
         {
@@ -321,6 +266,7 @@ namespace Kart.Controls
         {
             Vector3 referenceForward = Direction > 0 ? transform.forward : -transform.forward;
             float angleBetween = Vector3.SignedAngle(referenceForward, rb.linearVelocity, Vector3.up);
+
             if (Mathf.Abs(angleBetween) > 1)
             {
                 targetSteeringAngle += angleBetween;
@@ -329,13 +275,15 @@ namespace Kart.Controls
             return targetSteeringAngle;
         }
 
+        #endregion
 
-        private void HandleMotor(AxleInfo axleInfo, float motor)
+        #region Brakes
+
+        private void ApplyEngineBraking()
         {
-            if (!axleInfo.motor) return;
-
-            axleInfo.leftWheel.motorTorque = motor;
-            axleInfo.rightWheel.motorTorque = motor;
+            float speedFactor = rb.linearVelocity.magnitude / maxSpeed;
+            Vector3 deceleration = -rb.linearVelocity.normalized * (engineBrakingForce * speedFactor) / speedRatio;
+            rb.AddForce(deceleration, ForceMode.Acceleration);
         }
 
         private void HandleBrakesAndDrift(AxleInfo axleInfo)
@@ -379,6 +327,7 @@ namespace Kart.Controls
             Vector3 sidewaysVelocity = currentVelocity - forwardVelocity;
 
             float stiffness = axleInfos.FirstOrDefault()?.originalSidewaysFriction.stiffness ?? 1f;
+
             if (Mathf.Approximately(stiffness, 0f))
             {
                 stiffness = 0.0001f;
@@ -392,6 +341,37 @@ namespace Kart.Controls
             rb.linearVelocity = forwardVelocity + sidewaysVelocity;
         }
 
+        private void ApplyLowSpeedStop()
+        {
+            if (rb.linearVelocity.magnitude < 0.2f)
+            {
+                rb.linearVelocity = Vector3.zero;
+            }
+        }
+
+        #endregion
+
+        #region Physics
+
+        private void AdjustCenterOfMass(float verticalInput)
+        {
+            Vector3 centerOfMassAdjustment = Velocity.magnitude > 10f
+                ? new Vector3(0f, 0f, Mathf.Abs(verticalInput) > 0.1f ? Mathf.Sign(verticalInput) * -0.5f : 0f)
+                : Vector3.zero;
+            rb.centerOfMass = originalCenterOfMass + centerOfMassAdjustment;
+        }
+
+        private void ApplyDownforce()
+        {
+            float speedFactor = Mathf.Clamp01(rb.linearVelocity.magnitude / maxSpeed);
+            float lateralG = Mathf.Abs(Vector3.Dot(rb.linearVelocity, transform.right));
+            float downForceFactor = Mathf.Max(speedFactor, lateralG / lateralGScale);
+            rb.AddForce(-transform.up * (downForce * rb.mass * downForceFactor));
+        }
+
+        #endregion
+
+        #region WheelFriction
 
         private void ResetDriftFriction(WheelCollider wheel)
         {
@@ -441,15 +421,9 @@ namespace Kart.Controls
             return friction;
         }
 
-        private float AdjustInput(float inputValue)
-        {
-            return inputValue switch
-            {
-                >= .7f => 1f,
-                <= -.7f => -1f,
-                _ => inputValue
-            };
-        }
+        #endregion
+
+        #region State
 
         public bool IsGrounded()
         {
@@ -473,5 +447,71 @@ namespace Kart.Controls
             if (!wheelCollider.GetGroundHit(out var hit)) return false;
             return Mathf.Abs(hit.sidewaysSlip) > slipThreshold || Mathf.Abs(hit.forwardSlip) > slipThreshold;
         }
+
+        #endregion
+
+        #region Helpers
+
+        public void SetInput(IDrive driveInput)
+        {
+            input = driveInput;
+        }
+
+        private float AdjustInput(float inputValue)
+        {
+            return inputValue switch
+            {
+                >= .7f => 1f,
+                <= -.7f => -1f,
+                _ => inputValue
+            };
+        }
+
+        #endregion
+
+        #region Visuals
+
+        private void UpdateBanking(float horizontalInput)
+        {
+            float targetBankAngle = horizontalInput * -maxBankAngle;
+            Vector3 currentEuler = transform.localEulerAngles;
+            currentEuler.z = Mathf.LerpAngle(currentEuler.z, targetBankAngle, Time.deltaTime * bankSpeed);
+            transform.localEulerAngles = currentEuler;
+        }
+
+        private void UpdateWheelVisuals(WheelCollider wheelCollider)
+        {
+            if (wheelCollider.transform.childCount == 0) return;
+
+            Transform visualWheel = wheelCollider.transform.GetChild(0);
+            wheelCollider.GetWorldPose(out var position, out var rotation);
+            visualWheel.transform.position = position;
+            visualWheel.transform.rotation = rotation;
+        }
+
+        #endregion
+
+        #region Initialization
+
+        private void InitializeComponents()
+        {
+            if (playerInput is IDrive driveInput)
+            {
+                input = driveInput;
+            }
+
+            input.Enable();
+
+            rb.centerOfMass = centerOfMass.localPosition;
+            originalCenterOfMass = centerOfMass.localPosition;
+
+            foreach (AxleInfo axleInfo in axleInfos)
+            {
+                axleInfo.originalForwardFriction = axleInfo.leftWheel.forwardFriction;
+                axleInfo.originalSidewaysFriction = axleInfo.leftWheel.sidewaysFriction;
+            }
+        }
+
+        #endregion
     }
 }

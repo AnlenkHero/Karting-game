@@ -9,19 +9,15 @@ namespace Kart.Surface
     {
         [Header("References")] [SerializeField]
         private KartController kartController;
-
         [SerializeField] private KartAudio kartAudio;
 
         [Header("Surface Settings")] [SerializeField]
         private SurfaceType defaultSurface;
-
         private List<SurfaceArea> overlappingSurfaceAreas = new();
         private SurfaceType currentSurface;
 
         private Coroutine transitionRoutine;
-
         private bool isContinuousEffect;
-
         public SurfaceType CurrentSurface => currentSurface ?? defaultSurface;
 
         private void Start()

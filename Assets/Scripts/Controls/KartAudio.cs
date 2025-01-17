@@ -75,7 +75,6 @@ namespace Kart.Controls
                 Mathf.Abs(speed / maxSpeed + (Mathf.Sin(Time.time) * 0.1f)));
         }
 
-
         private void HandleDriftAudio(float speed)
         {
             var b = kartController.IsDrifting() && kartController.IsGrounded()
@@ -83,7 +82,9 @@ namespace Kart.Controls
                 : 0.0f;
             drift.volume = Mathf.Lerp(drift.volume, b, Time.deltaTime * 20f);
         }
-        
+
+        #region Surface CrossFade
+
         public void PlaySurfaceAudioCrossFade(SurfaceType surface)
         {
             if (surface.audioClip == null)
@@ -91,7 +92,7 @@ namespace Kart.Controls
                 FadeOutAndStopActiveSource();
                 return;
             }
-            
+
             if (activeSurfaceSource.clip == surface.audioClip && activeSurfaceSource.isPlaying)
                 return;
 
@@ -100,15 +101,15 @@ namespace Kart.Controls
                 StopCoroutine(crossFadeRoutine);
                 crossFadeRoutine = null;
             }
-            
+
             inactiveSurfaceSource.clip = surface.audioClip;
             inactiveSurfaceSource.loop = surface.isContinuousEffect;
-            inactiveSurfaceSource.volume = 0f; 
+            inactiveSurfaceSource.volume = 0f;
             inactiveSurfaceSource.Play();
-            
+
             crossFadeRoutine = StartCoroutine(CrossFadeRoutine(surface.isContinuousEffect));
         }
-        
+
         private void FadeOutAndStopActiveSource()
         {
             if (crossFadeRoutine != null)
@@ -138,7 +139,7 @@ namespace Kart.Controls
             activeSurfaceSource.clip = null;
             crossFadeRoutine = null;
         }
-        
+
         private IEnumerator CrossFadeRoutine(bool isContinuous)
         {
             float startVolumeActive = activeSurfaceSource.volume;
@@ -150,19 +151,19 @@ namespace Kart.Controls
             {
                 t += Time.deltaTime;
                 float factor = Mathf.Clamp01(t / crossFadeDuration);
-                
+
                 activeSurfaceSource.volume = Mathf.Lerp(startVolumeActive, 0f, factor);
                 inactiveSurfaceSource.volume = Mathf.Lerp(startVolumeInactive, endVolumeInactive, factor);
 
                 yield return null;
             }
-            
+
             activeSurfaceSource.volume = 0f;
             activeSurfaceSource.Stop();
             activeSurfaceSource.clip = null;
 
             inactiveSurfaceSource.volume = endVolumeInactive;
-            
+
             (activeSurfaceSource, inactiveSurfaceSource) = (inactiveSurfaceSource, activeSurfaceSource);
 
             crossFadeRoutine = null;
@@ -177,6 +178,8 @@ namespace Kart.Controls
             surfaceA.volume = 0f;
             surfaceB.volume = 0f;
         }
+
+        #endregion
 
         public void PlayHorn()
         {
