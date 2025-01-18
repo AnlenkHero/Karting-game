@@ -121,7 +121,7 @@ namespace Kart.Controls
         }
 
         #endregion
-        
+
         #region CoreMethods
 
         private void Move(Vector2 inputVector)
@@ -452,11 +452,6 @@ namespace Kart.Controls
 
         #region Helpers
 
-        public void SetInput(IDrive driveInput)
-        {
-            input = driveInput;
-        }
-
         private float AdjustInput(float inputValue)
         {
             return inputValue switch
@@ -492,6 +487,11 @@ namespace Kart.Controls
         #endregion
 
         #region Initialization
+
+        public void SetInput(IDrive driveInput)
+        {
+            input = driveInput;
+        }
 
         private void InitializeComponents()
         {

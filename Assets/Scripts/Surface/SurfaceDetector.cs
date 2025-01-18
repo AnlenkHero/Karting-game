@@ -39,7 +39,7 @@ namespace Kart.Surface
             if (!other.TryGetComponent<SurfaceArea>(out var surfaceArea) ||
                 overlappingSurfaceAreas.Contains(surfaceArea)) return;
 
-            Debug.Log($"Entered {surfaceArea.surface.name} surface");
+            Debug.Log($"Entered {surfaceArea.surface.surfaceName} surface");
             overlappingSurfaceAreas.Add(surfaceArea);
             UpdateCurrentSurface();
         }
@@ -49,7 +49,7 @@ namespace Kart.Surface
             if (!other.TryGetComponent<SurfaceArea>(out var surfaceArea) ||
                 !overlappingSurfaceAreas.Contains(surfaceArea)) return;
 
-            Debug.Log($"Exited {surfaceArea.surface.name} surface");
+            Debug.Log($"Exited {surfaceArea.surface.surfaceName} surface");
             overlappingSurfaceAreas.Remove(surfaceArea);
             UpdateCurrentSurface();
         }
