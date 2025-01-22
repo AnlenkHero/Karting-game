@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Kart.Controls;
 
@@ -7,17 +8,19 @@ namespace Kart.Surface
 {
     public class SurfaceDetector : MonoBehaviour
     {
-        [Header("References")] [SerializeField]
-        private KartController kartController;
+        [Header("References")] 
+        [SerializeField] private KartController kartController;
         [SerializeField] private KartAudio kartAudio;
 
-        [Header("Surface Settings")] [SerializeField]
-        private SurfaceType defaultSurface;
+        [Header("Surface Settings")]
+        [SerializeField] private SurfaceType defaultSurface;
+
         private List<SurfaceArea> overlappingSurfaceAreas = new();
         private SurfaceType currentSurface;
 
         private Coroutine transitionRoutine;
         private bool isContinuousEffect;
+
         public SurfaceType CurrentSurface => currentSurface ?? defaultSurface;
 
         private void Start()
@@ -37,7 +40,8 @@ namespace Kart.Surface
         private void OnTriggerEnter(Collider other)
         {
             if (!other.TryGetComponent<SurfaceArea>(out var surfaceArea) ||
-                overlappingSurfaceAreas.Contains(surfaceArea)) return;
+                overlappingSurfaceAreas.Contains(surfaceArea))
+                return;
 
             Debug.Log($"Entered {surfaceArea.surface.surfaceName} surface");
             overlappingSurfaceAreas.Add(surfaceArea);
@@ -47,7 +51,8 @@ namespace Kart.Surface
         private void OnTriggerExit(Collider other)
         {
             if (!other.TryGetComponent<SurfaceArea>(out var surfaceArea) ||
-                !overlappingSurfaceAreas.Contains(surfaceArea)) return;
+                !overlappingSurfaceAreas.Contains(surfaceArea))
+                return;
 
             Debug.Log($"Exited {surfaceArea.surface.surfaceName} surface");
             overlappingSurfaceAreas.Remove(surfaceArea);
@@ -56,8 +61,12 @@ namespace Kart.Surface
 
         private void UpdateCurrentSurface()
         {
-            var newSurface = (overlappingSurfaceAreas.Count > 0)
-                ? overlappingSurfaceAreas[^1].surface
+            var newSurfaceArea = overlappingSurfaceAreas
+                .OrderBy(sa => sa.priority) 
+                .LastOrDefault();
+
+            var newSurface = (newSurfaceArea != null)
+                ? newSurfaceArea.surface
                 : defaultSurface;
 
             if (newSurface == currentSurface) return;
@@ -102,13 +111,13 @@ namespace Kart.Surface
                 kartController.frictionMultiplier = Mathf.Lerp(kartController.frictionMultiplier, newSurface.frictionMultiplier, t);
                 kartController.steeringSensitivityMultiplier = Mathf.Lerp(kartController.steeringSensitivityMultiplier, newSurface.steeringSensitivityMultiplier, t);
                 kartController.brakeMultiplier = Mathf.Lerp(kartController.brakeMultiplier, newSurface.brakeMultiplier, t);
+
                 kartController.SetSurfaceFriction(currentForwardFriction, currentSidewaysFriction);
 
                 yield return null;
             }
 
             ApplySurfaceModifiersInstant(newSurface);
-
             transitionRoutine = null;
         }
 
