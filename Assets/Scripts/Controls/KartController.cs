@@ -46,7 +46,6 @@ namespace Kart.Controls
         [SerializeField] private float driftFriction = 0.5f;
         [SerializeField] private float slipThreshold = 0.9f;
         [SerializeField] private float brakeTorque = 10000f;
-        public float brakeMultiplier = 1.0f;
 
         [Header("Physics")] [SerializeField] private Transform centerOfMass;
         [SerializeField] private float downForce = 100f;
@@ -61,7 +60,8 @@ namespace Kart.Controls
         [Header("Surface Modifiers")] public float frictionMultiplier = 1.0f;
         public float slowdownMultiplier = 1.0f;
         public float steeringSensitivityMultiplier = 1.0f;
-
+        public float brakeMultiplier = 1.0f;
+        
         [Header("Input")] [SerializeField] private InputReader playerInput;
 
         [Header("References")] [SerializeField]
@@ -169,6 +169,13 @@ namespace Kart.Controls
         {
             if (input.IsBraking) return;
 
+            if (targetSpeed < 0 && SignedVelocityMagnitude > 0)
+            {
+                float decelerationForce = brakeTorque * brakeMultiplier;
+                rb.AddForce(-transform.forward * decelerationForce, ForceMode.Acceleration);
+                return;
+            }
+            
             if (rb.linearVelocity.magnitude < Mathf.Abs(targetSpeed))
             {
                 rb.AddForce(transform.forward * motor, ForceMode.Acceleration);
@@ -179,8 +186,8 @@ namespace Kart.Controls
         {
             float targetSpeed = verticalInput switch
             {
-                < 0 when SignedVelocityMagnitude > 0 => verticalInput * maxSpeed * brakeMultiplier * speedRatio / 2,
-                < 0 => verticalInput * maxSpeed * 1 / speedRatio,
+                < 0 when SignedVelocityMagnitude > 0 => verticalInput * maxSpeed * speedRatio / 2,
+                < 0 => verticalInput * maxSpeed / speedRatio,
                 _ => verticalInput * maxSpeed * slowdownMultiplier
             };
             return targetSpeed;
