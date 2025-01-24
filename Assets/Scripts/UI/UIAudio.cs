@@ -15,11 +15,6 @@ namespace Kart.UI
             button.onClick.AddListener(() => AudioManager.Instance.PlayUI("clickUI"));
         }
 
-        /*public void OnPointerClick(PointerEventData eventData)
-        {
-            AudioManager.Instance.PlayUI("clickUI");
-        }*/
-
         public void OnPointerEnter(PointerEventData eventData)
         {
             if (!button || button.interactable)
