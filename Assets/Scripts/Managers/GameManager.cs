@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Kart.Controls;
 using Kart.ModeStrategy;
 using UnityEngine;
@@ -97,7 +98,8 @@ namespace Kart
         {
             var standings = Strategy.GetStandings();
             Debug.Log("Current Standings:");
-            text.text = "";
+            text.text = string.Empty;
+            
             foreach (var entry in standings)
             {
                 Debug.Log($"{entry.rank}. {entry.player.name} - {entry.additionalInfo["LastLapTime"]}");

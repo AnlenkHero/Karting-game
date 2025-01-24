@@ -28,23 +28,14 @@ namespace Kart.ModeStrategy
             requiredLaps = gameType.totalLapsRequired;
 
             var allPlayers = GameManager.Instance.Players;
-            finishedCount = 0;
-            halfFinishTriggered = false;
-
+            
             halfPlayersCount = Mathf.CeilToInt(allPlayers.Count * 0.5f);
 
             foreach (var kart in allPlayers)
             {
                 playerLapData[kart] = new PlayerLapData
                 {
-                    currentLap = 0,
-                    currentCheckpoint = 0,
-                    hasFinished = false,
-                    finishTime = 0f,
-
                     lapStartTime = GameManager.Instance.ElapsedTime,
-                    lastLapTime = 0f,
-
                     lastCheckpointCrossTime = GameManager.Instance.ElapsedTime
                 };
             }
