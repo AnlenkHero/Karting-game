@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c61d18ef5ae4cdd82e1470042e53dde, type: 3}
+  m_Name: Sand 1
+  m_EditorClassIdentifier: 
+  surfaceName: Sand
+  forwardFriction: 1
+  sidewaysFriction: 1
+  frictionMultiplier: 5
+  brakeMultiplier: 50
+  slowdownMultiplier: 2
+  steeringSensitivityMultiplier: 1
+  audioClip: {fileID: 8300000, guid: 0d8c9061e01209348a2140348f2162a6, type: 3}
+  smoothTime: 0.01
+  isContinuousEffect: 0
+  customBehavior: {fileID: 11400000, guid: bb4f6e91117369c4f8ca4f27dbb44776, type: 2}

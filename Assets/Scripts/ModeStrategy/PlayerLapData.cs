@@ -4,9 +4,11 @@
     {
         public int currentLap;
         public int currentCheckpoint;
-        public float lapStartTime;
-        public float lastLapTime;
         public bool hasFinished;
         public float finishTime;
+        public float lastCheckpointCrossTime;
+        public float lapStartTime;
+        public float lastLapTime;
     }
+
 }

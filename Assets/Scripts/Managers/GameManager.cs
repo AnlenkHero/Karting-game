@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Kart.Controls;
 using Kart.ModeStrategy;
 using UnityEngine;
 using Kart.TrackPackage;
+using TMPro;
 
 namespace Kart
 {
@@ -17,6 +19,8 @@ namespace Kart
 
         public IGameModeStrategy Strategy { get; private set; }
         public GameState CurrentGameState { get; private set; }
+
+        public TextMeshProUGUI text;
 
         private void Awake()
         {
@@ -94,10 +98,12 @@ namespace Kart
         {
             var standings = Strategy.GetStandings();
             Debug.Log("Current Standings:");
+            text.text = string.Empty;
             
             foreach (var entry in standings)
             {
                 Debug.Log($"{entry.rank}. {entry.player.name} - {entry.additionalInfo["LastLapTime"]}");
+                text.text += $"{entry.rank}. {entry.player.name} - {entry.additionalInfo["LastLapTime"]}\n";
             }
         }
     }

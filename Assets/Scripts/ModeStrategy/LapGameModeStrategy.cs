@@ -8,15 +8,15 @@ namespace Kart.ModeStrategy
 {
     public class LapsGameModeStrategy : ICheckpointGameModeStrategy
     {
-        private GameType gameType;
+        private readonly GameType gameType;
         private int requiredLaps;
 
-        private Dictionary<KartController, PlayerLapData> playerLapData = new();
+        private readonly Dictionary<KartController, PlayerLapData> playerLapData = new();
         private int finishedCount;
         private bool halfFinishTriggered;
         private float halfFinishDeadline;
         private int halfPlayersCount;
-        private float halfPlayersFinishedTimer = 60f;
+        private readonly float halfPlayersFinishedTimer = 60f;
 
         public LapsGameModeStrategy(GameType gameType)
         {
@@ -28,9 +28,7 @@ namespace Kart.ModeStrategy
             requiredLaps = gameType.totalLapsRequired;
 
             var allPlayers = GameManager.Instance.Players;
-            finishedCount = 0;
-            halfFinishTriggered = false;
-
+            
             halfPlayersCount = Mathf.CeilToInt(allPlayers.Count * 0.5f);
 
             foreach (var kart in allPlayers)
@@ -38,6 +36,7 @@ namespace Kart.ModeStrategy
                 playerLapData[kart] = new PlayerLapData
                 {
                     lapStartTime = GameManager.Instance.ElapsedTime,
+                    lastCheckpointCrossTime = GameManager.Instance.ElapsedTime
                 };
             }
         }
@@ -45,6 +44,8 @@ namespace Kart.ModeStrategy
         public bool CheckForWinCondition(out KartController winner)
         {
             winner = null;
+            // This particular mode does not identify a single winner mid-race.
+            // We rely on OnPlayerCrossFinishLine to finalize finishing logic.
             return false;
         }
 
@@ -53,14 +54,12 @@ namespace Kart.ModeStrategy
             if (halfFinishTriggered && GameManager.Instance.ElapsedTime >= halfFinishDeadline)
                 return true;
 
-            if (finishedCount >= GameManager.Instance.Players.Count)
-                return true;
-
-            return false;
+            return finishedCount >= GameManager.Instance.Players.Count;
         }
 
         public void UpdateModeLogic()
         {
+            // No continuous logic needed in this scenario
         }
 
         public void OnPlayerCrossCheckpoint(KartController kart, LapCheckpoint checkpoint)
@@ -72,8 +71,7 @@ namespace Kart.ModeStrategy
 
             if (checkpoint.index == expectedNextCheckpoint)
             {
-                data.currentCheckpoint = checkpoint.index;
-                Debug.Log($"{kart.name} crossed checkpoint {checkpoint.index}.");
+                ProcessCheckpointCorrectCross(kart, checkpoint, data);
             }
             else
             {
@@ -84,43 +82,24 @@ namespace Kart.ModeStrategy
 
         public void OnPlayerCrossFinishLine(KartController kart, FinishLine finishLine)
         {
-            if (!playerLapData.TryGetValue(kart, out var data) || data.hasFinished) return;
+            if (!playerLapData.TryGetValue(kart, out var data) || data.hasFinished)
+                return;
 
             int totalCheckpoints = GameManager.Instance.currentTrack.checkpoints.Length;
-        
-            if (data.currentCheckpoint == (totalCheckpoints - 1))
+
+            if (IsValidFinishLineCross(data, totalCheckpoints))
             {
-                data.currentLap++;
-                data.currentCheckpoint = -1;
-                data.lastLapTime = GameManager.Instance.ElapsedTime - data.lapStartTime;
-                data.lapStartTime = GameManager.Instance.ElapsedTime;
+                CompleteLap(kart, data);
 
-                Debug.Log($"{kart.name} completed lap {data.currentLap}/{requiredLaps} " +
-                          $"in {data.lastLapTime:F2} seconds.");
+                if (data.currentLap < requiredLaps || data.hasFinished) return;
 
-                if (data.currentLap >= requiredLaps && !data.hasFinished)
-                {
-                    data.hasFinished = true;
-                    data.finishTime = GameManager.Instance.ElapsedTime;
-                    finishedCount++;
+                MarkFinishedPlayer(kart, data);
+                CheckHalfPlayersFinished();
 
-                    Debug.Log(
-                        $"{kart.name} FINISHED! Finish time: {data.finishTime:F2}s (Finished Count = {finishedCount})");
+                if (finishedCount < GameManager.Instance.Players.Count) return;
 
-                    if (!halfFinishTriggered && finishedCount >= halfPlayersCount)
-                    {
-                        halfFinishTriggered = true;
-                        halfFinishDeadline = GameManager.Instance.ElapsedTime + halfPlayersFinishedTimer;
-                        Debug.Log(
-                            $"Half of the players finished ({finishedCount}/{GameManager.Instance.Players.Count}). Starting {halfPlayersFinishedTimer}s countdown...");
-                    }
-
-                    if (finishedCount >= GameManager.Instance.Players.Count)
-                    {
-                        var standings = GetStandings();
-                        GameManager.Instance.EndGameWithStandings(standings);
-                    }
-                }
+                var standings = GetStandings();
+                GameManager.Instance.EndGameWithStandings(standings);
             }
             else
             {
@@ -128,55 +107,133 @@ namespace Kart.ModeStrategy
             }
         }
 
+        private void ProcessCheckpointCorrectCross(KartController kart, LapCheckpoint checkpoint, PlayerLapData data)
+        {
+            data.currentCheckpoint = checkpoint.index;
+            data.lastCheckpointCrossTime = GameManager.Instance.ElapsedTime;
+
+            Debug.Log($"{kart.name} crossed checkpoint {checkpoint.index} at {data.lastCheckpointCrossTime:F2}s.");
+        }
+
+        private bool IsValidFinishLineCross(PlayerLapData data, int totalCheckpoints)
+        {
+            return data.currentCheckpoint == (totalCheckpoints - 1);
+        }
+
+        private void CheckHalfPlayersFinished()
+        {
+            if (halfFinishTriggered || finishedCount < halfPlayersCount) return;
+
+            halfFinishTriggered = true;
+            halfFinishDeadline = GameManager.Instance.ElapsedTime + halfPlayersFinishedTimer;
+            Debug.Log(
+                $"Half of the players finished ({finishedCount}/{GameManager.Instance.Players.Count}). " +
+                $"Starting {halfPlayersFinishedTimer}s countdown...");
+        }
+
+        private void MarkFinishedPlayer(KartController kart, PlayerLapData data)
+        {
+            data.hasFinished = true;
+            data.finishTime = GameManager.Instance.ElapsedTime;
+            finishedCount++;
+
+            Debug.Log(
+                $"{kart.name} FINISHED! Finish time: {data.finishTime:F2}s (Finished Count = {finishedCount})");
+        }
+
+        private void CompleteLap(KartController kart, PlayerLapData data)
+        {
+            data.currentLap++;
+            data.currentCheckpoint = -1;
+
+            data.lastLapTime = GameManager.Instance.ElapsedTime - data.lapStartTime;
+            data.lapStartTime = GameManager.Instance.ElapsedTime;
+
+            data.lastCheckpointCrossTime = GameManager.Instance.ElapsedTime;
+
+            Debug.Log($"{kart.name} completed lap {data.currentLap}/{requiredLaps} " +
+                      $"in {data.lastLapTime:F2} seconds.");
+        }
+
         public List<StandingsEntry> GetStandings()
         {
-            var sortedResults = playerLapData.ToList();
-        
-            sortedResults.Sort((a, b) =>
-            {
-                var dataA = a.Value;
-                var dataB = b.Value;
+            var playerResults = playerLapData.ToList();
+            playerResults.Sort(ComparePlayerResults);
 
-                if (dataA.hasFinished && dataB.hasFinished)
+            return playerResults
+                .Select((kvp, i) => BuildStandingsEntry(kvp, i + 1))
+                .ToList();
+        }
+
+        /// <summary>
+        /// Comparison for sorting players in the standings.
+        /// 1) Has finished (and finish time)
+        /// 2) Laps completed
+        /// 3) Checkpoints reached
+        /// 4) lastCheckpointCrossTime (tie-break for same lap/checkpoint)
+        /// </summary>
+        private int ComparePlayerResults(KeyValuePair<KartController, PlayerLapData> a,
+            KeyValuePair<KartController, PlayerLapData> b)
+        {
+            var dataA = a.Value;
+            var dataB = b.Value;
+
+            switch (dataA.hasFinished)
+            {
+                case true when dataB.hasFinished:
+                    // Both finished => compare finish times
                     return dataA.finishTime.CompareTo(dataB.finishTime);
+                case true when !dataB.hasFinished:
+                    return -1; // A is finished, B is not
+                case false when dataB.hasFinished:
+                    return 1; // B is finished, A is not
+            }
 
-                if (dataA.hasFinished && !dataB.hasFinished)
-                    return -1;
+            //Compare laps
+            int lapCompare = dataB.currentLap.CompareTo(dataA.currentLap);
 
-                if (!dataA.hasFinished && dataB.hasFinished)
-                    return 1;
-
-                int lapCompare = dataB.currentLap.CompareTo(dataA.currentLap);
-                if (lapCompare != 0) return lapCompare;
-
-                return dataB.currentCheckpoint.CompareTo(dataA.currentCheckpoint);
-            });
-
-            return sortedResults.Select((kvp, index) =>
+            if (lapCompare != 0)
             {
-                var player = kvp.Key;
-                var data = kvp.Value;
+                return lapCompare;
+            }
 
-                var entry = new StandingsEntry
+            //Compare checkpoints
+            int checkpointCompare = dataB.currentCheckpoint.CompareTo(dataA.currentCheckpoint);
+
+            return checkpointCompare != 0
+                ? checkpointCompare
+                :
+                // Tie-break => compare lastCheckpointCrossTime (lower = crossed earlier = leading)
+                dataA.lastCheckpointCrossTime.CompareTo(dataB.lastCheckpointCrossTime);
+        }
+
+        /// <summary>
+        /// Builds a single StandingsEntry for sorted player data.
+        /// </summary>
+        private StandingsEntry BuildStandingsEntry(KeyValuePair<KartController, PlayerLapData> kvp, int rank)
+        {
+            var player = kvp.Key;
+            var data = kvp.Value;
+
+            var entry = new StandingsEntry
+            {
+                player = player,
+                rank = rank,
+                additionalInfo = new Dictionary<string, string>
                 {
-                    player = player,
-                    rank = index + 1,
-                    additionalInfo = new Dictionary<string, string>
+                    { "Status", data.hasFinished ? "Finished" : "DNF" },
+                    { "FinishTime", data.hasFinished ? $"{data.finishTime:F2}s" : "-" },
+                    { "LapsCompleted", $"{data.currentLap}/{requiredLaps}" },
+                    { "LastCheckpoint", $"Checkpoint {data.currentCheckpoint}" },
                     {
-                        { "Status", data.hasFinished ? "Finished" : "DNF" },
-                        { "FinishTime", data.hasFinished ? $"{data.finishTime:F2}s" : "-" },
-                        { "LapsCompleted", $"{data.currentLap}/{requiredLaps}" },
-                        { "LastCheckpoint", $"Checkpoint {data.currentCheckpoint}" },
-                        {
-                            "LastLapTime", data.currentLap > 0
-                                ? $"{data.lastLapTime:F2}s"
-                                : "N/A"
-                        }
+                        "LastLapTime", data.currentLap > 0
+                            ? $"{data.lastLapTime:F2}s"
+                            : "N/A"
                     }
-                };
+                }
+            };
 
-                return entry;
-            }).ToList();
+            return entry;
         }
     }
 }
