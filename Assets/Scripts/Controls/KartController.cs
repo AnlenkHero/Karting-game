@@ -1,7 +1,7 @@
 using System.Linq;
 using TMPro;
 using Unity.Cinemachine;
-using Unity.Netcode;
+
 using UnityEngine;
 
 namespace Kart.Controls
@@ -17,7 +17,7 @@ namespace Kart.Controls
         public WheelFrictionCurve originalSidewaysFriction;
     }
 
-    public class KartController : NetworkBehaviour
+    public class KartController : MonoBehaviour
     {
         [Header("Axle Information")] [SerializeField]
         private AxleInfo[] axleInfos;
@@ -99,25 +99,12 @@ namespace Kart.Controls
         private void Update()
         {
             playerText.SetText(
-                $"Owner: {IsOwner} NetworkObjectId: {NetworkObjectId} Velocity: {kartVelocity.magnitude:F1}");
+                $"Owner: PHOTON AWAITING NetworkObjectId: PHOTON AWAITING Velocity: {kartVelocity.magnitude:F1}");
         }
 
         private void FixedUpdate()
         {
             Move(input.Move);
-        }
-
-        public override void OnNetworkSpawn()
-        {
-            if (!IsOwner)
-            {
-                playerAudioListener.enabled = false;
-                playerCamera.Priority = 0;
-                return;
-            }
-
-            playerCamera.Priority = 100;
-            playerAudioListener.enabled = true;
         }
 
         #endregion
