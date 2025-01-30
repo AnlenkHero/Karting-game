@@ -1,9 +1,9 @@
 {
     "Version": 1,
     "TypeId": "NetworkProjectConfig",
-    "PeerMode": 0,
+    "PeerMode": 1,
     "LagCompensation": {
-        "Enabled": false,
+        "Enabled": true,
         "HitboxBufferLengthInMs": 200,
         "HitboxDefaultCapacity": 512,
         "CachedStaticCollidersSize": 64
@@ -17,7 +17,7 @@
         "InputDataWordCount": 0,
         "ReplicationFeatures": 1,
         "InputTransferMode": 0,
-        "SimulationUpdateTimeMode": 0,
+        "SimulationUpdateTimeMode": 1,
         "PlayerCount": 10,
         "TickRateSelection": {
             "Client": 64,
