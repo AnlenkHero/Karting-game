@@ -1,4 +1,3 @@
-
 using Fusion;
 using Kart.Controls;
 using Unity.Cinemachine;
@@ -6,7 +5,8 @@ using UnityEngine;
 
 public class KartCameraController : MonoBehaviour
 {
-[SerializeField] private CinemachineCamera cinemachineCamera;
+    [SerializeField] private CinemachineCamera cinemachineCamera;
+    [SerializeField] private Camera playerCamera;
     [SerializeField] private float followSpeed = 5f;
     [SerializeField] private Vector3 positionOffset = new Vector3(0, 5f, -10f);
     [SerializeField] private float rotationDamping = 0.2f;
@@ -17,15 +17,14 @@ public class KartCameraController : MonoBehaviour
     private Rigidbody kartRigidbody;
 
 
-
     public void SetupCamera()
     {
         kartTransform = GetComponent<Transform>();
         kartRigidbody = GetComponent<Rigidbody>();
 
-
-            cinemachineCamera.gameObject.SetActive(true);
-        
+        playerCamera.gameObject.SetActive(true);
+        cinemachineCamera.gameObject.SetActive(true);
+        Camera.main.gameObject.SetActive(false);
 
         ConfigureCinemachine();
     }
@@ -33,8 +32,6 @@ public class KartCameraController : MonoBehaviour
     private void ConfigureCinemachine()
     {
         // Find the new Follow and Aim components
-
-        
     }
 
     private void LateUpdate()
