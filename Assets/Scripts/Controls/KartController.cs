@@ -2,7 +2,6 @@ using System.Linq;
 using Fusion;
 using TMPro;
 using Unity.Cinemachine;
-
 using UnityEngine;
 
 namespace Kart.Controls
@@ -62,7 +61,7 @@ namespace Kart.Controls
         public float slowdownMultiplier = 1.0f;
         public float steeringSensitivityMultiplier = 1.0f;
         public float brakeMultiplier = 1.0f;
-        
+
         [Header("Input")] [SerializeField] private InputReader playerInput;
 
         [Header("References")] [SerializeField]
@@ -93,13 +92,17 @@ namespace Kart.Controls
 
         #region Unity Lifecycle
 
-public override void Spawned()
+        public override void Spawned()
         {
+            base.Spawned();
+            
+            GameManager.Players.Add(this);
             if (HasInputAuthority)
             {
                 cameraController.SetupCamera();
             }
         }
+
         private void Awake()
         {
             InitializeComponents();
@@ -113,7 +116,7 @@ public override void Spawned()
 
         public override void FixedUpdateNetwork()
         {
-            if(GetInput(out KartInput.NetworkInputData networkInputData))
+            if (GetInput(out KartInput.NetworkInputData networkInputData))
             {
                 input = networkInputData;
                 Move(input.Move);
@@ -188,7 +191,7 @@ public override void Spawned()
                 rb.AddForce(-transform.forward * decelerationForce, ForceMode.Acceleration);
                 return;
             }
-            
+
             if (rb.linearVelocity.magnitude < Mathf.Abs(targetSpeed))
             {
                 rb.AddForce(transform.forward * motor, ForceMode.Acceleration);
@@ -497,17 +500,17 @@ public override void Spawned()
 
         public void SetInput(IDrive driveInput)
         {
-       //     input = driveInput;
+            //     input = driveInput;
         }
 
         private void InitializeComponents()
         {
             if (playerInput is IDrive driveInput)
             {
-           //     input = driveInput;
+                //     input = driveInput;
             }
 
-         //   input.Enable();
+            //   input.Enable();
 
             rb.centerOfMass = centerOfMass.localPosition;
             originalCenterOfMass = centerOfMass.localPosition;

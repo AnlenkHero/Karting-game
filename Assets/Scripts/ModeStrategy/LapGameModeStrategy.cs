@@ -27,7 +27,7 @@ namespace Kart.ModeStrategy
         {
             requiredLaps = gameType.totalLapsRequired;
 
-            var allPlayers = GameManager.Instance.Players;
+            var allPlayers = GameManager.Players;
             
             halfPlayersCount = Mathf.CeilToInt(allPlayers.Count * 0.5f);
 
@@ -54,7 +54,7 @@ namespace Kart.ModeStrategy
             if (halfFinishTriggered && GameManager.Instance.ElapsedTime >= halfFinishDeadline)
                 return true;
 
-            return finishedCount >= GameManager.Instance.Players.Count;
+            return finishedCount >= GameManager.Players.Count;
         }
 
         public void UpdateModeLogic()
@@ -96,10 +96,9 @@ namespace Kart.ModeStrategy
                 MarkFinishedPlayer(kart, data);
                 CheckHalfPlayersFinished();
 
-                if (finishedCount < GameManager.Instance.Players.Count) return;
-
-                var standings = GetStandings();
-                GameManager.Instance.EndGameWithStandings(standings);
+                if (finishedCount < GameManager.Players.Count) return;
+                
+                GameManager.Instance.EndGameWithStandings();
             }
             else
             {
@@ -127,7 +126,7 @@ namespace Kart.ModeStrategy
             halfFinishTriggered = true;
             halfFinishDeadline = GameManager.Instance.ElapsedTime + halfPlayersFinishedTimer;
             Debug.Log(
-                $"Half of the players finished ({finishedCount}/{GameManager.Instance.Players.Count}). " +
+                $"Half of the players finished ({finishedCount}/{GameManager.Players.Count}). " +
                 $"Starting {halfPlayersFinishedTimer}s countdown...");
         }
 

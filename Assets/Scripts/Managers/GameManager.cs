@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using Fusion;
 using Kart.Controls;
 using Kart.ModeStrategy;
 using UnityEngine;
 using Kart.TrackPackage;
 using TMPro;
+using UnityEngine.Serialization;
 
 namespace Kart
 {
-    public class GameManager : MonoBehaviour
+    public class GameManager : NetworkBehaviour
     {
         public static GameManager Instance { get; private set; }
 
         public GameType currentGameType;
         public Track currentTrack;
-        public List<KartController> Players = new();
+        public static readonly List<KartController> Players = new();
         public float ElapsedTime { get; private set; }
 
         public IGameModeStrategy Strategy { get; private set; }
@@ -31,7 +33,7 @@ namespace Kart
             }
 
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+           // DontDestroyOnLoad(gameObject);
         }
 
         private void Start()
@@ -46,14 +48,22 @@ namespace Kart
             {
                 Debug.LogWarning("No Track assigned to the GameManager.");
             }
+        }
 
+        [Rpc]
+        public void RPC_StartGame()
+        {
             Strategy = IGameModeStrategy.GetGameMode(currentGameType);
             Strategy.InitializeMode();
             CurrentGameState = GameState.Running;
         }
-
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                RPC_StartGame();
+            }
+
             if (CurrentGameState is GameState.Finished or GameState.PreGame)
             {
                 return;
@@ -65,11 +75,9 @@ namespace Kart
 
             ShowCurrentStandings();
 
-            if (Strategy.IsGameOver())
-            {
-                var standings = Strategy.GetStandings();
-                EndGameWithStandings(standings);
-            }
+            if (!Strategy.IsGameOver()) return;
+
+            EndGameWithStandings();
         }
 
         public void EndGame(KartController winner)
@@ -82,13 +90,18 @@ namespace Kart
             Debug.Log("Game Ended with no winner.");
         }
 
-        public void EndGameWithStandings(List<StandingsEntry> standings)
+        public void EndGameWithStandings()
         {
+            var standings = Strategy.GetStandings();
             Debug.Log("Game Ended! Final Standings:");
-            
+            text.text = string.Empty;
+
             foreach (var entry in standings)
             {
-                Debug.Log($"{entry.rank}. {entry.player.name} - {entry.additionalInfo["Status"]}");
+                Debug.Log(
+                    $"{entry.rank}. {entry.player.name} - {entry.additionalInfo["Status"]} - {entry.additionalInfo["LastLapTime"]}");
+                text.text +=
+                    $"{entry.rank}. {entry.player.name} - {entry.additionalInfo["Status"]} - {entry.additionalInfo["LastLapTime"]}\n";
             }
 
             CurrentGameState = GameState.Finished;
@@ -99,7 +112,7 @@ namespace Kart
             var standings = Strategy.GetStandings();
             Debug.Log("Current Standings:");
             text.text = string.Empty;
-            
+
             foreach (var entry in standings)
             {
                 Debug.Log($"{entry.rank}. {entry.player.name} - {entry.additionalInfo["LastLapTime"]}");
