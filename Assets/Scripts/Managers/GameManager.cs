@@ -17,8 +17,7 @@ namespace Kart
         public GameType currentGameType;
         public Track currentTrack;
         public static readonly List<KartController> Players = new();
-        public float ElapsedTime { get; private set; }
-
+        [Networked] public float ElapsedTime { get; private set; }
         public IGameModeStrategy Strategy { get; private set; }
         public GameState CurrentGameState { get; private set; }
 
@@ -34,6 +33,15 @@ namespace Kart
 
             Instance = this;
            // DontDestroyOnLoad(gameObject);
+        }
+
+        public override void FixedUpdateNetwork()
+        {
+            base.FixedUpdateNetwork();
+            if (Runner.IsServer)
+            {
+                ElapsedTime += Runner.DeltaTime;
+            }
         }
 
         private void Start()
@@ -92,32 +100,29 @@ namespace Kart
 
         public void EndGameWithStandings()
         {
-            var standings = Strategy.GetStandings();
-            Debug.Log("Game Ended! Final Standings:");
-            text.text = string.Empty;
-
-            foreach (var entry in standings)
-            {
-                Debug.Log(
-                    $"{entry.rank}. {entry.player.name} - {entry.additionalInfo["Status"]} - {entry.additionalInfo["LastLapTime"]}");
-                text.text +=
-                    $"{entry.rank}. {entry.player.name} - {entry.additionalInfo["Status"]} - {entry.additionalInfo["LastLapTime"]}\n";
-            }
-
+            ShowCurrentStandings();
             CurrentGameState = GameState.Finished;
         }
 
-        public void ShowCurrentStandings()
+        private void ShowCurrentStandings()
         {
-            var standings = Strategy.GetStandings();
-            Debug.Log("Current Standings:");
-            text.text = string.Empty;
-
-            foreach (var entry in standings)
+            if (!Runner.IsServer) return;
+            
+            var standingsList = Strategy.GetStandings();
+            string standingEntry = "";
+            foreach (var entry in standingsList)
             {
-                Debug.Log($"{entry.rank}. {entry.player.name} - {entry.additionalInfo["LastLapTime"]}");
-                text.text += $"{entry.rank}. {entry.player.name} - {entry.additionalInfo["LastLapTime"]}\n";
+                standingEntry += $"{entry.rank}. {entry.player.name} - {entry.additionalInfo["LastLapTime"]}\n";
             }
+            Rpc_UpdateStandings(standingEntry);
         }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private void Rpc_UpdateStandings(string standingEntry)
+        {
+            text.text = standingEntry;
+            Debug.Log($"Rpc_UpdateStandings received:\n{standingEntry}");
+        }
+
     }
 }
