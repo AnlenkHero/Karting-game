@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Kart.Controls;
 using Kart.TrackPackage;
 using UnityEngine;
@@ -28,7 +29,7 @@ namespace Kart.ModeStrategy
             requiredLaps = gameType.totalLapsRequired;
 
             var allPlayers = GameManager.Players;
-            
+
             halfPlayersCount = Mathf.CeilToInt(allPlayers.Count * 0.5f);
 
             foreach (var kart in allPlayers)
@@ -97,7 +98,7 @@ namespace Kart.ModeStrategy
                 CheckHalfPlayersFinished();
 
                 if (finishedCount < GameManager.Players.Count) return;
-                
+
                 GameManager.Instance.EndGameWithStandings();
             }
             else
@@ -163,6 +164,24 @@ namespace Kart.ModeStrategy
                 .Select((kvp, i) => BuildStandingsEntry(kvp, i + 1))
                 .ToList();
         }
+
+        public string GetStandingsInfo()
+        {
+            var standingsList = GetStandings();
+            StringBuilder standingEntry = new StringBuilder();
+
+            foreach (var entry in standingsList)
+            {
+                string line = $"{entry.rank}. {entry.player.name} - {entry.additionalInfo["LastLapTime"]}";
+                if (entry.additionalInfo.TryGetValue("Status", out string status) && status == "Finished")
+                    line += $" - {status}";
+                
+                standingEntry.AppendLine(line);
+            }
+
+            return standingEntry.ToString();
+        }
+
 
         /// <summary>
         /// Comparison for sorting players in the standings.

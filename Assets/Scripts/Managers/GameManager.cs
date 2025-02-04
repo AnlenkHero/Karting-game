@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Fusion;
 using Kart.Controls;
 using Kart.ModeStrategy;
@@ -107,14 +108,7 @@ namespace Kart
         private void ShowCurrentStandings()
         {
             if (!Runner.IsServer) return;
-            
-            var standingsList = Strategy.GetStandings();
-            string standingEntry = "";
-            foreach (var entry in standingsList)
-            {
-                standingEntry += $"{entry.rank}. {entry.player.name} - {entry.additionalInfo["LastLapTime"]}\n";
-            }
-            Rpc_UpdateStandings(standingEntry);
+            Rpc_UpdateStandings(Strategy.GetStandingsInfo());
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

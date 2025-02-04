@@ -11,8 +11,8 @@ namespace Kart.ModeStrategy
         bool IsGameOver();
         void UpdateModeLogic();
         List<StandingsEntry> GetStandings();
-        
-        
+        public string GetStandingsInfo();
+
         static IGameModeStrategy GetGameMode(GameType gameType)
         {
             switch (gameType.modeType)
