@@ -23,7 +23,7 @@ namespace Kart
         public GameState CurrentGameState { get; private set; }
 
         public TextMeshProUGUI text;
-
+        private float time;
         private void Awake()
         {
             if (Instance)
@@ -39,7 +39,7 @@ namespace Kart
         public override void FixedUpdateNetwork()
         {
             base.FixedUpdateNetwork();
-            if (Runner.IsServer)
+            if (HasStateAuthority)
             {
                 ElapsedTime += Runner.DeltaTime;
             }
@@ -68,7 +68,7 @@ namespace Kart
         }
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.F))
+            if (Input.GetKeyDown(KeyCode.F) && HasStateAuthority)
             {
                 RPC_StartGame();
             }
@@ -78,8 +78,9 @@ namespace Kart
                 return;
             }
 
-            ElapsedTime += Time.deltaTime;
-
+            time += Time.deltaTime;
+            Debug.Log(time);
+            
             Strategy.UpdateModeLogic();
 
             ShowCurrentStandings();
@@ -107,7 +108,7 @@ namespace Kart
 
         private void ShowCurrentStandings()
         {
-            if (!Runner.IsServer) return;
+            if (!HasStateAuthority) return;
             Rpc_UpdateStandings(Strategy.GetStandingsInfo());
         }
 

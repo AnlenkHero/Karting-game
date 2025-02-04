@@ -110,7 +110,7 @@ namespace Kart.ModeStrategy
         private void ProcessCheckpointCorrectCross(KartController kart, LapCheckpoint checkpoint, PlayerLapData data)
         {
             data.currentCheckpoint = checkpoint.index;
-            data.lastCheckpointCrossTime = GameManager.Instance.ElapsedTime;
+            data.lastCheckpointCrossTime = GameManager.Instance.ElapsedTime - data.lapStartTime;
 
             Debug.Log($"{kart.name} crossed checkpoint {checkpoint.index} at {data.lastCheckpointCrossTime:F2}s.");
         }
