@@ -23,7 +23,6 @@ namespace Kart
         public GameState CurrentGameState { get; private set; }
 
         public TextMeshProUGUI text;
-        private float time;
         private void Awake()
         {
             if (Instance)
@@ -77,9 +76,6 @@ namespace Kart
             {
                 return;
             }
-
-            time += Time.deltaTime;
-            Debug.Log(time);
             
             Strategy.UpdateModeLogic();
 
