@@ -6,13 +6,13 @@ using Kart.Controls;
 using Kart.ModeStrategy;
 using UnityEngine;
 using Kart.TrackPackage;
-using TMPro;
-using UnityEngine.Serialization;
 
 namespace Kart
 {
     public class GameManager : NetworkBehaviour
     {
+        [SerializeField] private GameModeStrategyFactory strategyFactory;
+        
         public static GameManager Instance { get; private set; }
 
         public GameType currentGameType;
@@ -22,7 +22,7 @@ namespace Kart
         public IGameModeStrategy Strategy { get; private set; }
         public GameState CurrentGameState { get; private set; }
 
-        public TextMeshProUGUI text;
+        
         private void Awake()
         {
             if (Instance)
@@ -61,25 +61,21 @@ namespace Kart
         [Rpc]
         public void RPC_StartGame()
         {
-            Strategy = IGameModeStrategy.GetGameMode(currentGameType);
+            Strategy = strategyFactory.GetGameMode(currentGameType);
             Strategy.InitializeMode();
             CurrentGameState = GameState.Running;
         }
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.F) && HasStateAuthority)
-            {
                 RPC_StartGame();
-            }
 
             if (CurrentGameState is GameState.Finished or GameState.PreGame)
-            {
                 return;
-            }
             
             Strategy.UpdateModeLogic();
 
-            ShowCurrentStandings();
+            Strategy.OnStandingUpdate();
 
             if (!Strategy.IsGameOver()) return;
 
@@ -98,22 +94,8 @@ namespace Kart
 
         public void EndGameWithStandings()
         {
-            ShowCurrentStandings();
+            Strategy.OnRaceFinished();
             CurrentGameState = GameState.Finished;
         }
-
-        private void ShowCurrentStandings()
-        {
-            if (!HasStateAuthority) return;
-            Rpc_UpdateStandings(Strategy.GetStandingsInfo());
-        }
-
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        private void Rpc_UpdateStandings(string standingEntry)
-        {
-            text.text = standingEntry;
-            Debug.Log($"Rpc_UpdateStandings received:\n{standingEntry}");
-        }
-
     }
 }

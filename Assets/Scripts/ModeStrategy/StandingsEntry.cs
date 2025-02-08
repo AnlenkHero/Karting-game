@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using Fusion;
 using Kart.Controls;
 
 namespace Kart.ModeStrategy
 {
-    public class StandingsEntry
+    public class StandingsEntry : INetworkStruct //TODO remove dictionary and move to standing specific fields
     {
         public KartController player;
         public int rank;

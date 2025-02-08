@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
 namespace Kart.Fusion
 {
@@ -15,7 +13,7 @@ namespace Kart.Fusion
         public NetworkPrefabRef kartPrefab;
         public Button niggaButton;
         public Dictionary<PlayerRef, NetworkObject> _spawnedPlayers = new();
-     [SerializeField]   private NetworkRunner _runner;
+        [SerializeField] private NetworkRunner _runner;
 
         private void Awake()
         {
@@ -34,8 +32,8 @@ namespace Kart.Fusion
         {
             Debug.Log($"Player {player} Joined!");
             if (runner.IsServer)
-            {
-                var roomPlayer = runner.Spawn(PlayerPrefab, Vector3.zero, Quaternion.identity, player);
+            { 
+                runner.Spawn(PlayerPrefab, Vector3.zero, Quaternion.identity, player);
             }
         }
 

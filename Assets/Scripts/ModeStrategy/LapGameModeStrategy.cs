@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Kart.Controls;
 using Kart.TrackPackage;
+using Kart.UI;
 using UnityEngine;
 
 namespace Kart.ModeStrategy
@@ -13,15 +13,18 @@ namespace Kart.ModeStrategy
         private int requiredLaps;
 
         private readonly Dictionary<KartController, PlayerLapData> playerLapData = new();
+        
+        private LapsUiView lapsUiView;
         private int finishedCount;
         private bool halfFinishTriggered;
         private float halfFinishDeadline;
         private int halfPlayersCount;
         private readonly float halfPlayersFinishedTimer = 60f;
 
-        public LapsGameModeStrategy(GameType gameType)
+        public LapsGameModeStrategy(GameType gameType, LapsUiView lapsUiView)
         {
             this.gameType = gameType;
+            this.lapsUiView = lapsUiView;
         }
 
         public void InitializeMode()
@@ -54,7 +57,7 @@ namespace Kart.ModeStrategy
         {
             if (halfFinishTriggered && GameManager.Instance.ElapsedTime >= halfFinishDeadline)
                 return true;
-
+            
             return finishedCount >= GameManager.Players.Count;
         }
 
@@ -155,31 +158,29 @@ namespace Kart.ModeStrategy
                       $"in {data.lastLapTime:F2} seconds.");
         }
 
-        public List<StandingsEntry> GetStandings()
+        private IEnumerable<StandingsEntry> GetStandings()
         {
             var playerResults = playerLapData.ToList();
             playerResults.Sort(ComparePlayerResults);
 
             return playerResults
-                .Select((kvp, i) => BuildStandingsEntry(kvp, i + 1))
-                .ToList();
+                .Select((kvp, i) => BuildStandingsEntry(kvp, i + 1));
         }
 
-        public string GetStandingsInfo()
+        public void OnStandingUpdate()
         {
-            var standingsList = GetStandings();
-            StringBuilder standingEntry = new StringBuilder();
-
-            foreach (var entry in standingsList)
+            foreach (var entry in GetStandings())
             {
-                string line = $"{entry.rank}. {entry.player.name} - {entry.additionalInfo["LastLapTime"]}";
-                if (entry.additionalInfo.TryGetValue("Status", out string status) && status == "Finished")
-                    line += $" - {status}";
-                
-                standingEntry.AppendLine(line);
+                lapsUiView.AddOrUpdateStanding(entry);
             }
+        }
 
-            return standingEntry.ToString();
+        public void OnRaceFinished()
+        {
+            foreach (var entry in GetStandings())
+            {
+                lapsUiView.AddOrUpdateStanding(entry);
+            }
         }
 
 
