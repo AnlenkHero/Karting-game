@@ -74,7 +74,7 @@ namespace Kart.Fusion
         public void Spawn(NetworkRunner networkRunner, RoomPlayer player, NetworkPrefabRef kart)
         {
             runner = networkRunner;
-
+            
             if (runner.GameMode == GameMode.Host)
             {
                 var index = RoomPlayer.Players.IndexOf(player);
@@ -90,6 +90,7 @@ namespace Kart.Fusion
                     new Quaternion?(),
                     player.Object.InputAuthority
                 );
+                Kart = entity.GetComponent<KartController>();
 
 
                 Debug.Log($"Spawning kart for {player.Username} as {entity.name}");

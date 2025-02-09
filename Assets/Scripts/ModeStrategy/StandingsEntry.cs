@@ -1,13 +1,19 @@
 ﻿using System.Collections.Generic;
 using Fusion;
 using Kart.Controls;
+using Kart.Fusion;
 
 namespace Kart.ModeStrategy
 {
-    public class StandingsEntry : INetworkStruct //TODO remove dictionary and move to standing specific fields
+    [System.Serializable]
+    public struct StandingsEntry : INetworkStruct //TODO remove dictionary and move to standing specific fields
     {
-        public KartController player;
+        public NetworkString<_4> player;
         public int rank;
-        public Dictionary<string, string> additionalInfo = new Dictionary<string, string>();
+        public NetworkString<_4> status;
+        public NetworkString<_4> finishTime;
+        public NetworkString<_4> lapsCompleted;
+        public NetworkString<_4> lastCheckpoint;
+        public NetworkString<_4> lastLapTime;
     }
 }

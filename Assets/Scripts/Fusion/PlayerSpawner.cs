@@ -4,6 +4,7 @@ using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 namespace Kart.Fusion
 {
