@@ -1,27 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
+using Fusion;
 using Kart.Controls;
 using Kart.ModeStrategy;
 using UnityEngine;
 using Kart.TrackPackage;
-using TMPro;
 
 namespace Kart
 {
-    public class GameManager : MonoBehaviour
+    public class GameManager : NetworkBehaviour
     {
+        [SerializeField] private GameModeStrategyFactory strategyFactory;
+        
         public static GameManager Instance { get; private set; }
 
         public GameType currentGameType;
         public Track currentTrack;
-        public List<KartController> Players = new();
-        public float ElapsedTime { get; private set; }
-
+        public static readonly List<KartController> Players = new();
+        [Networked] public float ElapsedTime { get; private set; }
         public IGameModeStrategy Strategy { get; private set; }
         public GameState CurrentGameState { get; private set; }
 
-        public TextMeshProUGUI text;
-
+        
         private void Awake()
         {
             if (Instance)
@@ -31,7 +32,16 @@ namespace Kart
             }
 
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+           // DontDestroyOnLoad(gameObject);
+        }
+
+        public override void FixedUpdateNetwork()
+        {
+            base.FixedUpdateNetwork();
+            if (HasStateAuthority)
+            {
+                ElapsedTime += Runner.DeltaTime;
+            }
         }
 
         private void Start()
@@ -46,30 +56,30 @@ namespace Kart
             {
                 Debug.LogWarning("No Track assigned to the GameManager.");
             }
+        }
 
-            Strategy = IGameModeStrategy.GetGameMode(currentGameType);
+        [Rpc]
+        public void RPC_StartGame()
+        {
+            Strategy = strategyFactory.GetGameMode(currentGameType);
             Strategy.InitializeMode();
             CurrentGameState = GameState.Running;
         }
-
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.F) && HasStateAuthority)
+                RPC_StartGame();
+
             if (CurrentGameState is GameState.Finished or GameState.PreGame)
-            {
                 return;
-            }
-
-            ElapsedTime += Time.deltaTime;
-
+            
             Strategy.UpdateModeLogic();
 
-            ShowCurrentStandings();
+            Strategy.OnStandingUpdate();
 
-            if (Strategy.IsGameOver())
-            {
-                var standings = Strategy.GetStandings();
-                EndGameWithStandings(standings);
-            }
+            if (!Strategy.IsGameOver()) return;
+
+            EndGameWithStandings();
         }
 
         public void EndGame(KartController winner)
@@ -82,29 +92,10 @@ namespace Kart
             Debug.Log("Game Ended with no winner.");
         }
 
-        public void EndGameWithStandings(List<StandingsEntry> standings)
+        public void EndGameWithStandings()
         {
-            Debug.Log("Game Ended! Final Standings:");
-            
-            foreach (var entry in standings)
-            {
-                Debug.Log($"{entry.rank}. {entry.player.name} - {entry.additionalInfo["Status"]}");
-            }
-
+            Strategy.OnRaceFinished();
             CurrentGameState = GameState.Finished;
-        }
-
-        public void ShowCurrentStandings()
-        {
-            var standings = Strategy.GetStandings();
-            Debug.Log("Current Standings:");
-            text.text = string.Empty;
-            
-            foreach (var entry in standings)
-            {
-                Debug.Log($"{entry.rank}. {entry.player.name} - {entry.additionalInfo["LastLapTime"]}");
-                text.text += $"{entry.rank}. {entry.player.name} - {entry.additionalInfo["LastLapTime"]}\n";
-            }
         }
     }
 }

@@ -1,12 +1,19 @@
 ﻿using System.Collections.Generic;
+using Fusion;
 using Kart.Controls;
+using Kart.Fusion;
 
 namespace Kart.ModeStrategy
 {
-    public class StandingsEntry
+    [System.Serializable]
+    public struct StandingsEntry
     {
-        public KartController player;
         public int rank;
-        public Dictionary<string, string> additionalInfo = new Dictionary<string, string>();
+        public string player;
+        public string status;
+        public string finishTime;
+        public string lapsCompleted;
+        public string lastCheckpoint;
+        public string lastLapTime;
     }
 }

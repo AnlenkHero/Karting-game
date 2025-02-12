@@ -1,7 +1,7 @@
 using System.Linq;
+using Fusion;
 using TMPro;
 using Unity.Cinemachine;
-using Unity.Netcode;
 using UnityEngine;
 
 namespace Kart.Controls
@@ -46,7 +46,6 @@ namespace Kart.Controls
         [SerializeField] private float driftFriction = 0.5f;
         [SerializeField] private float slipThreshold = 0.9f;
         [SerializeField] private float brakeTorque = 10000f;
-        public float brakeMultiplier = 1.0f;
 
         [Header("Physics")] [SerializeField] private Transform centerOfMass;
         [SerializeField] private float downForce = 100f;
@@ -61,6 +60,7 @@ namespace Kart.Controls
         [Header("Surface Modifiers")] public float frictionMultiplier = 1.0f;
         public float slowdownMultiplier = 1.0f;
         public float steeringSensitivityMultiplier = 1.0f;
+        public float brakeMultiplier = 1.0f;
 
         [Header("Input")] [SerializeField] private InputReader playerInput;
 
@@ -71,11 +71,12 @@ namespace Kart.Controls
         [SerializeField] private CinemachineCamera playerCamera;
         [SerializeField] private AudioListener playerAudioListener;
         [SerializeField] private Rigidbody rb;
+        [SerializeField] private KartCameraController cameraController;
 
         [Header("Player Debug Info")] [SerializeField]
         private TextMeshPro playerText;
 
-        private IDrive input;
+        private KartInput.NetworkInputData input;
         private Vector3 originalCenterOfMass;
         private Vector3 kartVelocity;
         private float brakeVelocity;
@@ -91,6 +92,17 @@ namespace Kart.Controls
 
         #region Unity Lifecycle
 
+        public override void Spawned()
+        {
+            base.Spawned();
+            
+            GameManager.Players.Add(this);
+            if (HasInputAuthority)
+            {
+                cameraController.SetupCamera();
+            }
+        }
+
         private void Awake()
         {
             InitializeComponents();
@@ -99,25 +111,16 @@ namespace Kart.Controls
         private void Update()
         {
             playerText.SetText(
-                $"Owner: {IsOwner} NetworkObjectId: {NetworkObjectId} Velocity: {kartVelocity.magnitude:F1}");
+                $"Owner: PHOTON AWAITING NetworkObjectId: PHOTON AWAITING Velocity: {kartVelocity.magnitude:F1}");
         }
 
-        private void FixedUpdate()
+        public override void FixedUpdateNetwork()
         {
-            Move(input.Move);
-        }
-
-        public override void OnNetworkSpawn()
-        {
-            if (!IsOwner)
+            if (GetInput(out KartInput.NetworkInputData networkInputData))
             {
-                playerAudioListener.enabled = false;
-                playerCamera.Priority = 0;
-                return;
+                input = networkInputData;
+                Move(input.Move);
             }
-
-            playerCamera.Priority = 100;
-            playerAudioListener.enabled = true;
         }
 
         #endregion
@@ -167,7 +170,7 @@ namespace Kart.Controls
 
         private void HandleGroundedMovement(float verticalInput, float motor)
         {
-            if (Mathf.Abs(verticalInput) < 0.1f && rb.linearVelocity.magnitude > 0.1f && !input.IsBraking)
+            if (Mathf.Abs(verticalInput) < 0.1f && rb.linearVelocity.magnitude > 0.1f && !input.IsDriftPressed)
             {
                 ApplyEngineBraking();
             }
@@ -180,7 +183,14 @@ namespace Kart.Controls
 
         private void AccelerateGroundMovement(float motor, float targetSpeed)
         {
-            if (input.IsBraking) return;
+            if (input.IsDriftPressed) return;
+
+            if (targetSpeed < 0 && SignedVelocityMagnitude > 0)
+            {
+                float decelerationForce = brakeTorque * brakeMultiplier;
+                rb.AddForce(-transform.forward * decelerationForce, ForceMode.Acceleration);
+                return;
+            }
 
             if (rb.linearVelocity.magnitude < Mathf.Abs(targetSpeed))
             {
@@ -192,8 +202,8 @@ namespace Kart.Controls
         {
             float targetSpeed = verticalInput switch
             {
-                < 0 when SignedVelocityMagnitude > 0 => verticalInput * maxSpeed * brakeMultiplier * speedRatio / 2,
-                < 0 => verticalInput * maxSpeed * 1 / speedRatio,
+                < 0 when SignedVelocityMagnitude > 0 => verticalInput * maxSpeed * speedRatio / 2,
+                < 0 => verticalInput * maxSpeed / speedRatio,
                 _ => verticalInput * maxSpeed * slowdownMultiplier
             };
             return targetSpeed;
@@ -252,7 +262,7 @@ namespace Kart.Controls
         {
             if (!axleInfo.steering) return;
 
-            float steeringMultiplier = input.IsBraking ? driftSteerMultiplier : 1f;
+            float steeringMultiplier = input.IsDriftPressed ? driftSteerMultiplier : 1f;
 
             currentSteeringAngle = Mathf.SmoothDamp(currentSteeringAngle, targetSteeringAngle * steeringMultiplier,
                 ref steeringVelocity,
@@ -290,7 +300,7 @@ namespace Kart.Controls
         {
             if (!axleInfo.motor) return;
 
-            if (input.IsBraking)
+            if (input.IsDriftPressed)
             {
                 rb.constraints = RigidbodyConstraints.FreezeRotationX;
                 HandleHandbrake();
@@ -414,7 +424,7 @@ namespace Kart.Controls
 
         private WheelFrictionCurve UpdateFriction(WheelFrictionCurve friction)
         {
-            friction.stiffness = input.IsBraking
+            friction.stiffness = input.IsDriftPressed
                 ? Mathf.SmoothDamp(friction.stiffness, driftFriction * frictionMultiplier, ref driftVelocity,
                     Time.deltaTime * 2f)
                 : 1f;
@@ -490,17 +500,17 @@ namespace Kart.Controls
 
         public void SetInput(IDrive driveInput)
         {
-            input = driveInput;
+            //     input = driveInput;
         }
 
         private void InitializeComponents()
         {
             if (playerInput is IDrive driveInput)
             {
-                input = driveInput;
+                //     input = driveInput;
             }
 
-            input.Enable();
+            //   input.Enable();
 
             rb.centerOfMass = centerOfMass.localPosition;
             originalCenterOfMass = centerOfMass.localPosition;

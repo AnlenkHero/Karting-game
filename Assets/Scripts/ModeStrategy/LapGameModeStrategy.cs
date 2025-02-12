@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Fusion;
 using Kart.Controls;
+using Kart.Fusion;
 using Kart.TrackPackage;
+using Kart.UI;
 using UnityEngine;
 
 namespace Kart.ModeStrategy
@@ -11,33 +14,38 @@ namespace Kart.ModeStrategy
         private readonly GameType gameType;
         private int requiredLaps;
 
-        private readonly Dictionary<KartController, PlayerLapData> playerLapData = new();
+        private readonly List<PlayerLapData> playerLapData = new();
+
+        private LapsUiView lapsUiView;
         private int finishedCount;
         private bool halfFinishTriggered;
         private float halfFinishDeadline;
         private int halfPlayersCount;
         private readonly float halfPlayersFinishedTimer = 60f;
 
-        public LapsGameModeStrategy(GameType gameType)
+        public LapsGameModeStrategy(GameType gameType, LapsUiView lapsUiView)
         {
             this.gameType = gameType;
+            this.lapsUiView = lapsUiView;
         }
 
         public void InitializeMode()
         {
             requiredLaps = gameType.totalLapsRequired;
 
-            var allPlayers = GameManager.Instance.Players;
-            
+            var allPlayers = RoomPlayer.Players;
+
             halfPlayersCount = Mathf.CeilToInt(allPlayers.Count * 0.5f);
 
-            foreach (var kart in allPlayers)
+            foreach (var roomPlayer in allPlayers)
             {
-                playerLapData[kart] = new PlayerLapData
+                var newPlayer = new PlayerLapData
                 {
+                    player = roomPlayer,
                     lapStartTime = GameManager.Instance.ElapsedTime,
                     lastCheckpointCrossTime = GameManager.Instance.ElapsedTime
                 };
+                playerLapData.Add(newPlayer);
             }
         }
 
@@ -54,7 +62,7 @@ namespace Kart.ModeStrategy
             if (halfFinishTriggered && GameManager.Instance.ElapsedTime >= halfFinishDeadline)
                 return true;
 
-            return finishedCount >= GameManager.Instance.Players.Count;
+            return finishedCount >= GameManager.Players.Count;
         }
 
         public void UpdateModeLogic()
@@ -64,7 +72,8 @@ namespace Kart.ModeStrategy
 
         public void OnPlayerCrossCheckpoint(KartController kart, LapCheckpoint checkpoint)
         {
-            if (!playerLapData.TryGetValue(kart, out var data))
+            var data = playerLapData.FirstOrDefault(x => x.player.Kart == kart);
+            if (data == null)
                 return;
 
             int expectedNextCheckpoint = data.currentCheckpoint + 1;
@@ -82,8 +91,10 @@ namespace Kart.ModeStrategy
 
         public void OnPlayerCrossFinishLine(KartController kart, FinishLine finishLine)
         {
-            if (!playerLapData.TryGetValue(kart, out var data) || data.hasFinished)
+            var data = playerLapData.FirstOrDefault(x => x.player.Kart == kart);
+            if (data == null || data.hasFinished)
                 return;
+
 
             int totalCheckpoints = GameManager.Instance.currentTrack.checkpoints.Length;
 
@@ -96,10 +107,9 @@ namespace Kart.ModeStrategy
                 MarkFinishedPlayer(kart, data);
                 CheckHalfPlayersFinished();
 
-                if (finishedCount < GameManager.Instance.Players.Count) return;
+                if (finishedCount < GameManager.Players.Count) return;
 
-                var standings = GetStandings();
-                GameManager.Instance.EndGameWithStandings(standings);
+                GameManager.Instance.EndGameWithStandings();
             }
             else
             {
@@ -110,7 +120,7 @@ namespace Kart.ModeStrategy
         private void ProcessCheckpointCorrectCross(KartController kart, LapCheckpoint checkpoint, PlayerLapData data)
         {
             data.currentCheckpoint = checkpoint.index;
-            data.lastCheckpointCrossTime = GameManager.Instance.ElapsedTime;
+            data.lastCheckpointCrossTime = GameManager.Instance.ElapsedTime - data.lapStartTime;
 
             Debug.Log($"{kart.name} crossed checkpoint {checkpoint.index} at {data.lastCheckpointCrossTime:F2}s.");
         }
@@ -127,7 +137,7 @@ namespace Kart.ModeStrategy
             halfFinishTriggered = true;
             halfFinishDeadline = GameManager.Instance.ElapsedTime + halfPlayersFinishedTimer;
             Debug.Log(
-                $"Half of the players finished ({finishedCount}/{GameManager.Instance.Players.Count}). " +
+                $"Half of the players finished ({finishedCount}/{GameManager.Players.Count}). " +
                 $"Starting {halfPlayersFinishedTimer}s countdown...");
         }
 
@@ -155,15 +165,26 @@ namespace Kart.ModeStrategy
                       $"in {data.lastLapTime:F2} seconds.");
         }
 
-        public List<StandingsEntry> GetStandings()
+        private IEnumerable<StandingsEntry> GetStandings()
         {
-            var playerResults = playerLapData.ToList();
-            playerResults.Sort(ComparePlayerResults);
+            playerLapData.Sort(ComparePlayerResults);
 
-            return playerResults
-                .Select((kvp, i) => BuildStandingsEntry(kvp, i + 1))
-                .ToList();
+            return playerLapData
+                .Select((kvp, i) => BuildStandingsEntry(kvp, i + 1));
         }
+
+        public void OnStandingUpdate()
+        {
+            var standings = GetStandings().ToList();
+            lapsUiView.AddOrUpdateStanding(standings);
+        }
+
+        public void OnRaceFinished()
+        {
+            var standings = GetStandings().ToList();
+            lapsUiView.AddOrUpdateStanding(standings);
+        }
+
 
         /// <summary>
         /// Comparison for sorting players in the standings.
@@ -172,12 +193,8 @@ namespace Kart.ModeStrategy
         /// 3) Checkpoints reached
         /// 4) lastCheckpointCrossTime (tie-break for same lap/checkpoint)
         /// </summary>
-        private int ComparePlayerResults(KeyValuePair<KartController, PlayerLapData> a,
-            KeyValuePair<KartController, PlayerLapData> b)
+        private int ComparePlayerResults(PlayerLapData dataA, PlayerLapData dataB)
         {
-            var dataA = a.Value;
-            var dataB = b.Value;
-
             switch (dataA.hasFinished)
             {
                 case true when dataB.hasFinished:
@@ -210,27 +227,19 @@ namespace Kart.ModeStrategy
         /// <summary>
         /// Builds a single StandingsEntry for sorted player data.
         /// </summary>
-        private StandingsEntry BuildStandingsEntry(KeyValuePair<KartController, PlayerLapData> kvp, int rank)
+        private StandingsEntry BuildStandingsEntry(PlayerLapData data, int rank)
         {
-            var player = kvp.Key;
-            var data = kvp.Value;
+            var player = data.player;
 
             var entry = new StandingsEntry
             {
-                player = player,
+                player = player.Id.ToString(),
                 rank = rank,
-                additionalInfo = new Dictionary<string, string>
-                {
-                    { "Status", data.hasFinished ? "Finished" : "DNF" },
-                    { "FinishTime", data.hasFinished ? $"{data.finishTime:F2}s" : "-" },
-                    { "LapsCompleted", $"{data.currentLap}/{requiredLaps}" },
-                    { "LastCheckpoint", $"Checkpoint {data.currentCheckpoint}" },
-                    {
-                        "LastLapTime", data.currentLap > 0
-                            ? $"{data.lastLapTime:F2}s"
-                            : "N/A"
-                    }
-                }
+                status = data.hasFinished ? "Finished" : "DNF",
+                finishTime = data.hasFinished ? $"{data.finishTime:F2}s" : "-",
+                lapsCompleted = $"{data.currentLap}/{requiredLaps}",
+                lastCheckpoint = $"Checkpoint {data.currentCheckpoint}",
+                lastLapTime = data.currentLap > 0 ? $"{data.lastLapTime:F2}s" : "N/A",
             };
 
             return entry;
