@@ -6,59 +6,54 @@ using UnityEngine;
 
 namespace Kart.UI
 {
-    public class LapsUiView : NetworkBehaviour //TODO reorder standings based on their places
+    public class LapsUiView : NetworkBehaviour
     {
         [SerializeField] private LapsStandingView standingViewPrefab;
         [SerializeField] private Transform parent;
 
-        private readonly List<LapsStandingView> _standings = new();
-        private List<StandingsEntry> standingsEntry = new ();
+        private readonly List<LapsStandingView> standings = new();
+        private readonly List<StandingsEntry> standingsEntry = new();
 
-        // Called when a standings entry needs to be added or updated.
-        public void AddOrUpdateStanding(StandingsEntry[] standing)
+        public void AddOrUpdateStanding(List<StandingsEntry> standing)
         {
-            if (standing.Length == 0)
+            if (standing.Count == 0)
                 return;
 
-            // Only the state authority (the host) sends out the update.
-          //  if (Object.HasStateAuthority)
-            //{
-                // For RPCs, you’ll need to send only data types that Fusion supports.
-                // Adjust the parameters as needed.
-                RpcAddOrUpdateStanding(standing);
-            //}
+            RpcAddOrUpdateStanding(standing);
         }
 
-        private void RpcAddOrUpdateStanding(StandingsEntry[] StandingsEntry)
+        private void RpcAddOrUpdateStanding(List<StandingsEntry> standingsEntries)
         {
-            
             if (Object.HasStateAuthority)
             {
                 RpcClear();
-                foreach (var standing in StandingsEntry)
+                foreach (var standing in standingsEntries)
                 {
-                    RpcUpdateStanding(standing.rank, standing.player.ToString(), standing.lastLapTime.ToString(), standing.status.ToString());                    
+                    RpcUpdateStanding(standing.rank, standing.player, standing.lastLapTime,
+                        standing.status);
                 }
             }
 
-            if (_standings.Count == standingsEntry.Count)
+            if (standings.Count == standingsEntry.Count)
             {
-                for (int i=0; i<standingsEntry.Count; i++)
+                for (int i = 0; i < standingsEntry.Count; i++)
                 {
-                    UpdateStandingText(_standings[i], standingsEntry[i].rank, standingsEntry[i].player.ToString(),
-                        standingsEntry[i].lastLapTime.ToString(), standingsEntry[i].status.ToString());
+                    UpdateStandingText(standings[i], standingsEntry[i].rank, standingsEntry[i].player,
+                        standingsEntry[i].lastLapTime, standingsEntry[i].status);
                 }
-                return;   
+
+                return;
             }
 
             int index = 0;
-            while (_standings.Count != standingsEntry.Count && _standings.Count < 10)
+            while (standings.Count != standingsEntry.Count && standings.Count < 10)
             {
                 var instantiatedObj = Instantiate(standingViewPrefab, parent);
 
-                _standings.Add(instantiatedObj);
-                UpdateStandingText(_standings[index], standingsEntry[index].rank, standingsEntry[index].player.ToString(),
-                    standingsEntry[index].lastLapTime.ToString(), standingsEntry[index].status.ToString());
+                standings.Add(instantiatedObj);
+                UpdateStandingText(standings[index], standingsEntry[index].rank,
+                    standingsEntry[index].player,
+                    standingsEntry[index].lastLapTime, standingsEntry[index].status);
                 index++;
             }
         }
@@ -75,18 +70,13 @@ namespace Kart.UI
         {
             standingsEntry.Clear();
         }
-        
-        [Rpc]    
+
+        [Rpc]
         private void RpcUpdateStanding(int rank, string playerName, string lastLapTime, string status)
         {
-            var newStanding = new StandingsEntry{rank = rank, player = playerName, lastLapTime = lastLapTime, status = status};
+            var newStanding = new StandingsEntry
+                { rank = rank, player = playerName, lastLapTime = lastLapTime, status = status };
             standingsEntry.Add(newStanding);
-        }
-        
-        [Rpc]
-        private void RpcSetParent(LapsStandingView view)
-        {
-            view.transform.SetParent(parent, false);
         }
 
         private string ComposeStandingMessage(int rank, string playerName, string lastLapTime, string status)
@@ -95,5 +85,6 @@ namespace Kart.UI
             if (!string.IsNullOrEmpty(status) && status == "Finished")
                 message += $" - {status}";
             return message;
-        }    }
+        }
+    }
 }

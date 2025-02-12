@@ -175,13 +175,13 @@ namespace Kart.ModeStrategy
 
         public void OnStandingUpdate()
         {
-            var standings = GetStandings().ToArray();
+            var standings = GetStandings().ToList();
             lapsUiView.AddOrUpdateStanding(standings);
         }
 
         public void OnRaceFinished()
         {
-            var standings = GetStandings().ToArray();
+            var standings = GetStandings().ToList();
             lapsUiView.AddOrUpdateStanding(standings);
         }
 
