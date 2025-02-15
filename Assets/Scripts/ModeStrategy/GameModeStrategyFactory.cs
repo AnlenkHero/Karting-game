@@ -1,5 +1,6 @@
 using Fusion;
 using Kart.UI;
+using Kart.UI.Strategy;
 using UnityEngine;
 
 namespace Kart.ModeStrategy

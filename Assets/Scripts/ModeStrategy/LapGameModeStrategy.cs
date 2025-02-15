@@ -5,6 +5,7 @@ using Kart.Controls;
 using Kart.Fusion;
 using Kart.TrackPackage;
 using Kart.UI;
+using Kart.UI.Strategy;
 using UnityEngine;
 
 namespace Kart.ModeStrategy
