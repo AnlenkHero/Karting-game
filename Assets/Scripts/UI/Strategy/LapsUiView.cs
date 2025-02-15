@@ -1,10 +1,9 @@
 using System.Collections.Generic;
-using System.Linq;
 using Fusion;
 using Kart.ModeStrategy;
 using UnityEngine;
 
-namespace Kart.UI
+namespace Kart.UI.Strategy
 {
     public class LapsUiView : NetworkBehaviour
     {
