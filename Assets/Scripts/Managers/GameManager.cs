@@ -23,8 +23,9 @@ namespace Kart
         public GameState CurrentGameState { get; private set; }
 
         
-        private void Awake()
+        public override void Spawned()
         {
+            Players.Clear();
             if (Instance)
             {
                 Destroy(gameObject);
@@ -32,7 +33,7 @@ namespace Kart
             }
 
             Instance = this;
-           // DontDestroyOnLoad(gameObject);
+            DontDestroyOnLoad(gameObject);
         }
 
         public override void FixedUpdateNetwork()
@@ -67,6 +68,13 @@ namespace Kart
         }
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.N))
+            {
+                foreach (var player in Players)
+                {
+                    Debug.Log(player.Id);
+                }
+            }
             if (Input.GetKeyDown(KeyCode.F) && HasStateAuthority)
                 RPC_StartGame();
 
