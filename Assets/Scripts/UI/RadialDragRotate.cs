@@ -12,7 +12,7 @@ namespace UnityEngine.UI.Extensions
         [SerializeField] private Transform wheelTransform;
         [SerializeField] private float maxRotation = 1080f;
         [SerializeField] private float overshootDamping = 0.1f; 
-        
+        private float angle;
         private float previousAngle;
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -43,23 +43,28 @@ namespace UnityEngine.UI.Extensions
                     break;
             }
             
-            float newAngleCandidate = radialLayout.StartAngle + deltaAngle;
+            //float newAngleCandidate = radialLayout.StartAngle + deltaAngle;
+            float newAngleCandidate = angle + deltaAngle;
             
             if (newAngleCandidate > maxRotation)
             {
                 float overshoot = newAngleCandidate - maxRotation;
                 deltaAngle *= 1f / (1f + overshoot * overshootDamping);
-                newAngleCandidate = radialLayout.StartAngle + deltaAngle;
+                //newAngleCandidate = radialLayout.StartAngle + deltaAngle;
+                newAngleCandidate = angle + deltaAngle;
             }
             else if (newAngleCandidate < -maxRotation)
             {
                 float overshoot = -maxRotation - newAngleCandidate;
                 deltaAngle *= 1f / (1f + overshoot * overshootDamping);
-                newAngleCandidate = radialLayout.StartAngle + deltaAngle;
+                //newAngleCandidate = radialLayout.StartAngle + deltaAngle;
+                newAngleCandidate = angle + deltaAngle;
             }
             
-            radialLayout.StartAngle = newAngleCandidate;
-            wheelTransform.rotation = Quaternion.Euler(0, 0, radialLayout.StartAngle);
+            //radialLayout.StartAngle = newAngleCandidate;
+            angle = newAngleCandidate;
+            //wheelTransform.rotation = Quaternion.Euler(0, 0, radialLayout.StartAngle);
+            wheelTransform.rotation = Quaternion.Euler(0, 0, angle);
             LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
 
             previousAngle = currentAngle;
@@ -67,8 +72,10 @@ namespace UnityEngine.UI.Extensions
         
         public void OnEndDrag(PointerEventData eventData)
         {
-            float targetAngle = Mathf.Clamp(radialLayout.StartAngle, -maxRotation, maxRotation);
-            if (Mathf.Abs(radialLayout.StartAngle - targetAngle) > 0.1f)
+            //float targetAngle = Mathf.Clamp(radialLayout.StartAngle, -maxRotation, maxRotation);
+            //if (Mathf.Abs(radialLayout.StartAngle - targetAngle) > 0.1f)
+            float targetAngle = Mathf.Clamp(angle, -maxRotation, maxRotation);
+            if (Mathf.Abs(angle - targetAngle) > 0.1f)
             {
                 StopCoroutine(nameof(BounceBackCoroutine));
                 StartCoroutine(BounceBackCoroutine(targetAngle));
@@ -78,7 +85,8 @@ namespace UnityEngine.UI.Extensions
         private IEnumerator BounceBackCoroutine(float targetAngle)
         {
             float duration = 0.2f;
-            float startAngle = radialLayout.StartAngle;
+            //float startAngle = radialLayout.StartAngle;
+            float startAngle = angle;
             float elapsed = 0f;
 
             while (elapsed < duration)
@@ -86,13 +94,15 @@ namespace UnityEngine.UI.Extensions
                 elapsed += Time.deltaTime;
                 float t = elapsed / duration;
                 float newAngle = Mathf.Lerp(startAngle, targetAngle, t);
-                radialLayout.StartAngle = newAngle;
+                //radialLayout.StartAngle = newAngle;
+                angle = newAngle;
                 wheelTransform.rotation = Quaternion.Euler(0, 0, newAngle);
                 LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
                 yield return null;
             }
 
-            radialLayout.StartAngle = targetAngle;
+            //radialLayout.StartAngle = targetAngle;
+            angle = targetAngle;
             wheelTransform.rotation = Quaternion.Euler(0, 0, targetAngle);
             LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
         }
