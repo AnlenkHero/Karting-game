@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Fusion;
 using Kart.Controls;
 using Kart.Fusion;
 using Kart.TrackPackage;
-using Kart.UI;
 using Kart.UI.Strategy;
 using UnityEngine;
 
@@ -107,10 +105,6 @@ namespace Kart.ModeStrategy
 
                 MarkFinishedPlayer(kart, data);
                 CheckHalfPlayersFinished();
-
-                if (finishedCount < GameManager.Players.Count) return;
-
-                GameManager.Instance.EndGameWithStandings();
             }
             else
             {

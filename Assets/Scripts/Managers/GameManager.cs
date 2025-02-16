@@ -60,7 +60,7 @@ namespace Kart
         }
 
         [Rpc]
-        public void RPC_StartGame()
+        private void RPC_StartGame()
         {
             Strategy = strategyFactory.GetGameMode(currentGameType);
             Strategy.InitializeMode();
@@ -68,13 +68,7 @@ namespace Kart
         }
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.N))
-            {
-                foreach (var player in Players)
-                {
-                    Debug.Log(player.Id);
-                }
-            }
+
             if (Input.GetKeyDown(KeyCode.F) && HasStateAuthority)
                 RPC_StartGame();
 
@@ -100,7 +94,7 @@ namespace Kart
             Debug.Log("Game Ended with no winner.");
         }
 
-        public void EndGameWithStandings()
+        private void EndGameWithStandings()
         {
             Strategy.OnRaceFinished();
             CurrentGameState = GameState.Finished;
