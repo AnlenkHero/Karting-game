@@ -27,13 +27,16 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField] private GameManager _gameManagerPrefab;
     [SerializeField] private RoomPlayer _roomPlayerPrefab;
     [SerializeField] private DisconnectUI _disconnectUI;
-
+    
+    [SerializeField] private LevelManager _levelManager;
+    
+    [SerializeField] private DummySearchingUI _searchingUI;
+    
     public static ConnectionStatus ConnectionStatus = ConnectionStatus.Disconnected;
 
     private GameMode _gameMode;
     private NetworkRunner _runner;
     private FusionObjectPoolRoot _pool;
-    private LevelManager _levelManager;
     
     public static GameLauncher Instance => Singleton<GameLauncher>.Instance;
 
@@ -43,19 +46,28 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         Application.targetFrameRate = Screen.currentResolution.refreshRate;
         QualitySettings.vSyncCount = 1;
 
-        _levelManager = GetComponent<LevelManager>();
-
         DontDestroyOnLoad(gameObject);
 
+        // Load your main menu scene at startup
         SceneManager.LoadScene(LevelManager.MAIN_MENU_SCENE);
     }
 
     public void SetCreateLobby() => _gameMode = GameMode.Host;
     public void SetJoinLobby() => _gameMode = GameMode.Client;
-    
+
+    /// <summary>
+    /// Called by a button or similar. Joins (or creates) a matchmaking lobby.
+    /// </summary>
     public async void JoinOrCreateLobby()
     {
         SetConnectionStatus(ConnectionStatus.Connecting);
+
+        // 2) Show the searching UI while matchmaking
+        if (_searchingUI)
+        {
+            _searchingUI.gameObject.SetActive(true);
+            _searchingUI.StartSearching();
+        }
 
         if (_runner != null)
             LeaveSession();
@@ -91,7 +103,9 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     {
         Debug.Log("Session list updated. Count: " + sessionList.Count);
 
-        SessionInfo targetSession = sessionList.Where(session => session.IsOpen)
+        // Filter sessions: open, not full, name starts with "MyMatchmakingSession"
+        SessionInfo targetSession = sessionList
+            .Where(session => session.IsOpen)
             .Where(session => session.PlayerCount < session.MaxPlayers)
             .FirstOrDefault(session => session.Name.StartsWith("MyMatchmakingSession"));
 
@@ -191,13 +205,9 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         _disconnectUI.ShowMessage(status, message);
     }
 
-    public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
-    {
-    }
+    public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
 
-    public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
-    {
-    }
+    public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
@@ -209,6 +219,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
             var roomPlayer = runner.Spawn(_roomPlayerPrefab, Vector3.zero, Quaternion.identity, player);
             roomPlayer.GameState = RoomPlayer.EGameState.Lobby;
+
+            // 3) Check if we reached MaxPlayers -> automatically start the game
+            if (runner.SessionInfo.PlayerCount == runner.SessionInfo.MaxPlayers)
+            {
+                GameStarted();
+            }
         }
 
         SetConnectionStatus(ConnectionStatus.Connected);
@@ -239,45 +255,35 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         _runner = null;
     }
 
-    public void OnInput(NetworkRunner runner, NetworkInput input)
-    {
-    }
+    public void OnInput(NetworkRunner runner, NetworkInput input) { }
+    public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
+    public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
+    public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
+    public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
+    public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
+    public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
+    public void OnSceneLoadDone(NetworkRunner runner) { }
+    public void OnSceneLoadStart(NetworkRunner runner) { }
 
-    public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
+    /// <summary>
+    /// Called by the server once all slots are filled. We close the session and hide the searching UI.
+    /// You can also load a game scene here if desired.
+    /// </summary>
+    private void GameStarted()
     {
-    }
-
-    public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)
-    {
-    }
-
-    public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
-    {
-    }
-
-    public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
-    {
-    }
-
-    public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
-    {
-    }
-
-    public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
-    {
-    }
-
-    public void OnSceneLoadDone(NetworkRunner runner)
-    {
-    }
-
-    public void OnSceneLoadStart(NetworkRunner runner)
-    {
-    }
-
-    public void GameStarted()
-    {
+        // 4) Mark the session as closed
         _runner.SessionInfo.IsOpen = false;
+
+        // 5) Hide the searching UI
+        if (_searchingUI)
+        {
+            _searchingUI.gameObject.SetActive(false);
+            _searchingUI.StopSearching();
+        }
+
+        // 6) Optionally load your game scene or do any other "start" logic
+        Debug.Log("All players joined. Starting the game now...");
+        LevelManager.LoadTrack(2);
     }
 
     private static (string, string) ShutdownReasonToHuman(ShutdownReason reason)

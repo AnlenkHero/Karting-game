@@ -11,7 +11,7 @@ namespace Kart.UI
 
         private void DebugButton()
         {
-            GameLauncher.Instance.GameStarted();
+            //GameLauncher.Instance.GameStarted();
             LevelManager.LoadTrack(2);
         }
     }
