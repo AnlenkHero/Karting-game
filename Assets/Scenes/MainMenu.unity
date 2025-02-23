@@ -557,8 +557,8 @@ GameObject:
   - component: {fileID: 421034166}
   - component: {fileID: 421034165}
   - component: {fileID: 421034167}
-  - component: {fileID: 421034169}
   - component: {fileID: 421034168}
+  - component: {fileID: 421034169}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -699,7 +699,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 421034162}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1da5f3985b44ea4a8d3a8acdb928d95, type: 3}
+  m_Script: {fileID: 11500000, guid: d2290f028f8b4b8180731d7715b52d48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 421034168}
@@ -1260,8 +1260,8 @@ GameObject:
   - component: {fileID: 1797304787}
   - component: {fileID: 1797304789}
   - component: {fileID: 1797304788}
-  - component: {fileID: 1797304791}
   - component: {fileID: 1797304790}
+  - component: {fileID: 1797304791}
   m_Layer: 5
   m_Name: Image (1)
   m_TagString: Untagged
@@ -1379,7 +1379,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1797304786}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1da5f3985b44ea4a8d3a8acdb928d95, type: 3}
+  m_Script: {fileID: 11500000, guid: 97291be3e17b484589d22689711fb4fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 1797304790}

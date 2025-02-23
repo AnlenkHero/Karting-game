@@ -1,8 +1,14 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Resources;
+using Fusion;
+using Kart.Fusion;
+using Unity.Mathematics;
+using UnityEngine;
+using ResourceManager = Kart.Managers.ResourceManager;
 
 namespace Kart.TrackPackage
 {
-    public class Track : MonoBehaviour
+    public class Track : NetworkBehaviour
     {
         [Header("Track Setup")] public TrackData trackData;
         public LapCheckpoint lapCheckpointPrefab;
@@ -10,7 +16,12 @@ namespace Kart.TrackPackage
 
         [Header("Runtime References")] public LapCheckpoint[] checkpoints;
         public FinishLine finishLine;
-        
+
+        private void Awake()
+        {
+            GameManager.CurrentTrack = this;
+        }
+
         public void Initialize()
         {
             if (trackData == null)
@@ -48,6 +59,29 @@ namespace Kart.TrackPackage
             Debug.Log("Track initialized. Checkpoints and FinishLine have been spawned.");
         }
 
+        public void SpawnPlayer(NetworkRunner runner, RoomPlayer player)
+        {
+            var index = RoomPlayer.Players.IndexOf(player);
+    //        var point = trackData.spawnPoints[index];
+
+            var prefabId = player.KartId;
+            var prefab = ResourceManager.Instance.kartDefinitions[prefabId].prefab;
+
+            // Spawn player
+            var entity = runner.Spawn(
+                prefab,
+                Vector3.zero,
+                quaternion.identity,
+                player.Object.InputAuthority
+            );
+            
+            player.GameState = RoomPlayer.EGameState.GameCutscene;
+            player.Kart = entity;
+
+            Debug.Log($"Spawning kart for {player.Username} as {entity.name}");
+            entity.transform.name = $"Kart ({player.Username})";
+        }
+        
         private void ClearExistingCheckpoints()
         {
             var otherCheckpoint =

@@ -16,7 +16,7 @@ namespace Kart.UI
 
         private void DebugButton()
         {
-            Debug.Log(gameObject.name);
+            //GameLauncher.Instance.JoinOrCreateLobby();
         }
     }
 }

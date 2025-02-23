@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Fusion;
 using Kart.Controls;
+using Kart.Managers;
 using Kart.ModeStrategy;
 using UnityEngine;
 using Kart.TrackPackage;
@@ -16,7 +18,7 @@ namespace Kart
         public static GameManager Instance { get; private set; }
 
         public GameType currentGameType;
-        public Track currentTrack;
+        public static Track CurrentTrack;
         public static readonly List<KartController> Players = new();
         [Networked] public float ElapsedTime { get; private set; }
         public IGameModeStrategy Strategy { get; private set; }
@@ -49,9 +51,9 @@ namespace Kart
         {
             CurrentGameState = GameState.PreGame;
 
-            if (currentTrack != null)
+            if (CurrentTrack != null)
             {
-                currentTrack.Initialize();
+                CurrentTrack.Initialize();
             }
             else
             {

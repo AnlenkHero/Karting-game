@@ -13,7 +13,8 @@ namespace Kart.TrackPackage
             public Quaternion rotation;
             public Vector3 scale;
         }
-
+        
+        public Transform[] spawnPoints; 
         public CheckpointData[] checkpoints;
         public Vector3 finishLinePosition;
         public Quaternion finishLineRotation;

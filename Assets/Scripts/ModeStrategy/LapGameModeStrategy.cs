@@ -95,7 +95,7 @@ namespace Kart.ModeStrategy
                 return;
 
 
-            int totalCheckpoints = GameManager.Instance.currentTrack.checkpoints.Length;
+            int totalCheckpoints = GameManager.CurrentTrack.checkpoints.Length;
 
             if (IsValidFinishLineCross(data, totalCheckpoints))
             {
