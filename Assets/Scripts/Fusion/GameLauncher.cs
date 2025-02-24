@@ -8,6 +8,7 @@ using Fusion.Sockets;
 using Kart;
 using Kart.Fusion;
 using Kart.Helpers;
+using Kart.Managers;
 using Kart.UI;
 using Managers;
 using UnityEngine;
@@ -283,7 +284,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         // 6) Optionally load your game scene or do any other "start" logic
         Debug.Log("All players joined. Starting the game now...");
-        LevelManager.LoadTrack(2);
+        LevelManager.LoadTrack(ResourceManager.Instance.tracks[0].buildIndex);
     }
 
     private static (string, string) ShutdownReasonToHuman(ShutdownReason reason)

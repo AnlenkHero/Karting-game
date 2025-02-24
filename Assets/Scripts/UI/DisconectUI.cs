@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,11 +7,17 @@ namespace Kart.UI
 {
     public class DisconnectUI : MonoBehaviour
     {
-        public Transform parent;
-        public TextMeshProUGUI disconnectStatus;
-        public TextMeshProUGUI disconnectMessage;
+        [SerializeField] private Transform parent;
+        [SerializeField] private TextMeshProUGUI disconnectStatus;
+        [SerializeField] private TextMeshProUGUI disconnectMessage;
+        [SerializeField] private Button closeButton;
 
-        public void ShowMessage( string status, string message)
+        private void Awake()
+        {
+            closeButton.onClick.AddListener(() => parent.gameObject.SetActive(false));
+        }
+
+        public void ShowMessage(string status, string message)
         {
             if (status == null || message == null)
                 return;
