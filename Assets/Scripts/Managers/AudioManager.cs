@@ -4,6 +4,7 @@ using Kart.Helpers;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.UI;
 
 namespace Kart.Managers
 {
@@ -18,10 +19,10 @@ namespace Kart.Managers
         public AudioMixerGroup musicMixer;
         public DefaultMixerTarget defaultMixer = DefaultMixerTarget.None;
 
-        public static readonly string mainVolumeParam = "Volume";
-        public static readonly string sfxVolumeParam = "SFXVol";
-        public static readonly string uiVolumeParam = "UIVol";
-        public static readonly string musicVolumeParam = "MusicVol";
+        public static readonly string mainVolumeParam = "Master";
+        public static readonly string sfxVolumeParam = "SFX";
+        public static readonly string uiVolumeParam = "UI";
+        public static readonly string musicVolumeParam = "Music";
 
         [SerializeField] private AudioBank soundBank;
         [SerializeField] private AudioBank musicBank;
@@ -41,6 +42,10 @@ namespace Kart.Managers
             InitMixer();
         }
 
+        private void InitSliders()
+        {
+
+        }
         private void InitBanks()
         {
             soundBank.Build();
@@ -153,30 +158,12 @@ namespace Kart.Managers
         }
 
 
-        public static void SetVolumeMaster(float value)
+        public static void SetVolume(string volumeParam, float value)
         {
-            Instance.masterMixer.SetFloat(mainVolumeParam, ToDecibels(value));
-            SetPref(mainVolumeParam, value);
+            Instance.masterMixer.SetFloat(volumeParam, ToDecibels(value));
+            SetPref(volumeParam, value);
         }
-
-        public static void SetVolumeSFX(float value)
-        {
-            Instance.masterMixer.SetFloat(sfxVolumeParam, ToDecibels(value));
-            SetPref(sfxVolumeParam, value);
-        }
-
-        public static void SetVolumeUI(float value)
-        {
-            Instance.masterMixer.SetFloat(uiVolumeParam, ToDecibels(value));
-            SetPref(uiVolumeParam, value);
-        }
-
-        public static void SetVolumeMusic(float value)
-        {
-            Instance.masterMixer.SetFloat(musicVolumeParam, ToDecibels(value));
-            SetPref(musicVolumeParam, value);
-        }
-
+        
         public static float ToDecibels(float value)
         {
             if (value == 0) return -80;

@@ -9,9 +9,11 @@ using Kart;
 using Kart.Fusion;
 using Kart.Helpers;
 using Kart.Managers;
+using Kart.Settings;
 using Kart.UI;
 using Managers;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 public enum ConnectionStatus
@@ -28,17 +30,17 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField] private GameManager _gameManagerPrefab;
     [SerializeField] private RoomPlayer _roomPlayerPrefab;
     [SerializeField] private DisconnectUI _disconnectUI;
-    
+    [SerializeField] private Volume _volumeProfile;
     [SerializeField] private LevelManager _levelManager;
-    
+
     [SerializeField] private DummySearchingUI _searchingUI;
-    
+
     public static ConnectionStatus ConnectionStatus = ConnectionStatus.Disconnected;
 
     private GameMode _gameMode;
     private NetworkRunner _runner;
     private FusionObjectPoolRoot _pool;
-    
+
     public static GameLauncher Instance => Singleton<GameLauncher>.Instance;
 
     private void Start()
@@ -79,7 +81,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         _runner = go.AddComponent<NetworkRunner>();
         var sim3D = go.AddComponent<RunnerSimulatePhysics3D>();
         sim3D.ClientPhysicsSimulation = ClientPhysicsSimulation.SimulateAlways;
-        
+
         _gameMode = GameMode.AutoHostOrClient;
         _runner.ProvideInput = true;
         _runner.AddCallbacks(this);
@@ -87,7 +89,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         _pool = go.AddComponent<FusionObjectPoolRoot>();
 
         Debug.Log($"Created gameobject {go.name} - joining matchmaking lobby");
-        
+
         var joinLobbyResult = await _runner.JoinSessionLobby(SessionLobby.Custom, "MyMatchmakingLobby");
         if (joinLobbyResult.Ok)
         {
@@ -99,7 +101,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             SetConnectionStatus(ConnectionStatus.Failed);
         }
     }
-    
+
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
     {
         Debug.Log("Session list updated. Count: " + sessionList.Count);
@@ -122,7 +124,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             StartGameSession(newSessionName, enableCreation: true);
         }
     }
-    
+
     private async void StartGameSession(string sessionName, bool enableCreation)
     {
         Debug.Log($"Starting game session: {sessionName} (Enable Creation: {enableCreation})");
@@ -133,7 +135,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             SessionName = sessionName,
             ObjectProvider = _pool,
             SceneManager = _levelManager,
-            PlayerCount = 2,
+            PlayerCount = 1,
             EnableClientSessionCreation = enableCreation,
             MatchmakingMode = MatchmakingMode.FillRoom
         };
@@ -206,9 +208,13 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         _disconnectUI.ShowMessage(status, message);
     }
 
-    public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+    public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
+    {
+    }
 
-    public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+    public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
+    {
+    }
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
@@ -256,15 +262,41 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         _runner = null;
     }
 
-    public void OnInput(NetworkRunner runner, NetworkInput input) { }
-    public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
-    public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
-    public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
-    public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
-    public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
-    public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
-    public void OnSceneLoadDone(NetworkRunner runner) { }
-    public void OnSceneLoadStart(NetworkRunner runner) { }
+    public void OnInput(NetworkRunner runner, NetworkInput input)
+    {
+    }
+
+    public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
+    {
+    }
+
+    public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)
+    {
+    }
+
+    public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
+    {
+    }
+
+    public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
+    {
+    }
+
+    public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
+    {
+    }
+
+    public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
+    {
+    }
+
+    public void OnSceneLoadDone(NetworkRunner runner)
+    {
+    }
+
+    public void OnSceneLoadStart(NetworkRunner runner)
+    {
+    }
 
     /// <summary>
     /// Called by the server once all slots are filled. We close the session and hide the searching UI.
@@ -284,6 +316,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         // 6) Optionally load your game scene or do any other "start" logic
         Debug.Log("All players joined. Starting the game now...");
+        _volumeProfile.profile = ResourceManager.Instance.tracks[0].volumeProfile;
         LevelManager.LoadTrack(ResourceManager.Instance.tracks[0].buildIndex);
     }
 

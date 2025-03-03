@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Kart.Resources
 {
@@ -8,5 +9,6 @@ namespace Kart.Resources
         public string trackName;
         public Sprite trackIcon;
         public int buildIndex;
+        public VolumeProfile volumeProfile;
     }
 }
