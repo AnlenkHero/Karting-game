@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -10,12 +12,14 @@ namespace Kart.Settings
     {
         public TMP_Dropdown graphicsDropdown;
         public TMP_Dropdown resolutionDropdown;
+        public TMP_Dropdown screenModeDropdown;
         public Toggle postprocessingToggle;
         public Volume volumeProfile;
 
         private const string GraphicsQualityKey = "GraphicsQuality";
         private const string PostProcessingKey = "PostProcessing";
         private const string ResolutionIndexKey = "ResolutionIndex";
+        private const string ScreenModeKey = "ScreenMode";
 
         private Resolution[] resolutions;
 
@@ -23,18 +27,19 @@ namespace Kart.Settings
         {
             graphicsDropdown.onValueChanged.AddListener(SetGraphicsQuality);
             resolutionDropdown.onValueChanged.AddListener(SetResolution);
+            screenModeDropdown.onValueChanged.AddListener(SetScreenMode);
             postprocessingToggle.onValueChanged.AddListener(TogglePostProcessing);
 
             InitGraphicsDropdown();
             InitResolutionDropdown();
+            InitScreenModeDropdown();
             LoadSettings();
         }
 
         private void InitGraphicsDropdown()
         {
-            string[] names = QualitySettings.names;
             graphicsDropdown.ClearOptions();
-            graphicsDropdown.AddOptions(new List<string>(names));
+            graphicsDropdown.AddOptions(QualitySettings.names.ToList());
 
             int currentQuality = PlayerPrefs.GetInt(GraphicsQualityKey, QualitySettings.GetQualityLevel());
             graphicsDropdown.value = currentQuality;
@@ -43,18 +48,41 @@ namespace Kart.Settings
         private void InitResolutionDropdown()
         {
             resolutionDropdown.ClearOptions();
-            resolutions = Screen.resolutions;
-            List<string> options = new List<string>();
-            int savedResolutionIndex = PlayerPrefs.GetInt(ResolutionIndexKey, 0);
+            resolutions = Screen.resolutions
+                .OrderByDescending(r => r.width * r.height)
+                .ThenByDescending(r => r.refreshRateRatio.value)
+                .ToArray();
 
-            for (int i = 0; i < resolutions.Length; i++)
+            int savedResolutionIndex = PlayerPrefs.GetInt(ResolutionIndexKey, -1);
+            if (savedResolutionIndex == -1)
             {
-                string resolutionOption = $"{resolutions[i].width} x {resolutions[i].height} @ {resolutions[i].refreshRate}Hz";
-                options.Add(resolutionOption);
+                savedResolutionIndex = 0;
+                PlayerPrefs.SetInt(ResolutionIndexKey, savedResolutionIndex);
+                PlayerPrefs.Save();
             }
+
+            int maxWidth = resolutions.Max(r => r.width).ToString().Length;
+            int maxHeight = resolutions.Max(r => r.height).ToString().Length;
+
+            List<string> options = resolutions
+                .Select(r => 
+                    $"{r.width.ToString().PadRight(maxWidth)} x {r.height.ToString().PadRight(maxHeight)}  @ {(int)r.refreshRateRatio.value}Hz")
+                .ToList();
 
             resolutionDropdown.AddOptions(options);
             resolutionDropdown.value = savedResolutionIndex;
+        }
+
+
+
+        private void InitScreenModeDropdown()
+        {
+            screenModeDropdown.ClearOptions();
+            List<string> options = Enum.GetNames(typeof(FullScreenMode)).ToList();
+
+            screenModeDropdown.AddOptions(options);
+            int savedMode = PlayerPrefs.GetInt(ScreenModeKey, (int)Screen.fullScreenMode);
+            screenModeDropdown.value = savedMode;
         }
 
         private void SetGraphicsQuality(int value)
@@ -66,13 +94,24 @@ namespace Kart.Settings
 
         private void SetResolution(int index)
         {
-            if (index >= 0 && index < resolutions.Length)
-            {
-                Resolution selectedResolution = resolutions[index];
-                Screen.SetResolution(selectedResolution.width, selectedResolution.height, FullScreenMode.ExclusiveFullScreen, selectedResolution.refreshRateRatio);
-                PlayerPrefs.SetInt(ResolutionIndexKey, index);
-                PlayerPrefs.Save();
-            }
+            if (index < 0 || index >= resolutions.Length) return;
+
+            Resolution selectedResolution = resolutions[index];
+            Screen.SetResolution(selectedResolution.width, selectedResolution.height, Screen.fullScreenMode, selectedResolution.refreshRateRatio);
+            PlayerPrefs.SetInt(ResolutionIndexKey, index);
+            PlayerPrefs.Save();
+        }
+
+        private void SetScreenMode(int index)
+        {
+            if (!Enum.IsDefined(typeof(FullScreenMode), index)) return;
+
+            FullScreenMode mode = (FullScreenMode)index;
+            Resolution selectedResolution = resolutions[resolutionDropdown.value];
+
+            Screen.SetResolution(selectedResolution.width, selectedResolution.height, mode, selectedResolution.refreshRateRatio);
+            PlayerPrefs.SetInt(ScreenModeKey, index);
+            PlayerPrefs.Save();
         }
 
         private void TogglePostProcessing(bool value)
@@ -104,10 +143,16 @@ namespace Kart.Settings
                 if (savedResolutionIndex >= 0 && savedResolutionIndex < resolutions.Length)
                 {
                     Resolution selectedResolution = resolutions[savedResolutionIndex];
-                    Screen.SetResolution(selectedResolution.width, selectedResolution.height, Screen.fullScreen, selectedResolution.refreshRate);
+                    Screen.SetResolution(selectedResolution.width, selectedResolution.height, Screen.fullScreenMode, selectedResolution.refreshRateRatio);
                     resolutionDropdown.value = savedResolutionIndex;
                 }
             }
+
+            if (!PlayerPrefs.HasKey(ScreenModeKey)) return;
+            int savedMode = PlayerPrefs.GetInt(ScreenModeKey);
+            if (!Enum.IsDefined(typeof(FullScreenMode), savedMode)) return;
+            Screen.fullScreenMode = (FullScreenMode)savedMode;
+            screenModeDropdown.value = savedMode;
         }
     }
 }
