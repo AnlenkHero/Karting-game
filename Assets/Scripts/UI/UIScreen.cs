@@ -9,14 +9,14 @@ namespace Kart.UI
 
         public static UIScreen activeScreen;
 
-        // Class Methods
-	
         public static void Focus(UIScreen screen)
         {
+            Debug.Log(activeScreen);
             if (screen == activeScreen)
                 return;
 
-            if(activeScreen)
+
+            if (activeScreen)
                 activeScreen.Defocus();
             screen.previousScreen = activeScreen;
             activeScreen = screen;
@@ -27,8 +27,7 @@ namespace Kart.UI
         {
             activeScreen?.BackTo(null);
         }
-
-        // Instance Methods
+        
 
         public void FocusScreen(UIScreen screen)
         {
@@ -37,30 +36,34 @@ namespace Kart.UI
 
         private void Focus()
         {
-            if(gameObject)
+            if (gameObject)
                 gameObject.SetActive(true);
         }
 
         private void Defocus()
         {
-            if(gameObject)
+            if (gameObject)
                 gameObject.SetActive(false);
         }
 
         public void Back()
         {
-            if (previousScreen)
+            if (!previousScreen)
             {
                 Defocus();
-                activeScreen = previousScreen;
-                activeScreen.Focus();
-                previousScreen = null;
+                activeScreen = null;
+                return;
             }
+
+            Defocus();
+            activeScreen = previousScreen;
+            activeScreen.Focus();
+            previousScreen = null;
         }
 
         public void BackTo(UIScreen screen)
         {
-            while (activeScreen!=null && activeScreen.previousScreen!=null && activeScreen != screen)
+            while (activeScreen != null && activeScreen.previousScreen != null && activeScreen != screen)
                 activeScreen.Back();
         }
     }

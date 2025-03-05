@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Kart.UI
@@ -10,10 +9,12 @@ namespace Kart.UI
         [SerializeField] private Button settingsButton;
         [SerializeField] private Button leaveButton;
 
-        [SerializeField] private GameObject settingsPanel;
-
+        [SerializeField] private UIScreen escapeMenuScreen;
+        [SerializeField] private UIScreen settingsScreen;
+        
         private void Awake()
         {
+            UIScreen.Focus(escapeMenuScreen);
             resumeButton.onClick.AddListener(Resume);
             settingsButton.onClick.AddListener(Settings);
             leaveButton.onClick.AddListener(Leave);
@@ -21,12 +22,12 @@ namespace Kart.UI
 
         private void Resume()
         {
-            gameObject.SetActive(false);
+            UIScreen.activeScreen?.Back();
         }
 
         private void Settings()
         {
-            settingsPanel.SetActive(true);
+            UIScreen.activeScreen?.FocusScreen(settingsScreen);
         }
 
         private void Leave()

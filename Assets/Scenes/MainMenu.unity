@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 79617679}
   - component: {fileID: 79617678}
   m_Layer: 5
-  m_Name: Image (4)
+  m_Name: Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -472,7 +472,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &228735864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -556,7 +556,6 @@ GameObject:
   - component: {fileID: 421034163}
   - component: {fileID: 421034166}
   - component: {fileID: 421034165}
-  - component: {fileID: 421034167}
   - component: {fileID: 421034168}
   - component: {fileID: 421034169}
   m_Layer: 5
@@ -623,29 +622,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 421034162}
   m_CullTransparentMesh: 1
---- !u!114 &421034167
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 421034162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ebce7906e5d20a4fb26d8b510b81926, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 0
-  fDistance: 0
-  MinAngle: 0
-  MaxAngle: 0
-  StartAngle: 0
-  OnlyLayoutVisible: 0
 --- !u!114 &421034168
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1612,6 +1588,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2101991570}
   - component: {fileID: 2101991571}
+  - component: {fileID: 2101991572}
   m_Layer: 5
   m_Name: Ultra mega wheel button menu
   m_TagString: Untagged
@@ -1657,6 +1634,20 @@ MonoBehaviour:
   wheelTransform: {fileID: 2138923651}
   maxRotation: 1080
   overshootDamping: 0.1
+--- !u!114 &2101991572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2101991569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da3132252c884593bea6a9f66d88a082, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matchmakingButton: {fileID: 1797304790}
+  settingsButton: {fileID: 79617678}
 --- !u!1 &2138923650
 GameObject:
   m_ObjectHideFlags: 0
