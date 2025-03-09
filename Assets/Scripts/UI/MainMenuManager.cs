@@ -13,13 +13,16 @@ namespace Kart.UI
         {
             matchmakingButton.onClick.AddListener(StartMatchmaking);
             settingsButton.onClick.AddListener(OpenSettingsMenu);
+            var n = GetComponent<UIScreen>();
+            UIScreen.SetRootScreen(n);
+            UIScreen.Focus(n);
         }
-        
+
         private void StartMatchmaking()
         {
             GameLauncher.Instance.JoinOrCreateLobby();
         }
-        
+
         private void OpenSettingsMenu()
         {
             UIScreen.Focus(InterfaceManager.Instance.settingsMenu);

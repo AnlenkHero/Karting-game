@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Kart.UI
@@ -14,20 +16,29 @@ namespace Kart.UI
         
         private void Awake()
         {
-            UIScreen.Focus(escapeMenuScreen);
-            resumeButton.onClick.AddListener(Resume);
-            settingsButton.onClick.AddListener(Settings);
+            //UIScreen.Focus(escapeMenuScreen);
+           // resumeButton.onClick.AddListener(Resume);
+            //settingsButton.onClick.AddListener(Settings);
             leaveButton.onClick.AddListener(Leave);
+        }
+        
+        private void Update()
+        {
+            if(Input.GetKeyDown(KeyCode.Escape))
+            {
+                UIScreen.BackToInitial();
+                UIScreen.rootScreen.FocusScreen(escapeMenuScreen);
+            }
         }
 
         private void Resume()
         {
-            UIScreen.activeScreen?.Back();
+            escapeMenuScreen.Back();
         }
 
         private void Settings()
         {
-            UIScreen.activeScreen?.FocusScreen(settingsScreen);
+            escapeMenuScreen.FocusScreen(settingsScreen);
         }
 
         private void Leave()

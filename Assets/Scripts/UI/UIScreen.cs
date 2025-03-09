@@ -1,26 +1,34 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems; // Needed for EventSystem
 
 namespace Kart.UI
 {
     public class UIScreen : MonoBehaviour
     {
+        
         public bool isModal = false;
-        [SerializeField] private UIScreen previousScreen = null;
+        [SerializeField] private Selectable firstSelected = null;
+        public UIScreen previousScreen = null;
 
         public static UIScreen activeScreen;
+        public static UIScreen rootScreen;
 
+        public static void SetRootScreen(UIScreen screen)
+        {
+            rootScreen = screen;
+        }
         public static void Focus(UIScreen screen)
         {
-            Debug.Log(activeScreen);
             if (screen == activeScreen)
                 return;
-
 
             if (activeScreen)
                 activeScreen.Defocus();
             screen.previousScreen = activeScreen;
             activeScreen = screen;
             screen.Focus();
+            Debug.Log(activeScreen);
         }
 
         public static void BackToInitial()
@@ -28,7 +36,6 @@ namespace Kart.UI
             activeScreen?.BackTo(null);
         }
         
-
         public void FocusScreen(UIScreen screen)
         {
             Focus(screen);
@@ -36,8 +43,14 @@ namespace Kart.UI
 
         private void Focus()
         {
-            if (gameObject)
-                gameObject.SetActive(true);
+            if (!gameObject) return;
+            
+            gameObject.SetActive(true);
+                
+            if (firstSelected != null)
+            {
+                firstSelected.Select();
+            }
         }
 
         private void Defocus()
@@ -51,7 +64,6 @@ namespace Kart.UI
             if (!previousScreen)
             {
                 Defocus();
-                activeScreen = null;
                 return;
             }
 
@@ -59,6 +71,7 @@ namespace Kart.UI
             activeScreen = previousScreen;
             activeScreen.Focus();
             previousScreen = null;
+            Debug.Log(activeScreen);
         }
 
         public void BackTo(UIScreen screen)

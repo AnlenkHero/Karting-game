@@ -296,6 +296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isModal: 0
+  firstSelected: {fileID: 545766545}
   previousScreen: {fileID: 0}
 --- !u!114 &37042518
 MonoBehaviour:
@@ -444,10 +445,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
+    m_SelectOnUp: {fileID: 183088168}
+    m_SelectOnDown: {fileID: 183088168}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -619,7 +620,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 560, y: -413.423}
+  m_AnchoredPosition: {x: 560.1222, y: -413.33334}
   m_SizeDelta: {x: 500, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &99361798
@@ -635,10 +636,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
+    m_SelectOnUp: {fileID: 1303023926}
+    m_SelectOnDown: {fileID: 1354611409}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -1461,10 +1462,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
+    m_SelectOnUp: {fileID: 59872191}
+    m_SelectOnDown: {fileID: 59872191}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -2658,7 +2659,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 416704313}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1534342000}
+        m_TargetAssemblyTypeName: Kart.UI.UIScreen, Assembly-CSharp
+        m_MethodName: FocusScreen
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 37042517}
+          m_ObjectArgumentAssemblyTypeName: Kart.UI.UIScreen, Assembly-CSharp
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &416704313
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2787,6 +2800,7 @@ GameObject:
   - component: {fileID: 429740312}
   - component: {fileID: 429740311}
   - component: {fileID: 429740317}
+  - component: {fileID: 429740318}
   m_Layer: 5
   m_Name: Game Launcher Canvas
   m_TagString: Untagged
@@ -2933,6 +2947,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pauseMenu: {fileID: 1534342000}
   settingsMenu: {fileID: 37042517}
+--- !u!114 &429740318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 429740309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 882990182da34de881a90474c4af9954, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resumeButton: {fileID: 1596117732}
+  settingsButton: {fileID: 416704312}
+  leaveButton: {fileID: 1098520873}
+  escapeMenuScreen: {fileID: 1534342000}
+  settingsScreen: {fileID: 37042517}
+  active: {fileID: 0}
+  prev: {fileID: 0}
 --- !u!1 &447321397
 GameObject:
   m_ObjectHideFlags: 0
@@ -3315,10 +3348,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
+    m_SelectOnUp: {fileID: 1354611409}
+    m_SelectOnDown: {fileID: 1190122973}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -4173,7 +4206,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 561.2, y: -163.33334}
+  m_AnchoredPosition: {x: 560.1222, y: -163.33334}
   m_SizeDelta: {x: 500, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &545766545
@@ -4189,10 +4222,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
+    m_SelectOnUp: {fileID: 729269828}
+    m_SelectOnDown: {fileID: 837106591}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -4435,7 +4468,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 560, y: -348.423}
+  m_AnchoredPosition: {x: 560.1222, y: -348.33334}
   m_SizeDelta: {x: 300, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &572520752
@@ -5267,8 +5300,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 961.2, y: -113.333336}
-  m_SizeDelta: {x: 1922.4, y: 226.66667}
+  m_AnchoredPosition: {x: 960.1222, y: -113.333336}
+  m_SizeDelta: {x: 1920.2444, y: 226.66667}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &672580613
 MonoBehaviour:
@@ -5589,7 +5622,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 561.2, y: -463.33334}
+  m_AnchoredPosition: {x: 560.1222, y: -463.33334}
   m_SizeDelta: {x: 500, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &706209506
@@ -5605,10 +5638,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
+    m_SelectOnUp: {fileID: 837106591}
+    m_SelectOnDown: {fileID: 729269828}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -5837,10 +5870,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
+    m_SelectOnUp: {fileID: 706209506}
+    m_SelectOnDown: {fileID: 545766545}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -6467,7 +6500,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 561.2, y: -313.33334}
+  m_AnchoredPosition: {x: 560.1222, y: -313.33334}
   m_SizeDelta: {x: 500, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &837106591
@@ -6483,10 +6516,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
+    m_SelectOnUp: {fileID: 545766545}
+    m_SelectOnDown: {fileID: 706209506}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -8452,7 +8485,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 560, y: -88.423004}
+  m_AnchoredPosition: {x: 560.1222, y: -88.33334}
   m_SizeDelta: {x: 300, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1137600093
@@ -8650,7 +8683,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 560, y: -153.423}
+  m_AnchoredPosition: {x: 560.1222, y: -153.33334}
   m_SizeDelta: {x: 500, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1190122973
@@ -8666,10 +8699,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
+    m_SelectOnUp: {fileID: 455047790}
+    m_SelectOnDown: {fileID: 1303023926}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -8806,6 +8839,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isModal: 0
+  firstSelected: {fileID: 183088168}
   previousScreen: {fileID: 0}
 --- !u!1 &1238088239
 GameObject:
@@ -8876,8 +8910,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 961.2, y: -966.6667}
-  m_SizeDelta: {x: 1922.4, y: 226.66667}
+  m_AnchoredPosition: {x: 960.1222, y: -966.6667}
+  m_SizeDelta: {x: 1920.2444, y: 226.66667}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1238505441
 MonoBehaviour:
@@ -9141,7 +9175,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 560, y: -478.423}
+  m_AnchoredPosition: {x: 560.1222, y: -478.33334}
   m_SizeDelta: {x: 300, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1259364390
@@ -9521,7 +9555,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 560, y: -283.423}
+  m_AnchoredPosition: {x: 560.1222, y: -283.33334}
   m_SizeDelta: {x: 500, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1303023925
@@ -9552,10 +9586,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
+    m_SelectOnUp: {fileID: 1190122973}
+    m_SelectOnDown: {fileID: 99361798}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -9777,6 +9811,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isModal: 0
+  firstSelected: {fileID: 1190122973}
   previousScreen: {fileID: 0}
 --- !u!1 &1354611407
 GameObject:
@@ -9815,7 +9850,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 560, y: -543.423}
+  m_AnchoredPosition: {x: 560.1222, y: -543.3334}
   m_SizeDelta: {x: 500, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1354611409
@@ -9831,10 +9866,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
+    m_SelectOnUp: {fileID: 99361798}
+    m_SelectOnDown: {fileID: 455047790}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -10445,8 +10480,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 960, y: -113.42301}
-  m_SizeDelta: {x: 1920, y: 226.84602}
+  m_AnchoredPosition: {x: 960.1222, y: -113.333336}
+  m_SizeDelta: {x: 1920.2444, y: 226.66667}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1407659962
 MonoBehaviour:
@@ -10520,6 +10555,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isModal: 0
+  firstSelected: {fileID: 276122994}
   previousScreen: {fileID: 0}
 --- !u!114 &1410238383
 MonoBehaviour:
@@ -11307,7 +11343,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1534341998}
-  - component: {fileID: 1534341999}
   - component: {fileID: 1534342000}
   m_Layer: 5
   m_Name: Escape Panel
@@ -11338,23 +11373,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1534341999
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1534341997}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 882990182da34de881a90474c4af9954, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  resumeButton: {fileID: 1596117732}
-  settingsButton: {fileID: 416704312}
-  leaveButton: {fileID: 1098520873}
-  escapeMenuScreen: {fileID: 1534342000}
-  settingsScreen: {fileID: 37042517}
 --- !u!114 &1534342000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11368,6 +11386,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isModal: 0
+  firstSelected: {fileID: 1596117732}
   previousScreen: {fileID: 0}
 --- !u!1 &1539773933
 GameObject:
@@ -11960,7 +11979,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1596117733}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1534342000}
+        m_TargetAssemblyTypeName: Kart.UI.UIScreen, Assembly-CSharp
+        m_MethodName: Back
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1596117733
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12925,8 +12956,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 960, y: -540.26904}
-  m_SizeDelta: {x: 1920, y: 626.846}
+  m_AnchoredPosition: {x: 960.1222, y: -540}
+  m_SizeDelta: {x: 1920.2444, y: 626.6667}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1660250653
 MonoBehaviour:
@@ -13872,7 +13903,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 560, y: -218.423}
+  m_AnchoredPosition: {x: 560.1222, y: -218.33334}
   m_SizeDelta: {x: 300, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1872502540
@@ -15395,8 +15426,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 961.2, y: -540}
-  m_SizeDelta: {x: 1922.4, y: 626.6667}
+  m_AnchoredPosition: {x: 960.1222, y: -540}
+  m_SizeDelta: {x: 1920.2444, y: 626.6667}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2115321886
 MonoBehaviour:
@@ -15452,8 +15483,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 960, y: -967.11505}
-  m_SizeDelta: {x: 1920, y: 226.84602}
+  m_AnchoredPosition: {x: 960.1222, y: -966.6667}
+  m_SizeDelta: {x: 1920.2444, y: 226.66667}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2129282457
 MonoBehaviour:
