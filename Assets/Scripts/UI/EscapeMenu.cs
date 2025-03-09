@@ -16,29 +16,20 @@ namespace Kart.UI
         
         private void Awake()
         {
-            //UIScreen.Focus(escapeMenuScreen);
-           // resumeButton.onClick.AddListener(Resume);
-            //settingsButton.onClick.AddListener(Settings);
+            resumeButton.onClick.AddListener(Resume);
+            settingsButton.onClick.AddListener(Settings);
             leaveButton.onClick.AddListener(Leave);
         }
         
-        private void Update()
-        {
-            if(Input.GetKeyDown(KeyCode.Escape))
-            {
-                UIScreen.BackToInitial();
-                UIScreen.rootScreen.FocusScreen(escapeMenuScreen);
-            }
-        }
 
         private void Resume()
         {
-            escapeMenuScreen.Back();
+            InterfaceManager.Instance.CloseActiveScreen();
         }
 
         private void Settings()
         {
-            escapeMenuScreen.FocusScreen(settingsScreen);
+            InterfaceManager.Instance.ShowScreen(InterfaceManager.Instance.SettingsMenu);
         }
 
         private void Leave()

@@ -163,7 +163,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         if (status == ConnectionStatus.Disconnected || status == ConnectionStatus.Failed)
         {
             SceneManager.LoadScene(LevelManager.MAIN_MENU_SCENE);
-            UIScreen.BackToInitial();
+            InterfaceManager.Instance.CloseToRoot();
         }
     }
 
@@ -316,6 +316,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         // 6) Optionally load your game scene or do any other "start" logic
         Debug.Log("All players joined. Starting the game now...");
+        InterfaceManager.Instance.SetRootScreen(null);
         _volumeProfile.profile = ResourceManager.Instance.tracks[0].volumeProfile;
         LevelManager.LoadTrack(ResourceManager.Instance.tracks[0].buildIndex);
     }

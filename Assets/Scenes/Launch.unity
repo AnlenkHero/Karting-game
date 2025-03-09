@@ -256,7 +256,7 @@ GameObject:
   - component: {fileID: 37042517}
   - component: {fileID: 37042518}
   m_Layer: 5
-  m_Name: Options Panel
+  m_Name: Settings Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -295,9 +295,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6640d8f6a1754dad8815de1321b8bfdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isModal: 0
   firstSelected: {fileID: 545766545}
-  previousScreen: {fileID: 0}
 --- !u!114 &37042518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -476,9 +474,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1232440502}
-        m_TargetAssemblyTypeName: Kart.UI.UIScreen, Assembly-CSharp
-        m_MethodName: Back
+      - m_Target: {fileID: 990392535}
+        m_TargetAssemblyTypeName: Kart.UI.InterfaceManager, Assembly-CSharp
+        m_MethodName: CloseActiveScreen
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2799,7 +2797,6 @@ GameObject:
   - component: {fileID: 429740313}
   - component: {fileID: 429740312}
   - component: {fileID: 429740311}
-  - component: {fileID: 429740317}
   - component: {fileID: 429740318}
   m_Layer: 5
   m_Name: Game Launcher Canvas
@@ -2926,6 +2923,7 @@ RectTransform:
   - {fileID: 1900591227}
   - {fileID: 1451919258}
   - {fileID: 1420965946}
+  - {fileID: 1152215337}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -2933,20 +2931,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &429740317
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 429740309}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 541e8a10cf59470db67e02c0e5a58881, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pauseMenu: {fileID: 1534342000}
-  settingsMenu: {fileID: 37042517}
 --- !u!114 &429740318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2964,8 +2948,6 @@ MonoBehaviour:
   leaveButton: {fileID: 1098520873}
   escapeMenuScreen: {fileID: 1534342000}
   settingsScreen: {fileID: 37042517}
-  active: {fileID: 0}
-  prev: {fileID: 0}
 --- !u!1 &447321397
 GameObject:
   m_ObjectHideFlags: 0
@@ -3379,9 +3361,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1353145354}
-        m_TargetAssemblyTypeName: Kart.UI.UIScreen, Assembly-CSharp
-        m_MethodName: Back
+      - m_Target: {fileID: 990392535}
+        m_TargetAssemblyTypeName: Kart.UI.InterfaceManager, Assembly-CSharp
+        m_MethodName: CloseActiveScreen
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5901,9 +5883,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 37042517}
-        m_TargetAssemblyTypeName: Kart.UI.UIScreen, Assembly-CSharp
-        m_MethodName: Back
+      - m_Target: {fileID: 990392535}
+        m_TargetAssemblyTypeName: Kart.UI.InterfaceManager, Assembly-CSharp
+        m_MethodName: CloseActiveScreen
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7538,9 +7520,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1410238382}
-        m_TargetAssemblyTypeName: Kart.UI.UIScreen, Assembly-CSharp
-        m_MethodName: Back
+      - m_Target: {fileID: 990392535}
+        m_TargetAssemblyTypeName: Kart.UI.InterfaceManager, Assembly-CSharp
+        m_MethodName: CloseActiveScreen
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7714,6 +7696,100 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 0
+--- !u!1 &990392530
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 990392531}
+  - component: {fileID: 990392535}
+  - component: {fileID: 990392534}
+  - component: {fileID: 990392533}
+  - component: {fileID: 990392532}
+  m_Layer: 5
+  m_Name: Interface Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &990392531
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990392530}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.371875, y: 0.371875, z: 0.371875}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 960.0001, y: 540.5043}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &990392532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990392530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed4d8577e0204438841dc56fcef001c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  escapeMenu: {fileID: 1534342000}
+  settingsMenu: {fileID: 37042517}
+--- !u!114 &990392533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990392530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38a42299beea490493c0340b50a7f86e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  screenHandler: {fileID: 990392534}
+--- !u!114 &990392534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990392530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5f01a8eda7c41f8bb277cc944b7a4a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  globalScreenStorage: {fileID: 990392532}
+  dummyRootScreen: {fileID: 1152215338}
+--- !u!114 &990392535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990392530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 541e8a10cf59470db67e02c0e5a58881, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  screenHandler: {fileID: 990392534}
+  inputHandler: {fileID: 990392533}
 --- !u!1 &995445252
 GameObject:
   m_ObjectHideFlags: 0
@@ -8646,6 +8722,55 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!1 &1152215336
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1152215337}
+  - component: {fileID: 1152215338}
+  m_Layer: 5
+  m_Name: Dummy UI Screen
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1152215337
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1152215336}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 429740316}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1152215338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1152215336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6640d8f6a1754dad8815de1321b8bfdc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  firstSelected: {fileID: 0}
 --- !u!1 &1190122971
 GameObject:
   m_ObjectHideFlags: 0
@@ -8838,9 +8963,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6640d8f6a1754dad8815de1321b8bfdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isModal: 0
   firstSelected: {fileID: 183088168}
-  previousScreen: {fileID: 0}
 --- !u!1 &1238088239
 GameObject:
   m_ObjectHideFlags: 0
@@ -9810,9 +9933,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6640d8f6a1754dad8815de1321b8bfdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isModal: 0
   firstSelected: {fileID: 1190122973}
-  previousScreen: {fileID: 0}
 --- !u!1 &1354611407
 GameObject:
   m_ObjectHideFlags: 0
@@ -10554,9 +10675,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6640d8f6a1754dad8815de1321b8bfdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isModal: 0
   firstSelected: {fileID: 276122994}
-  previousScreen: {fileID: 0}
 --- !u!114 &1410238383
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10599,7 +10718,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1420965945}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -11385,9 +11504,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6640d8f6a1754dad8815de1321b8bfdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isModal: 0
   firstSelected: {fileID: 1596117732}
-  previousScreen: {fileID: 0}
 --- !u!1 &1539773933
 GameObject:
   m_ObjectHideFlags: 0
@@ -11980,9 +12097,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1534342000}
-        m_TargetAssemblyTypeName: Kart.UI.UIScreen, Assembly-CSharp
-        m_MethodName: Back
+      - m_Target: {fileID: 990392535}
+        m_TargetAssemblyTypeName: Kart.UI.InterfaceManager, Assembly-CSharp
+        m_MethodName: CloseActiveScreen
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -12881,27 +12998,27 @@ MonoBehaviour:
   m_MoveRepeatDelay: 0.5
   m_MoveRepeatRate: 0.1
   m_XRTrackingOrigin: {fileID: 0}
-  m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018,
+  m_ActionsAsset: {fileID: -944628639613478452, guid: 665fcd90424e7fb45bef458a67f78002,
     type: 3}
-  m_PointAction: {fileID: -1654692200621890270, guid: ca9f5fa95ffab41fb9a615ab714db018,
+  m_PointAction: {fileID: -6004031066839046661, guid: 665fcd90424e7fb45bef458a67f78002,
     type: 3}
-  m_MoveAction: {fileID: -8784545083839296357, guid: ca9f5fa95ffab41fb9a615ab714db018,
+  m_MoveAction: {fileID: 1102163416142001319, guid: 665fcd90424e7fb45bef458a67f78002,
     type: 3}
-  m_SubmitAction: {fileID: 392368643174621059, guid: ca9f5fa95ffab41fb9a615ab714db018,
+  m_SubmitAction: {fileID: -2342946974288366005, guid: 665fcd90424e7fb45bef458a67f78002,
     type: 3}
-  m_CancelAction: {fileID: 7727032971491509709, guid: ca9f5fa95ffab41fb9a615ab714db018,
+  m_CancelAction: {fileID: -821589102811894382, guid: 665fcd90424e7fb45bef458a67f78002,
     type: 3}
-  m_LeftClickAction: {fileID: 3001919216989983466, guid: ca9f5fa95ffab41fb9a615ab714db018,
+  m_LeftClickAction: {fileID: 7297957455815284745, guid: 665fcd90424e7fb45bef458a67f78002,
     type: 3}
-  m_MiddleClickAction: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018,
+  m_MiddleClickAction: {fileID: 3216763748560994595, guid: 665fcd90424e7fb45bef458a67f78002,
     type: 3}
-  m_RightClickAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018,
+  m_RightClickAction: {fileID: -9065535492708814976, guid: 665fcd90424e7fb45bef458a67f78002,
     type: 3}
-  m_ScrollWheelAction: {fileID: 6240969308177333660, guid: ca9f5fa95ffab41fb9a615ab714db018,
+  m_ScrollWheelAction: {fileID: 7308158352554656339, guid: 665fcd90424e7fb45bef458a67f78002,
     type: 3}
-  m_TrackedDevicePositionAction: {fileID: 6564999863303420839, guid: ca9f5fa95ffab41fb9a615ab714db018,
+  m_TrackedDevicePositionAction: {fileID: 7360735035677278195, guid: 665fcd90424e7fb45bef458a67f78002,
     type: 3}
-  m_TrackedDeviceOrientationAction: {fileID: 7970375526676320489, guid: ca9f5fa95ffab41fb9a615ab714db018,
+  m_TrackedDeviceOrientationAction: {fileID: 7685731793861151265, guid: 665fcd90424e7fb45bef458a67f78002,
     type: 3}
   m_DeselectOnBackgroundClick: 0
   m_PointerBehavior: 0
@@ -15515,3 +15632,4 @@ SceneRoots:
   - {fileID: 729406058}
   - {fileID: 1511245127}
   - {fileID: 429740316}
+  - {fileID: 990392531}

@@ -1,35 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using Kart.Helpers;
-using Kart.UI;
+﻿using Kart.Helpers;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace Kart.Managers
+namespace Kart.UI
 {
     public class InterfaceManager : MonoBehaviour
     {
-        public UIScreen pauseMenu;
-        public UIScreen settingsMenu;
-
         public static InterfaceManager Instance => Singleton<InterfaceManager>.Instance;
 
-        private void OnEnable()
+        [SerializeField] private InterfaceScreenHandler screenHandler;
+        [SerializeField] private InterfaceInputHandler inputHandler;
+
+        private void Awake()
         {
-            DontDestroyOnLoad(this);
+            DontDestroyOnLoad(gameObject);
         }
 
-        public void OpenPauseMenu()
+        public void ShowScreen(UIScreen screen)
         {
-            if (UIScreen.activeScreen != pauseMenu)
-            {
-                UIScreen.Focus(pauseMenu);
-            }
+            if (screenHandler != null)
+                screenHandler.ShowScreen(screen);
+        }
+
+        public void CloseActiveScreen()
+        {
+            if (screenHandler != null)
+                screenHandler.CloseActiveScreen();
+        }
+
+        public void CloseToRoot()
+        {
+            if (screenHandler != null)
+                screenHandler.CloseToRoot();
+        }
+
+        public void SetRootScreen(UIScreen screen)
+        {
+            screenHandler.SetRootScreen(screen);
         }
         
-        public void OpenSettingsMenu()
-        {
-            UIScreen.Focus(settingsMenu);
-        }
+
+        public UIScreen ActiveScreen => screenHandler != null ? screenHandler.ActiveScreen : null;
+        public UIScreen RootScreen => screenHandler != null ? screenHandler.RootScreen : null;
+        public UIScreen PauseMenuScreen => screenHandler != null ? screenHandler.EscapeMenuScreen : null;
+
+        public UIScreen SettingsMenu => screenHandler != null ? screenHandler.SettingsMenuScreen : null;
     }
 }

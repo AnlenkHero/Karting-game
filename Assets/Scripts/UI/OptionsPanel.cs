@@ -25,22 +25,22 @@ namespace Kart.UI
         
         private void Graphics()
         {
-            optionsScreen.FocusScreen(graphicsScreen);
+            InterfaceManager.Instance.ShowScreen(graphicsScreen);
         }
         
         private void Audio()
         {
-            optionsScreen.FocusScreen(audioScreen);
+            InterfaceManager.Instance.ShowScreen(audioScreen);
         }
         
         private void User()
         {
-            optionsScreen.FocusScreen(userScreen);
+            InterfaceManager.Instance.ShowScreen(userScreen);
         }
         
         private void Back()
         {
-            optionsScreen.Back();
+            InterfaceManager.Instance.CloseActiveScreen();
         }
     }
 }

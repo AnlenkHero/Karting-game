@@ -14,8 +14,7 @@ namespace Kart.UI
             matchmakingButton.onClick.AddListener(StartMatchmaking);
             settingsButton.onClick.AddListener(OpenSettingsMenu);
             var n = GetComponent<UIScreen>();
-            UIScreen.SetRootScreen(n);
-            UIScreen.Focus(n);
+            InterfaceManager.Instance.SetRootScreen(n);
         }
 
         private void StartMatchmaking()
@@ -25,7 +24,7 @@ namespace Kart.UI
 
         private void OpenSettingsMenu()
         {
-            UIScreen.Focus(InterfaceManager.Instance.settingsMenu);
+            InterfaceManager.Instance.ShowScreen(InterfaceManager.Instance.SettingsMenu);
         }
     }
 }
