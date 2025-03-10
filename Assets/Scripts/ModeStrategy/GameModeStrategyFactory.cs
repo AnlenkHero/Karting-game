@@ -1,3 +1,4 @@
+using System;
 using Fusion;
 using Kart.UI;
 using Kart.UI.Strategy;
@@ -9,7 +10,12 @@ namespace Kart.ModeStrategy
     {
         [SerializeField] private Transform parent;
         [SerializeField] private LapsUiView lapsUiView;
-        
+
+        private void Awake()
+        {
+            GameManager.Instance.strategyFactory = this;
+        }
+
         public IGameModeStrategy GetGameMode(GameType gameType)
         {
             switch (gameType.modeType)

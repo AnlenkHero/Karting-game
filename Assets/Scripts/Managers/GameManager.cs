@@ -13,7 +13,7 @@ namespace Kart
 {
     public class GameManager : NetworkBehaviour
     {
-        [SerializeField] private GameModeStrategyFactory strategyFactory;
+        public GameModeStrategyFactory strategyFactory;
         
         public static GameManager Instance { get; private set; }
 
@@ -47,7 +47,7 @@ namespace Kart
             }
         }
 
-        private void Start()
+        public void PrepareForRace()
         {
             CurrentGameState = GameState.PreGame;
 

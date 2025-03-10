@@ -20,6 +20,7 @@ namespace Kart.TrackPackage
         private void Awake()
         {
             GameManager.CurrentTrack = this;
+            GameManager.Instance.PrepareForRace();
         }
 
         public void Initialize()

@@ -221,7 +221,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         Debug.Log($"Player {player} Joined!");
         if (runner.IsServer)
         {
-            if (_gameMode == GameMode.Host)
+            if (_gameMode == GameMode.AutoHostOrClient)
                 runner.Spawn(_gameManagerPrefab, Vector3.zero, Quaternion.identity);
 
             var roomPlayer = runner.Spawn(_roomPlayerPrefab, Vector3.zero, Quaternion.identity, player);
