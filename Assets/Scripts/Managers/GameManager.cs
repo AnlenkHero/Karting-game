@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Fusion;
 using Kart.Controls;
-using Kart.Managers;
 using Kart.ModeStrategy;
 using UnityEngine;
 using Kart.TrackPackage;
@@ -13,8 +9,9 @@ namespace Kart
 {
     public class GameManager : NetworkBehaviour
     {
-        public GameModeStrategyFactory strategyFactory;
-        
+        [Networked]
+        public  GameModeStrategyFactory strategyFactory { get; set; }
+
         public static GameManager Instance { get; private set; }
 
         public GameType currentGameType;
@@ -24,7 +21,7 @@ namespace Kart
         public IGameModeStrategy Strategy { get; private set; }
         public GameState CurrentGameState { get; private set; }
 
-        
+
         public override void Spawned()
         {
             Players.Clear();
@@ -47,7 +44,8 @@ namespace Kart
             }
         }
 
-        public void PrepareForRace()
+        [Rpc]
+        public void RPC_PrepareForRace()
         {
             CurrentGameState = GameState.PreGame;
 
@@ -68,15 +66,15 @@ namespace Kart
             Strategy.InitializeMode();
             CurrentGameState = GameState.Running;
         }
+
         private void Update()
         {
-
             if (Input.GetKeyDown(KeyCode.F) && HasStateAuthority)
                 RPC_StartGame();
 
             if (CurrentGameState is GameState.Finished or GameState.PreGame)
                 return;
-            
+
             Strategy.UpdateModeLogic();
 
             Strategy.OnStandingUpdate();

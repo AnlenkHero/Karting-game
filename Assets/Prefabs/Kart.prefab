@@ -185,13 +185,13 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
     m_AsymptoteValue: 0.5
-    m_Stiffness: 1
+    m_Stiffness: 5
   m_SidewaysFriction:
     m_ExtremumSlip: 0.2
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 5
+    m_Stiffness: 10
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1166,7 +1166,7 @@ Rigidbody:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_ImplicitCom: 1
+  m_ImplicitCom: 0
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -1223,7 +1223,7 @@ MonoBehaviour:
   driftAngleThreshold: 30
   maxDriftAngle: 90
   lowSpeedTurnThreshold: 22
-  maxSteeringAngle: 45
+  maxSteeringAngle: 30
   reverseSteeringAngle: 10
   turnCurve:
     serializedVersion: 2
@@ -1744,13 +1744,13 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
     m_AsymptoteValue: 0.5
-    m_Stiffness: 1
+    m_Stiffness: 5
   m_SidewaysFriction:
     m_ExtremumSlip: 0.2
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 5
+    m_Stiffness: 10
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -3006,13 +3006,13 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
     m_AsymptoteValue: 0.5
-    m_Stiffness: 1
+    m_Stiffness: 5
   m_SidewaysFriction:
     m_ExtremumSlip: 0.2
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 5
+    m_Stiffness: 10
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -3254,13 +3254,13 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
     m_AsymptoteValue: 0.5
-    m_Stiffness: 1
+    m_Stiffness: 5
   m_SidewaysFriction:
     m_ExtremumSlip: 0.2
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 5
+    m_Stiffness: 10
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

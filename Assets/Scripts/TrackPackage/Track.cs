@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Resources;
 using Fusion;
 using Kart.Fusion;
@@ -17,10 +18,12 @@ namespace Kart.TrackPackage
         [Header("Runtime References")] public LapCheckpoint[] checkpoints;
         public FinishLine finishLine;
 
-        private void Awake()
+        
+        private IEnumerator Start()
         {
             GameManager.CurrentTrack = this;
-            GameManager.Instance.PrepareForRace();
+            yield return new WaitUntil(() => GameManager.Instance != null && GameManager.Instance.Object != null);
+            GameManager.Instance.RPC_PrepareForRace();
         }
 
         public void Initialize()

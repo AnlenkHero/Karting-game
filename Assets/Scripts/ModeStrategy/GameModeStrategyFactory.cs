@@ -1,6 +1,5 @@
 using System;
 using Fusion;
-using Kart.UI;
 using Kart.UI.Strategy;
 using UnityEngine;
 
@@ -11,10 +10,12 @@ namespace Kart.ModeStrategy
         [SerializeField] private Transform parent;
         [SerializeField] private LapsUiView lapsUiView;
 
-        private void Awake()
+        public override void Spawned()
         {
+            base.Spawned();
             GameManager.Instance.strategyFactory = this;
         }
+
 
         public IGameModeStrategy GetGameMode(GameType gameType)
         {
@@ -26,7 +27,7 @@ namespace Kart.ModeStrategy
                     return new LapsGameModeStrategy(gameType, lapsUiView);
                 }
                 default:
-                    throw new System.Exception("Unsupported Game Mode Type");
+                    throw new Exception("Unsupported Game Mode Type");
             }
         }
     }
