@@ -16,6 +16,8 @@ namespace Kart.ModeStrategy
         public int playersToRemain;
 
         public GameModeType modeType;
+
+        public float[] pointsForPlacings;
     }
 
     public enum GameModeType

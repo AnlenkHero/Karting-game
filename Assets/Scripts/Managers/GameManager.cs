@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Fusion;
 using Kart.Controls;
+using Kart.Fusion;
 using Kart.ModeStrategy;
 using UnityEngine;
 using Kart.TrackPackage;
@@ -9,9 +10,9 @@ namespace Kart
 {
     public class GameManager : NetworkBehaviour
     {
-        [Networked]
-        public  GameModeStrategyFactory strategyFactory { get; set; }
+        [Networked] public GameModeStrategyFactory strategyFactory { get; set; }
 
+        public PointsTable PointsTable = new();
         public static GameManager Instance { get; private set; }
 
         public GameType currentGameType;
@@ -48,6 +49,7 @@ namespace Kart
         public void RPC_PrepareForRace()
         {
             CurrentGameState = GameState.PreGame;
+            PointsTable.CheckAndAddNewPlayers(RoomPlayer.Players);
 
             if (CurrentTrack != null)
             {

@@ -22,7 +22,7 @@ namespace Kart.ModeStrategy
         private int halfPlayersCount;
         private readonly float halfPlayersFinishedTimer = 60f;
 
-        public LapsGameModeStrategy(GameType gameType, LapsUiView lapsUiView)
+        public LapsGameModeStrategy(GameType gameType, LapsUiView lapsUiView, GameEndUiView gameEndUiView)
         {
             this.gameType = gameType;
             this.lapsUiView = lapsUiView;
@@ -178,6 +178,21 @@ namespace Kart.ModeStrategy
         {
             var standings = GetStandings().ToList();
             lapsUiView.AddOrUpdateStanding(standings);
+            for (int i = 0; i < standings.Count; i++)
+            {
+                var standing = standings[i];
+                if (standing.status == "Finished")
+                {
+                    GameManager.Instance.PointsTable.AddPoints(
+                        RoomPlayer.Players.FirstOrDefault(p => p.Id.ToString() == standing.player),
+                        gameType.pointsForPlacings[i]);
+                }
+            }
+
+            foreach (var rp in RoomPlayer.Players)
+            {
+                Debug.Log($"{rp.Id}, {GameManager.Instance.PointsTable.GetPoints(rp)}");
+            }
         }
 
 
@@ -218,7 +233,7 @@ namespace Kart.ModeStrategy
                 // Tie-break => compare lastCheckpointCrossTime (lower = crossed earlier = leading)
                 dataA.lastCheckpointCrossTime.CompareTo(dataB.lastCheckpointCrossTime);
         }
-        
+
         private StandingsEntry BuildStandingsEntry(PlayerLapData data, int rank)
         {
             var player = data.player;

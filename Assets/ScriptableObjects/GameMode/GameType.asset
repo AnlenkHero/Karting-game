@@ -21,3 +21,10 @@ MonoBehaviour:
   matchDuration: 0
   playersToRemain: 0
   modeType: 0
+  pointsForPlacings:
+  - 10
+  - 8
+  - 6
+  - 4
+  - 2
+  - 1

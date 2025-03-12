@@ -7,9 +7,8 @@ namespace Kart.ModeStrategy
 {
     public class GameModeStrategyFactory : NetworkBehaviour
     {
-        [SerializeField] private Transform parent;
         [SerializeField] private LapsUiView lapsUiView;
-
+        [SerializeField] private GameEndUiView gameEndUiView;
         public override void Spawned()
         {
             base.Spawned();
@@ -24,7 +23,7 @@ namespace Kart.ModeStrategy
                 case GameModeType.Laps:
                 {
                     lapsUiView.gameObject.SetActive(true);
-                    return new LapsGameModeStrategy(gameType, lapsUiView);
+                    return new LapsGameModeStrategy(gameType, lapsUiView, gameEndUiView);
                 }
                 default:
                     throw new Exception("Unsupported Game Mode Type");
