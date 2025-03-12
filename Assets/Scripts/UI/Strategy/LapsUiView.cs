@@ -10,20 +10,35 @@ namespace Kart.UI.Strategy
     {
         [SerializeField] private LapsStandingView standingViewPrefab;
         [SerializeField] private Transform parent;
-
-        private readonly List<LapsStandingView> standings = new ();
+        
+        private List<LapsStandingView> standings = new ();
         private readonly List<StandingsEntry> standingsEntry = new ();
 
         private int expectedStandingsCount;
         private int updatesReceived;
 
+        private bool isDelay;
+        private Coroutine delayCoroutine;
         private Coroutine uiUpdateCoroutine;
+        
+        private const int MaxStandings = 10;
+
+        private void Start()
+        {
+            for (int i = 0; i < MaxStandings; i++)
+            {
+                var view = Instantiate(standingViewPrefab, parent);
+                view.gameObject.SetActive(false);
+                standings.Add(view);
+            }
+        }
 
         public void AddOrUpdateStanding(List<StandingsEntry> standing)
         {
-            if (standing == null || standing.Count == 0 || !HasStateAuthority)
+            if (standing == null || standing.Count == 0 || !HasStateAuthority || isDelay)
                 return;
 
+            StartCoroutine(DelayedUpdateUI());
             RpcClear();
 
             RpcSetExpectedStandingsCount(standing.Count);
@@ -107,7 +122,7 @@ namespace Kart.UI.Strategy
         private void StopUIDebounce()
         {
             if (uiUpdateCoroutine == null) return;
-            
+
             StopCoroutine(uiUpdateCoroutine);
             uiUpdateCoroutine = null;
         }
@@ -118,37 +133,36 @@ namespace Kart.UI.Strategy
             UpdateStandingsUI();
         }
 
+        private IEnumerator DelayedUpdateUI()
+        {
+            isDelay = true;
+            yield return new WaitForSeconds(0.2f);
+            isDelay = false;
+        }
+
         #endregion
-        
+
         private void UpdateStandingsUI()
         {
-            while (standings.Count < standingsEntry.Count && standings.Count < 10)
+            for (int i = 0; i < standings.Count; i++)
             {
-                var view = Instantiate(standingViewPrefab, parent);
-                standings.Add(view);
-            }
-            
-            for (int i = 0; i < standingsEntry.Count; i++)
-            {
-                if (i >= standings.Count) continue;
-                
-                standings[i].gameObject.SetActive(true);
-                UpdateStandingText(standings[i],
-                    standingsEntry[i].rank,
-                    standingsEntry[i].player,
-                    standingsEntry[i].lastLapTime,
-                    standingsEntry[i].status);
-            }
-            
-            for (int i = standingsEntry.Count; i < standings.Count; i++)
-            {
-                standings[i].gameObject.SetActive(false);
+                if (i < standingsEntry.Count)
+                {
+                    standings[i].gameObject.SetActive(true);
+                    UpdateStandingText(standings[i],
+                        standingsEntry[i].rank,
+                        standingsEntry[i].player,
+                        standingsEntry[i].lastLapTime,
+                        standingsEntry[i].status);
+                }
+                else
+                {
+                    standings[i].gameObject.SetActive(false);
+                }
             }
         }
 
-
-        private void UpdateStandingText(LapsStandingView view, int rank, string playerName, string lastLapTime,
-            string status)
+        private void UpdateStandingText(LapsStandingView view, int rank, string playerName, string lastLapTime, string status)
         {
             view.SetText(ComposeStandingMessage(rank, playerName, lastLapTime, status));
         }

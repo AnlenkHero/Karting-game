@@ -135,7 +135,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             SessionName = sessionName,
             ObjectProvider = _pool,
             SceneManager = _levelManager,
-            PlayerCount = 2,
+            PlayerCount = 3,
             EnableClientSessionCreation = enableCreation,
             MatchmakingMode = MatchmakingMode.FillRoom
         };
@@ -230,8 +230,12 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             // 3) Check if we reached MaxPlayers -> automatically start the game
             if (runner.SessionInfo.PlayerCount == runner.SessionInfo.MaxPlayers)
             {
-                GameStarted();
+                ServerGameStarted();
             }
+        }
+        if (runner.SessionInfo.PlayerCount == runner.SessionInfo.MaxPlayers)
+        {
+            ClientGameStarted();
         }
 
         SetConnectionStatus(ConnectionStatus.Connected);
@@ -302,23 +306,27 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     /// Called by the server once all slots are filled. We close the session and hide the searching UI.
     /// You can also load a game scene here if desired.
     /// </summary>
-    private void GameStarted()
+    private void ServerGameStarted()
     {
-        // 4) Mark the session as closed
         _runner.SessionInfo.IsOpen = false;
-
-        // 5) Hide the searching UI
-        if (_searchingUI)
-        {
-            _searchingUI.gameObject.SetActive(false);
-            _searchingUI.StopSearching();
-        }
-
-        // 6) Optionally load your game scene or do any other "start" logic
+        
         Debug.Log("All players joined. Starting the game now...");
-        InterfaceManager.Instance.SetRootScreen(null);
+        
         _volumeProfile.profile = ResourceManager.Instance.tracks[0].volumeProfile;
         LevelManager.LoadTrack(ResourceManager.Instance.tracks[0].buildIndex);
+    }
+    
+    private void ClientGameStarted()
+    {
+        Rpc_DisableSearchingUI();
+        InterfaceManager.Instance.SetRootScreen(null);
+    }
+
+    [Rpc]
+    private void Rpc_DisableSearchingUI()
+    {
+        _searchingUI.gameObject.SetActive(false);
+        _searchingUI.StopSearching();
     }
 
     private static (string, string) ShutdownReasonToHuman(ShutdownReason reason)

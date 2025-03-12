@@ -96,6 +96,7 @@ namespace Kart
 
         private void EndGameWithStandings()
         {
+            Debug.Log("Game Ended with standings.");
             Strategy.OnRaceFinished();
             CurrentGameState = GameState.Finished;
         }

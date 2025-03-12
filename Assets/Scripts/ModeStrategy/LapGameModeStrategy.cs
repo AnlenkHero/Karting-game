@@ -61,7 +61,7 @@ namespace Kart.ModeStrategy
             if (halfFinishTriggered && GameManager.Instance.ElapsedTime >= halfFinishDeadline)
                 return true;
 
-            return finishedCount >= GameManager.Players.Count;
+            return finishedCount >= RoomPlayer.Players.Count;
         }
 
         public void UpdateModeLogic()
@@ -132,7 +132,7 @@ namespace Kart.ModeStrategy
             halfFinishTriggered = true;
             halfFinishDeadline = GameManager.Instance.ElapsedTime + halfPlayersFinishedTimer;
             Debug.Log(
-                $"Half of the players finished ({finishedCount}/{GameManager.Players.Count}). " +
+                $"Half of the players finished ({finishedCount}/{RoomPlayer.Players.Count}). " +
                 $"Starting {halfPlayersFinishedTimer}s countdown...");
         }
 
@@ -218,10 +218,7 @@ namespace Kart.ModeStrategy
                 // Tie-break => compare lastCheckpointCrossTime (lower = crossed earlier = leading)
                 dataA.lastCheckpointCrossTime.CompareTo(dataB.lastCheckpointCrossTime);
         }
-
-        /// <summary>
-        /// Builds a single StandingsEntry for sorted player data.
-        /// </summary>
+        
         private StandingsEntry BuildStandingsEntry(PlayerLapData data, int rank)
         {
             var player = data.player;
