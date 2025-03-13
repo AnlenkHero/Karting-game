@@ -66,16 +66,15 @@ namespace Kart.TrackPackage
         public void SpawnPlayer(NetworkRunner runner, RoomPlayer player)
         {
             var index = RoomPlayer.Players.IndexOf(player);
-    //        var point = trackData.spawnPoints[index];
+            var spawnPoint = trackData.spawnPoints[index];
 
             var prefabId = player.KartId;
             var prefab = ResourceManager.Instance.kartDefinitions[prefabId].prefab;
-
-            // Spawn player
+            
             var entity = runner.Spawn(
                 prefab,
-                Vector3.zero,
-                quaternion.identity,
+                spawnPoint.position,
+                spawnPoint.rotation,
                 player.Object.InputAuthority
             );
             

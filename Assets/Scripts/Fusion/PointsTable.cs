@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Kart.Fusion
 {
@@ -45,6 +46,13 @@ namespace Kart.Fusion
                     playerPoints.Add(player, 0f);
                 }
             }
+        }
+        
+        public List<KeyValuePair<RoomPlayer, float>> GetSortedPlayerPointsList()
+        {
+            return playerPoints
+                .OrderByDescending(entry => entry.Value)
+                .ToList();
         }
 
         // Returns the RoomPlayer with the highest cumulative points.

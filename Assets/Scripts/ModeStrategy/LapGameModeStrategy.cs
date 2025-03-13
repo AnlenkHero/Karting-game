@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Kart.Controls;
 using Kart.Fusion;
@@ -11,11 +12,11 @@ namespace Kart.ModeStrategy
     public class LapsGameModeStrategy : ICheckpointGameModeStrategy
     {
         private readonly GameType gameType;
+        private readonly LapsUiView lapsUiView;
+        private readonly GameEndUiView gameEndUiView;
+        
         private int requiredLaps;
-
         private readonly List<PlayerLapData> playerLapData = new();
-
-        private LapsUiView lapsUiView;
         private int finishedCount;
         private bool halfFinishTriggered;
         private float halfFinishDeadline;
@@ -26,6 +27,7 @@ namespace Kart.ModeStrategy
         {
             this.gameType = gameType;
             this.lapsUiView = lapsUiView;
+            this.gameEndUiView = gameEndUiView;
         }
 
         public void InitializeMode()
@@ -178,21 +180,35 @@ namespace Kart.ModeStrategy
         {
             var standings = GetStandings().ToList();
             lapsUiView.AddOrUpdateStanding(standings);
+            PointsTable pointsForRace = new PointsTable();
+            
             for (int i = 0; i < standings.Count; i++)
             {
                 var standing = standings[i];
                 if (standing.status == "Finished")
                 {
+                    pointsForRace.AddPoints(RoomPlayer.Players.FirstOrDefault(p => p.Id.ToString() == standing.player)!, gameType.pointsForPlacings[i]);
+                    
                     GameManager.Instance.PointsTable.AddPoints(
                         RoomPlayer.Players.FirstOrDefault(p => p.Id.ToString() == standing.player),
                         gameType.pointsForPlacings[i]);
                 }
             }
+            
+            gameEndUiView.ShowEndGameUI(pointsForRace);
 
             foreach (var rp in RoomPlayer.Players)
             {
                 Debug.Log($"{rp.Id}, {GameManager.Instance.PointsTable.GetPoints(rp)}");
             }
+
+            GameManager.Instance.StartCoroutine(WaitForYou());
+        }
+
+        private IEnumerator WaitForYou()
+        {
+            yield return new WaitForSeconds(3);
+            gameEndUiView.ShowEndGameUI(GameManager.Instance.PointsTable);
         }
 
 

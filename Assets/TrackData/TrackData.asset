@@ -12,6 +12,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c392e31decaf4e60bc8bfe6db73ad87b, type: 3}
   m_Name: TrackData
   m_EditorClassIdentifier: 
+  spawnPoints:
+  - index: 0
+    position: {x: 93.5, y: 0, z: -300}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  - index: 1
+    position: {x: 140, y: 0, z: -300}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  - index: 2
+    position: {x: 93.5, y: 0, z: -350}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  - index: 3
+    position: {x: 140, y: 0, z: -350}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  - index: 4
+    position: {x: 93.5, y: 0, z: -400}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  - index: 5
+    position: {x: 140, y: 0, z: -400}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  - index: 6
+    position: {x: 93.5, y: 0, z: -450}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  - index: 7
+    position: {x: 140, y: 0, z: -450}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  - index: 8
+    position: {x: 93.5, y: 0, z: -500}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  - index: 7
+    position: {x: 140, y: 0, z: -450}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
   checkpoints:
   - index: 3
     position: {x: 135.6, y: 9.105732, z: 242.9}

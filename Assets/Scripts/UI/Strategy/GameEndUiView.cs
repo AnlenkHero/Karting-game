@@ -1,27 +1,28 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using Kart.Fusion;
 using UnityEngine;
 using UnityEngine.UI;
 using Kart.ModeStrategy;
+using TMPro;
 
 public class GameEndUiView : MonoBehaviour
 {
-    [SerializeField] private Text standingsText;
+    [SerializeField] private TextMeshProUGUI standingsText;
     [SerializeField] private GameObject container;
     
-    public void ShowEndGameUI(List<StandingsEntry> standings)
+    public void ShowEndGameUI(PointsTable standings)
     {
         container.SetActive(true);
         standingsText.text = ComposeStandingsMessage(standings);
     }
     
-    private string ComposeStandingsMessage(List<StandingsEntry> standings)
+    private string ComposeStandingsMessage(PointsTable standings)
     {
         StringBuilder sb = new StringBuilder();
-        foreach (var entry in standings)
+        foreach (var entry in standings.GetSortedPlayerPointsList())
         {
-            string statusText = (!string.IsNullOrEmpty(entry.status) && entry.status == "Finished") ? $" - {entry.status}" : "";
-            sb.AppendLine($"{entry.rank}. {entry.player} - {entry.lastLapTime}{statusText}");
+            sb.AppendLine($"{entry.Key.Id.ToString()}: {entry.Value}");
         }
         return sb.ToString();
     }
