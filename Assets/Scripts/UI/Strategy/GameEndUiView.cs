@@ -1,32 +1,37 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using Kart.Fusion;
 using UnityEngine;
-using UnityEngine.UI;
-using Kart.ModeStrategy;
+using Kart.UI.Strategy;
 using TMPro;
 
 public class GameEndUiView : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI standingsText;
     [SerializeField] private GameObject container;
-    
+    [SerializeField] private TextMeshProUGUI standingsText;
+    [SerializeField] private GameEndUiStanding standingPrefab;
+    [SerializeField] private Transform standingsParent;
+
     public void ShowEndGameUI(PointsTable standings)
     {
         container.SetActive(true);
-        standingsText.text = ComposeStandingsMessage(standings);
+        //standingsText.text = ComposeStandingsMessage(standings);
+        ComposeStandingsMessage(standings);
     }
-    
-    private string ComposeStandingsMessage(PointsTable standings)
+
+    private void ComposeStandingsMessage(PointsTable standings)
     {
         StringBuilder sb = new StringBuilder();
-        foreach (var entry in standings.GetSortedPlayerPointsList())
+        var sortedList = standings.GetSortedPlayerPointsList();
+        for (int playerPoints = 0; playerPoints < sortedList.Count; playerPoints++)
         {
-            sb.AppendLine($"{entry.Key.Id.ToString()}: {entry.Value}");
+            int position = playerPoints + 1;
+            var nigga = Instantiate(standingPrefab, standingsParent);
+            nigga.SetData(sortedList[playerPoints].Key.Id.ToString(), position, sortedList[playerPoints].Value, null);
         }
-        return sb.ToString();
+
+        //return sb.ToString();
     }
-    
+
     public void HideEndGameUI()
     {
         container.SetActive(false);
