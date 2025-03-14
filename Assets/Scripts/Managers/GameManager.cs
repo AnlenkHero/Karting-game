@@ -79,7 +79,7 @@ namespace Kart
 
             Strategy.UpdateModeLogic();
 
-            Strategy.OnStandingUpdate();
+            Strategy.RpcOnStandingUpdate();
 
             if (!Strategy.IsGameOver()) return;
 
@@ -99,7 +99,7 @@ namespace Kart
         private void EndGameWithStandings()
         {
             Debug.Log("Game Ended with standings.");
-            Strategy.OnRaceFinished();
+            Strategy.RpcOnRaceFinished();
             CurrentGameState = GameState.Finished;
         }
     }

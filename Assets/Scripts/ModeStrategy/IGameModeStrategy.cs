@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Fusion;
 using Kart.Controls;
 
 namespace Kart.ModeStrategy
@@ -9,7 +10,9 @@ namespace Kart.ModeStrategy
         bool CheckForWinCondition(out KartController winner);
         bool IsGameOver();
         void UpdateModeLogic();
-        void OnStandingUpdate();
-        void OnRaceFinished();
+        [Rpc]
+        void RpcOnStandingUpdate();
+        [Rpc]
+        void RpcOnRaceFinished();
     }
 }

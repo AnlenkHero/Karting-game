@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Fusion;
 using Kart.Controls;
 using Kart.Fusion;
 using Kart.TrackPackage;
@@ -14,7 +15,7 @@ namespace Kart.ModeStrategy.LapStrategy
         private readonly GameType gameType;
         private readonly LapsUiView lapsUiView;
         private readonly GameEndUiView gameEndUiView;
-        
+
         private int requiredLaps;
         private readonly List<PlayerLapData> playerLapData = new();
         private int finishedCount;
@@ -170,31 +171,35 @@ namespace Kart.ModeStrategy.LapStrategy
                 .Select((kvp, i) => BuildStandingsEntry(kvp, i + 1));
         }
 
-        public void OnStandingUpdate()
+        [Rpc]
+        public void RpcOnStandingUpdate()
         {
             var standings = GetStandings().ToList();
             lapsUiView.AddOrUpdateStanding(standings);
         }
 
-        public void OnRaceFinished()
+        [Rpc]
+        public void RpcOnRaceFinished()
         {
             var standings = GetStandings().ToList();
             lapsUiView.AddOrUpdateStanding(standings);
             PointsTable pointsForRace = new PointsTable();
-            
+
             for (int i = 0; i < standings.Count; i++)
             {
                 var standing = standings[i];
                 if (standing.status == "Finished")
                 {
-                    pointsForRace.AddPoints(RoomPlayer.Players.FirstOrDefault(p => p.Id.ToString() == standing.playerId)!, gameType.pointsForPlacings[i]);
-                    
+                    pointsForRace.AddPoints(
+                        RoomPlayer.Players.FirstOrDefault(p => p.Id.ToString() == standing.playerId)!,
+                        gameType.pointsForPlacings[i]);
+
                     GameManager.Instance.PointsTable.AddPoints(
                         RoomPlayer.Players.FirstOrDefault(p => p.Id.ToString() == standing.playerId),
                         gameType.pointsForPlacings[i]);
                 }
             }
-            
+
             gameEndUiView.ShowEndGameUI(pointsForRace);
 
             foreach (var rp in RoomPlayer.Players)
