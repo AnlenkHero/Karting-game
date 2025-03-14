@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Fusion;
-using Kart.ModeStrategy;
+using Kart.ModeStrategy.LapStrategy;
 using UnityEngine;
 
 namespace Kart.UI.Strategy
@@ -12,7 +12,7 @@ namespace Kart.UI.Strategy
         [SerializeField] private Transform parent;
         
         private List<LapsStandingView> standings = new ();
-        private readonly List<StandingsEntry> standingsEntry = new ();
+        private readonly List<LapStandings> standingsEntry = new ();
 
         private int expectedStandingsCount;
         private int updatesReceived;
@@ -33,7 +33,7 @@ namespace Kart.UI.Strategy
             }
         }
 
-        public void AddOrUpdateStanding(List<StandingsEntry> standing)
+        public void AddOrUpdateStanding(List<LapStandings> standing)
         {
             if (standing == null || standing.Count == 0 || !HasStateAuthority || isDelay)
                 return;
@@ -46,7 +46,7 @@ namespace Kart.UI.Strategy
             for (int i = 0; i < standing.Count; i++)
             {
                 var entry = standing[i];
-                RpcUpdateStanding(i, entry.rank, entry.player, entry.lastLapTime, entry.status);
+                RpcUpdateStanding(i, entry.rank, entry.playerName, entry.lastLapTime, entry.status);
             }
         }
 
@@ -70,7 +70,7 @@ namespace Kart.UI.Strategy
             
             for (int i = 0; i < count; i++)
             {
-                standingsEntry.Add(new StandingsEntry());
+                standingsEntry.Add(new LapStandings());
             }
 
             updatesReceived = 0;
@@ -83,10 +83,10 @@ namespace Kart.UI.Strategy
         {
             if (index >= 0 && index < standingsEntry.Count)
             {
-                standingsEntry[index] = new StandingsEntry
+                standingsEntry[index] = new LapStandings
                 {
                     rank = rank,
-                    player = playerName,
+                    playerName = playerName,
                     lastLapTime = lastLapTime,
                     status = status
                 };
@@ -151,7 +151,7 @@ namespace Kart.UI.Strategy
                     standings[i].gameObject.SetActive(true);
                     UpdateStandingText(standings[i],
                         standingsEntry[i].rank,
-                        standingsEntry[i].player,
+                        standingsEntry[i].playerName,
                         standingsEntry[i].lastLapTime,
                         standingsEntry[i].status);
                 }

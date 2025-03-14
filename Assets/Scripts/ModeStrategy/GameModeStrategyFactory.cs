@@ -1,5 +1,6 @@
 using System;
 using Fusion;
+using Kart.ModeStrategy.LapStrategy;
 using Kart.UI.Strategy;
 using UnityEngine;
 

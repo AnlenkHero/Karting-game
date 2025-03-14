@@ -46,7 +46,6 @@ namespace Kart.Fusion
             if (Object.HasInputAuthority)
             {
                 Local = this;
-
                 PlayerChanged?.Invoke(this);
                 RPC_SetPlayerStats(ClientInfo.Username, ClientInfo.KartId);
             }
@@ -74,7 +73,7 @@ namespace Kart.Fusion
         public void Spawn(NetworkRunner networkRunner, RoomPlayer player, NetworkPrefabRef kart)
         {
             runner = networkRunner;
-            
+
             if (runner.GameMode == GameMode.Host)
             {
                 var index = RoomPlayer.Players.IndexOf(player);
@@ -98,10 +97,10 @@ namespace Kart.Fusion
             }
         }
 
-        [Rpc(sources: RpcSources.InputAuthority, targets: RpcTargets.StateAuthority)]
+        [Rpc]
         private void RPC_SetPlayerStats(NetworkString<_32> username, int kartId)
         {
-            Username = username;
+            Username = Username = $"Player {Object.Id}"; //TODO Add ui here
             KartId = kartId;
         }
 

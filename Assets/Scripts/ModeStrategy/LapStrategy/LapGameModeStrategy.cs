@@ -7,7 +7,7 @@ using Kart.TrackPackage;
 using Kart.UI.Strategy;
 using UnityEngine;
 
-namespace Kart.ModeStrategy
+namespace Kart.ModeStrategy.LapStrategy
 {
     public class LapsGameModeStrategy : ICheckpointGameModeStrategy
     {
@@ -162,7 +162,7 @@ namespace Kart.ModeStrategy
                       $"in {data.lastLapTime:F2} seconds.");
         }
 
-        private IEnumerable<StandingsEntry> GetStandings()
+        private IEnumerable<LapStandings> GetStandings()
         {
             playerLapData.Sort(ComparePlayerResults);
 
@@ -187,10 +187,10 @@ namespace Kart.ModeStrategy
                 var standing = standings[i];
                 if (standing.status == "Finished")
                 {
-                    pointsForRace.AddPoints(RoomPlayer.Players.FirstOrDefault(p => p.Id.ToString() == standing.player)!, gameType.pointsForPlacings[i]);
+                    pointsForRace.AddPoints(RoomPlayer.Players.FirstOrDefault(p => p.Id.ToString() == standing.playerId)!, gameType.pointsForPlacings[i]);
                     
                     GameManager.Instance.PointsTable.AddPoints(
-                        RoomPlayer.Players.FirstOrDefault(p => p.Id.ToString() == standing.player),
+                        RoomPlayer.Players.FirstOrDefault(p => p.Id.ToString() == standing.playerId),
                         gameType.pointsForPlacings[i]);
                 }
             }
@@ -199,7 +199,7 @@ namespace Kart.ModeStrategy
 
             foreach (var rp in RoomPlayer.Players)
             {
-                Debug.Log($"{rp.Id}, {GameManager.Instance.PointsTable.GetPoints(rp)}");
+                Debug.Log($"{rp.Username}, {GameManager.Instance.PointsTable.GetPoints(rp)}");
             }
 
             GameManager.Instance.StartCoroutine(WaitForYou());
@@ -250,13 +250,14 @@ namespace Kart.ModeStrategy
                 dataA.lastCheckpointCrossTime.CompareTo(dataB.lastCheckpointCrossTime);
         }
 
-        private StandingsEntry BuildStandingsEntry(PlayerLapData data, int rank)
+        private LapStandings BuildStandingsEntry(PlayerLapData data, int rank)
         {
             var player = data.player;
 
-            var entry = new StandingsEntry
+            var entry = new LapStandings
             {
-                player = player.Id.ToString(),
+                playerId = player.Id.ToString(),
+                playerName = player.Username.Value,
                 rank = rank,
                 status = data.hasFinished ? "Finished" : "DNF",
                 finishTime = data.hasFinished ? $"{data.finishTime:F2}s" : "-",

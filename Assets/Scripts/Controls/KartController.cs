@@ -99,6 +99,7 @@ namespace Kart.Controls
         {
             base.Spawned();
             GameManager.Players.Add(this);
+            Runner.SetIsSimulated(Object, true);
             if (HasInputAuthority)
             {
                 cameraController.SetupCamera();

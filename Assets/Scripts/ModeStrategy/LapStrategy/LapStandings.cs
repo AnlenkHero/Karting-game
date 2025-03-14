@@ -1,15 +1,11 @@
-﻿using System.Collections.Generic;
-using Fusion;
-using Kart.Controls;
-using Kart.Fusion;
-
-namespace Kart.ModeStrategy
+﻿namespace Kart.ModeStrategy.LapStrategy
 {
     [System.Serializable]
-    public struct StandingsEntry
+    public struct LapStandings
     {
         public int rank;
-        public string player;
+        public string playerId;
+        public string playerName;
         public string status;
         public string finishTime;
         public string lapsCompleted;

@@ -135,7 +135,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             SessionName = sessionName,
             ObjectProvider = _pool,
             SceneManager = _levelManager,
-            PlayerCount = 1,
+            PlayerCount = 3,
             EnableClientSessionCreation = enableCreation,
             MatchmakingMode = MatchmakingMode.FillRoom
         };
