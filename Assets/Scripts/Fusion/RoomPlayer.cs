@@ -98,9 +98,9 @@ namespace Kart.Fusion
         }
 
         [Rpc]
-        private void RPC_SetPlayerStats(NetworkString<_32> username, int kartId)
+        public void RPC_SetPlayerStats(NetworkString<_32> username, int kartId)
         {
-            Username = Username = $"Player {Object.Id}"; //TODO Add ui here
+            Username = username;
             KartId = kartId;
         }
 

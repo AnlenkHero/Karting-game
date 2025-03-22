@@ -4,7 +4,7 @@ namespace Kart.Fusion
 {
     public static class ClientInfo {
         public static string Username {
-            get => PlayerPrefs.GetString("C_Username", string.Empty);
+            get => PlayerPrefs.GetString("C_Username", "Player");
             set => PlayerPrefs.SetString("C_Username", value);
         }
 
