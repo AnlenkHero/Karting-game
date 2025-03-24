@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Fusion;
 using Fusion.Addons.Physics;
 using Fusion.Photon.Realtime;
@@ -61,7 +62,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     /// <summary>
     /// Called by a button or similar. Joins (or creates) a matchmaking lobby.
     /// </summary>
-    public async void JoinOrCreateLobby()
+    public async Task JoinOrCreateLobby()
     {
         SetConnectionStatus(ConnectionStatus.Connecting);
 
@@ -127,27 +128,35 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     private async void StartGameSession(string sessionName, bool enableCreation)
     {
-        Debug.Log($"Starting game session: {sessionName} (Enable Creation: {enableCreation})");
-
-        var startArgs = new StartGameArgs
+        try
         {
-            GameMode = _gameMode,
-            SessionName = sessionName,
-            ObjectProvider = _pool,
-            SceneManager = _levelManager,
-            PlayerCount = 4,
-            EnableClientSessionCreation = enableCreation,
-            MatchmakingMode = MatchmakingMode.FillRoom
-        };
+            Debug.Log($"Starting game session: {sessionName} (Enable Creation: {enableCreation})");
 
-        var result = await _runner.StartGame(startArgs);
-        if (result.Ok)
-        {
-            Debug.Log("Successfully started game session: " + sessionName);
+            var startArgs = new StartGameArgs
+            {
+                GameMode = _gameMode,
+                SessionName = sessionName,
+                ObjectProvider = _pool,
+                SceneManager = _levelManager,
+                PlayerCount = 4,
+                EnableClientSessionCreation = enableCreation,
+                MatchmakingMode = MatchmakingMode.FillRoom
+            };
+
+            var result = await _runner.StartGame(startArgs);
+            if (result.Ok)
+            {
+                Debug.Log("Successfully started game session: " + sessionName);
+            }
+            else
+            {
+                Debug.LogError("Failed to start game session: " + result.ShutdownReason);
+                SetConnectionStatus(ConnectionStatus.Failed);
+            }
         }
-        else
+        catch (Exception e)
         {
-            Debug.LogError("Failed to start game session: " + result.ShutdownReason);
+            Debug.LogError("Exception in StartGameSession: " + e);
             SetConnectionStatus(ConnectionStatus.Failed);
         }
     }
@@ -160,7 +169,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         if (!Application.isPlaying)
             return;
 
-        if (status == ConnectionStatus.Disconnected || status == ConnectionStatus.Failed)
+        if ((status == ConnectionStatus.Disconnected || status == ConnectionStatus.Failed) && SceneManager.GetActiveScene().buildIndex != LevelManager.MAIN_MENU_SCENE)
         {
             SceneManager.LoadScene(LevelManager.MAIN_MENU_SCENE);
             InterfaceManager.Instance.CloseToRoot();

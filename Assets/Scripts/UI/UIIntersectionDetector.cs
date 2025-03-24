@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using TMPro;
+﻿using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,31 +6,14 @@ namespace Kart.UI
 {
     public class UIIntersectionDetector : MonoBehaviour
     {
-        [Header("References")]
+        [Header("References")] 
         public RectTransform rotatingRect;
-
-        public MainMenuButton[] menuButtons;
-
+        public Button[] menuButtons;
         public RectTransform replicationTarget;
-
         public Button replicationButton;
-
         public Image replicationImage;
-
-        private MainMenuButton currentReplicatedButton = null;
-        private Dictionary<MainMenuButton, Rect> staticButtonAABBs = new Dictionary<MainMenuButton, Rect>();
-        private void Awake()
-        {
-            foreach (MainMenuButton btn in menuButtons)
-            {
-                RectTransform btnRect = btn.GetComponent<RectTransform>();
-                Vector3[] btnCorners = new Vector3[4];
-                btnRect.GetWorldCorners(btnCorners);
-                Rect btnAABB = GetAABB(btnCorners);
-                staticButtonAABBs[btn] = btnAABB;
-            }
-        }
-
+        private Button _currentReplicatedButton;
+        
         void Update()
         {
             Vector3[] rotatingCorners = new Vector3[4];
@@ -41,17 +22,17 @@ namespace Kart.UI
 
             bool intersectionFound = false;
 
-            foreach (MainMenuButton btn in menuButtons)
+            foreach (Button btn in menuButtons.Where(x => x.gameObject.activeSelf))
             {
-                RectTransform btnRect = btn.GetComponent<RectTransform>();
+                RectTransform btnRect = btn.transform as RectTransform;
                 Vector3[] btnCorners = new Vector3[4];
                 btnRect.GetWorldCorners(btnCorners);
                 Rect btnAABB = GetAABB(btnCorners);
 
                 if (!rotatingAABB.Overlaps(btnAABB)) continue;
-                if (currentReplicatedButton != btn)
+                if (_currentReplicatedButton != btn)
                 {
-                    currentReplicatedButton = btn;
+                    _currentReplicatedButton = btn;
                     UpdateReplicationButton(btn);
                 }
 
@@ -66,15 +47,15 @@ namespace Kart.UI
             }
             else
             {
-                currentReplicatedButton = null;
+                _currentReplicatedButton = null;
                 replicationButton.gameObject.SetActive(false);
             }
         }
 
-        void UpdateReplicationButton(MainMenuButton btn)
+        void UpdateReplicationButton(Button btn)
         {
-            Image btnImage = btn.GetComponent<Image>();
-            if (btnImage != null && replicationImage != null)
+            Image btnImage = (Image)btn.targetGraphic;
+            if (btnImage && replicationImage)
             {
                 replicationImage.sprite = btnImage.sprite;
                 replicationImage.color = btnImage.color;
@@ -82,8 +63,8 @@ namespace Kart.UI
 
             replicationButton.onClick.RemoveAllListeners();
 
-            Button originalButton = btn.GetComponent<Button>();
-            if (originalButton != null)
+            Button originalButton = btn;
+            if (originalButton)
             {
                 replicationButton.onClick.AddListener(() => { originalButton.onClick.Invoke(); });
             }

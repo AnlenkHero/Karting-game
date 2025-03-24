@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Kart.Fusion;
+using Kart.Managers;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Kart.UI
@@ -14,7 +16,12 @@ namespace Kart.UI
         [SerializeField] private Button audioButton;
         [SerializeField] private Button userButton;
         [SerializeField] private Button backButton;
-        
+
+        private void OnEnable()
+        {
+            userButton.interactable = RoomPlayer.Local == null;
+        }
+
         private void Awake()
         {
             graphicsButton.onClick.AddListener(Graphics);

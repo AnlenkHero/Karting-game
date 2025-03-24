@@ -1,7 +1,8 @@
 ﻿using Kart.Helpers;
+using Kart.UI;
 using UnityEngine;
 
-namespace Kart.UI
+namespace Kart.Managers
 {
     public class InterfaceManager : MonoBehaviour
     {
