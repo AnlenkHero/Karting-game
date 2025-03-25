@@ -989,7 +989,7 @@ GameObject:
   - component: {fileID: 1229654672}
   - component: {fileID: 1229654671}
   m_Layer: 5
-  m_Name: Image (3)
+  m_Name: Quit Game Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1785,6 +1785,7 @@ MonoBehaviour:
   matchmakingButton: {fileID: 421034168}
   cancelMatchmakingButton: {fileID: 1382245714}
   settingsButton: {fileID: 79617678}
+  quitButton: {fileID: 1229654671}
   mainMenuScreen: {fileID: 2101991573}
 --- !u!1 &2138923650
 GameObject:

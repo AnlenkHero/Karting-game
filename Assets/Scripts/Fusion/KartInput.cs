@@ -54,7 +54,6 @@ namespace Kart
             public bool IsDown(uint button) => (Buttons & button) == button;
 
             public bool IsDownThisFrame(uint button) => (OneShots & button) == button;
-            public bool Nigga;
             public bool IsAccelerate => IsDown(ButtonAccelerate);
             public bool IsReverse => IsDown(ButtonReverse);
             public bool IsDriftPressed => IsDown(ButtonDrift);

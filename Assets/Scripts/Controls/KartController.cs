@@ -1,5 +1,6 @@
 using System.Linq;
 using Fusion;
+using Kart.Fusion;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -19,17 +20,19 @@ namespace Kart.Controls
 
     public class KartController : NetworkBehaviour
     {
-        [Header("Axle Information")]
-        [SerializeField] private AxleInfo[] axleInfos;
+        [Header("Axle Information")] [SerializeField]
+        private AxleInfo[] axleInfos;
 
-        [Header("Motor Attributes")]
-        [SerializeField] private float maxMotorTorque = 10f;
+        [Header("Motor Attributes")] [SerializeField]
+        private float maxMotorTorque = 10f;
+
         [SerializeField] private float maxSpeed = 100f;
         [SerializeField] private float speedRatio = 5f;
         [SerializeField] private float engineBrakingForce = 50f;
 
-        [Header("Steering Attributes")]
-        [SerializeField] private float turnPersistenceTorque = 0.09f;
+        [Header("Steering Attributes")] [SerializeField]
+        private float turnPersistenceTorque = 0.09f;
+
         [SerializeField] private float driftAngleThreshold = 90f;
         [SerializeField] private float maxDriftAngle = 150f;
         [SerializeField] private float lowSpeedTurnThreshold = 22f;
@@ -38,43 +41,41 @@ namespace Kart.Controls
         [SerializeField] private AnimationCurve turnCurve;
         [SerializeField] private float turnStrength = 1500f;
 
-        [Header("Braking and Drifting")]
-        [SerializeField] private float driftSteerMultiplier = 1.5f;
+        [Header("Braking and Drifting")] [SerializeField]
+        private float driftSteerMultiplier = 1.5f;
+
         [SerializeField] private float driftFriction = 0.5f;
         [SerializeField] private float slipThreshold = 0.9f;
         [SerializeField] private float brakeTorque = 10000f;
 
-        [Header("Physics")]
-        [SerializeField] private Transform centerOfMass;
+        [Header("Physics")] [SerializeField] private Transform centerOfMass;
         [SerializeField] private float downForce = 100f;
         [SerializeField] private float gravity = Physics.gravity.y;
         [SerializeField] private float lateralGScale = 10f;
         [SerializeField] private float gravityMultiplierForAirborne = 5f;
         [SerializeField] private float airControlMultiplier = 0.5f;
 
-        [Header("Banking")]
-        [SerializeField] private float maxBankAngle = 5f;
+        [Header("Banking")] [SerializeField] private float maxBankAngle = 5f;
         [SerializeField] private float bankSpeed = 2f;
 
-        [Header("Surface Modifiers")]
-        public float frictionMultiplier = 1.0f;
+        [Header("Surface Modifiers")] public float frictionMultiplier = 1.0f;
         public float slowdownMultiplier = 1.0f;
         public float steeringSensitivityMultiplier = 1.0f;
         public float brakeMultiplier = 1.0f;
 
-        [Header("Input")]
-        [SerializeField] private InputReader playerInput;
+        [Header("Input")] [SerializeField] private InputReader playerInput;
 
-        [Header("References")]
-        [SerializeField] private Circuit circuit;
+        [Header("References")] [SerializeField]
+        private Circuit circuit;
+
         [SerializeField] private AIDriverData driverData;
         [SerializeField] private CinemachineCamera playerCamera;
         [SerializeField] private AudioListener playerAudioListener;
         [SerializeField] private Rigidbody rb;
         [SerializeField] private KartCameraController cameraController;
 
-        [Header("Player Debug Info")]
-        [SerializeField] private TextMeshPro playerText;
+        [Header("Player Debug Info")] [SerializeField]
+        private TextMeshPro playerText;
 
         private KartInput.NetworkInputData input;
         private Vector3 originalCenterOfMass;
@@ -83,12 +84,19 @@ namespace Kart.Controls
         private float driftVelocity;
         private float currentSteeringAngle;
         private float steeringVelocity;
-
+        
+        [Networked] private Vector3 NetworkedVelocity { get; set; }
+        [Networked] private string KartName { get; set; }
         // Public properties
         public float VerticalInput => input.Move.y;
+
+
         public Vector3 Velocity => kartVelocity;
+
         public float MaxSpeed => maxSpeed;
+
         public float MaxReverseSpeed => maxSpeed / speedRatio;
+
         // Use rb.rotation * Vector3.forward instead of transform.forward
         public float Direction => Mathf.Sign(Vector3.Dot(rb.rotation * Vector3.forward, rb.linearVelocity));
         public float SignedVelocityMagnitude => Velocity.magnitude * Direction;
@@ -102,10 +110,15 @@ namespace Kart.Controls
             Runner.SetIsSimulated(Object, true);
             if (HasInputAuthority)
             {
+                RPC_SetKartName(RoomPlayer.Local.Username.Value);
                 cameraController.SetupCamera();
             }
         }
-
+        [Rpc]
+        private void RPC_SetKartName(string newName, RpcInfo info = default)
+        {
+            KartName = newName;
+        }
         private void Awake()
         {
             InitializeComponents();
@@ -114,15 +127,17 @@ namespace Kart.Controls
         private void Update()
         {
             playerText.SetText(
-                $"Owner: PHOTON AWAITING NetworkObjectId: PHOTON AWAITING Velocity: {kartVelocity.magnitude:F1}");
+                $"{KartName} Velocity: {NetworkedVelocity.magnitude:F1}");
         }
-
+        
         public override void FixedUpdateNetwork()
         {
             if (GetInput(out KartInput.NetworkInputData networkInputData))
             {
                 input = networkInputData;
                 Move(input.Move);
+                
+                NetworkedVelocity = kartVelocity;
             }
         }
 
@@ -237,7 +252,8 @@ namespace Kart.Controls
         {
             float speedFactor = Mathf.Clamp01(kartVelocity.magnitude / maxSpeed);
             float adjustedTurnFactor = turnCurve.Evaluate(speedFactor);
-            float effectiveSteeringAngle = (Direction > 0 ? maxSteeringAngle : reverseSteeringAngle) * steeringSensitivityMultiplier;
+            float effectiveSteeringAngle = (Direction > 0 ? maxSteeringAngle : reverseSteeringAngle) *
+                                           steeringSensitivityMultiplier;
             float targetSteeringAngle = steeringInput * effectiveSteeringAngle * adjustedTurnFactor;
 
             targetSteeringAngle = ApplyCounterSteering(targetSteeringAngle);
@@ -249,7 +265,8 @@ namespace Kart.Controls
 
         private void ApplySteeringHelp(float steeringInput, float adjustedTurnFactor)
         {
-            if (!(Mathf.Abs(steeringInput) > 0.1f) || !(kartVelocity.magnitude > lowSpeedTurnThreshold) || !IsGrounded()) 
+            if (!(Mathf.Abs(steeringInput) > 0.1f) || !(kartVelocity.magnitude > lowSpeedTurnThreshold) ||
+                !IsGrounded())
                 return;
 
             // Replace transform.forward with rb.rotation * Vector3.forward
@@ -258,7 +275,8 @@ namespace Kart.Controls
             float baseDirectionMultiplier = Direction > 0 ? 1f : -1f;
             float driftBlendFactor = Mathf.InverseLerp(driftAngleThreshold, maxDriftAngle, angleBetween);
             float directionMultiplier = Mathf.Lerp(baseDirectionMultiplier, -baseDirectionMultiplier, driftBlendFactor);
-            Vector3 desiredTurnDirection = Vector3.up * (steeringInput * turnPersistenceTorque * adjustedTurnFactor * directionMultiplier * steeringSensitivityMultiplier);
+            Vector3 desiredTurnDirection = Vector3.up * (steeringInput * turnPersistenceTorque * adjustedTurnFactor *
+                                                         directionMultiplier * steeringSensitivityMultiplier);
             rb.AddTorque(desiredTurnDirection, ForceMode.Acceleration);
         }
 
@@ -337,7 +355,8 @@ namespace Kart.Controls
         private void HandleHandbrake()
         {
             // Replace transform.forward with the forward derived from rb.rotation
-            Vector3 forwardDirection = new Vector3((rb.rotation * Vector3.forward).x, 0f, (rb.rotation * Vector3.forward).z).normalized;
+            Vector3 forwardDirection =
+                new Vector3((rb.rotation * Vector3.forward).x, 0f, (rb.rotation * Vector3.forward).z).normalized;
             Vector3 currentVelocity = rb.linearVelocity;
             Vector3 forwardVelocity = Vector3.Project(currentVelocity, forwardDirection);
             Vector3 sidewaysVelocity = currentVelocity - forwardVelocity;
