@@ -10,6 +10,7 @@ namespace Kart.Managers
 
         [SerializeField] private InterfaceScreenHandler screenHandler;
         [SerializeField] private InterfaceInputHandler inputHandler;
+        [SerializeField] private GameObject loadingScreen;
 
         private void Awake()
         {
@@ -39,6 +40,11 @@ namespace Kart.Managers
             screenHandler.SetRootScreen(screen);
         }
         
+        public void ShowLoadingScreen(bool show)
+        {
+            if (loadingScreen != null)
+                loadingScreen.SetActive(show);
+        }
 
         public UIScreen ActiveScreen => screenHandler != null ? screenHandler.ActiveScreen : null;
         public UIScreen RootScreen => screenHandler != null ? screenHandler.RootScreen : null;

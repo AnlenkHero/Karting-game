@@ -3,88 +3,93 @@ using Fusion;
 using Kart;
 using Kart.Fusion;
 using Kart.Helpers;
+using Kart.Managers;
 using Kart.UI;
 using UnityEngine;
 
 
 namespace Managers
 {
-	public class LevelManager : NetworkSceneManagerDefault
-	{
-		public const int LAUNCH_SCENE = 0;
-		public const int MAIN_MENU_SCENE = 1;
-		
-		[SerializeField] private UIScreen _dummyScreen;
-		[SerializeField] private UIScreen _lobbyScreen;
-		[SerializeField] private CanvasFader fader;
+    public class LevelManager : NetworkSceneManagerDefault
+    {
+        public const int LAUNCH_SCENE = 0;
+        public const int MAIN_MENU_SCENE = 1;
 
-		public static LevelManager Instance => Singleton<LevelManager>.Instance;
-		
-		public static void LoadMenu()
-		{
-			Instance.Runner.LoadScene(SceneRef.FromIndex(MAIN_MENU_SCENE));
-		}
+        [SerializeField] private UIScreen _dummyScreen;
+        [SerializeField] private UIScreen _lobbyScreen;
+        [SerializeField] private CanvasFader fader;
 
-		public static void LoadTrack(int sceneIndex)
-		{
-			Instance.Runner.LoadScene(SceneRef.FromIndex(sceneIndex));
-		}
+        public static LevelManager Instance => Singleton<LevelManager>.Instance;
 
-		protected override IEnumerator LoadSceneCoroutine(SceneRef sceneRef, NetworkLoadSceneParameters sceneParams)
-		{
-			Debug.Log($"Loading scene {sceneRef}");
+        public static void LoadMenu()
+        {
+            Instance.Runner.LoadScene(SceneRef.FromIndex(MAIN_MENU_SCENE));
+        }
 
-	
-			
-			yield return base.LoadSceneCoroutine(sceneRef, sceneParams);
-			
-			// Delay one frame, so we're sure level objects has spawned locally
-			yield return null;
-			
-			// Now we can safely spawn karts
-			if (GameManager.CurrentTrack != null && sceneRef.AsIndex > MAIN_MENU_SCENE)
-			{
-				if (Runner.GameMode == GameMode.Host)
-				{
-					foreach (var player in RoomPlayer.Players)
-					{
-						player.GameState = RoomPlayer.EGameState.GameCutscene;
-						GameManager.CurrentTrack.SpawnPlayer(Runner, player);
-					}
-				}
-			}
+        public static void LoadTrack(int sceneIndex)
+        {
+            Instance.Runner.LoadScene(SceneRef.FromIndex(sceneIndex));
+        }
+
+        protected override IEnumerator LoadSceneCoroutine(SceneRef sceneRef, NetworkLoadSceneParameters sceneParams)
+        {
+            Debug.Log($"Loading scene {sceneRef}");
+            ShowLoadingScreen(true);
 
 
-		}
-		private void PreLoadScene(int scene)
-		{
-			
-			/*if (scene > MAIN_MENU_SCENE)
-			{
-				// Show an empty dummy UI screen - this will stay on during the game so that the game has a place in the navigation stack. Without this, Back() will break
-				Debug.Log("Showing Dummy");
-				UIScreen.Focus(_dummyScreen);
-			}
-			else if(scene==MAIN_MENU_SCENE)
-			{
-				foreach (RoomPlayer player in RoomPlayer.Players)
-				{
-					player.IsReady = false;
-				}
-				UIScreen.activeScreen.BackTo(_lobbyScreen);
-			}
-			else
-			{
-				UIScreen.BackToInitial();
-			}
-			fader.gameObject.SetActive(true);
-			fader.FadeIn();*/
-		}
-	
-		private void PostLoadScene()
-		{
-			fader.FadeOut();
-		}
+            yield return base.LoadSceneCoroutine(sceneRef, sceneParams);
 
-	}
+            // Delay one frame, so we're sure level objects has spawned locally
+            yield return null;
+
+            // Now we can safely spawn karts
+            if (GameManager.CurrentTrack != null && sceneRef.AsIndex > MAIN_MENU_SCENE)
+            {
+                if (Runner.GameMode == GameMode.Host)
+                {
+                    foreach (var player in RoomPlayer.Players)
+                    {
+                        player.GameState = RoomPlayer.EGameState.GameCutscene;
+                        GameManager.CurrentTrack.SpawnPlayer(Runner, player);
+                    }
+                }
+            }
+            
+            ShowLoadingScreen(false);
+        }
+
+        private void PreLoadScene(int scene)
+        {
+            /*if (scene > MAIN_MENU_SCENE)
+            {
+                // Show an empty dummy UI screen - this will stay on during the game so that the game has a place in the navigation stack. Without this, Back() will break
+                Debug.Log("Showing Dummy");
+                UIScreen.Focus(_dummyScreen);
+            }
+            else if(scene==MAIN_MENU_SCENE)
+            {
+                foreach (RoomPlayer player in RoomPlayer.Players)
+                {
+                    player.IsReady = false;
+                }
+                UIScreen.activeScreen.BackTo(_lobbyScreen);
+            }
+            else
+            {
+                UIScreen.BackToInitial();
+            }
+            fader.gameObject.SetActive(true);
+            fader.FadeIn();*/
+        }
+
+        private void PostLoadScene()
+        {
+            fader.FadeOut();
+        }
+        
+        private void ShowLoadingScreen(bool state)
+        {
+            InterfaceManager.Instance.ShowLoadingScreen(state);
+        }
+    }
 }

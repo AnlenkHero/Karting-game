@@ -169,7 +169,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         if (!Application.isPlaying)
             return;
 
-        if ((status == ConnectionStatus.Disconnected || status == ConnectionStatus.Failed) && SceneManager.GetActiveScene().buildIndex != LevelManager.MAIN_MENU_SCENE)
+        if ((status == ConnectionStatus.Disconnected || status == ConnectionStatus.Failed) &&
+            SceneManager.GetActiveScene().buildIndex != LevelManager.MAIN_MENU_SCENE)
         {
             SceneManager.LoadScene(LevelManager.MAIN_MENU_SCENE);
             InterfaceManager.Instance.CloseToRoot();
@@ -228,6 +229,10 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
         Debug.Log($"Player {player} Joined!");
+        if (runner.SessionInfo.PlayerCount == runner.SessionInfo.MaxPlayers)
+        {
+            ClientGameStarted();
+        }
         if (runner.IsServer)
         {
             if (_gameMode == GameMode.AutoHostOrClient)
@@ -241,10 +246,6 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             {
                 ServerGameStarted();
             }
-        }
-        if (runner.SessionInfo.PlayerCount == runner.SessionInfo.MaxPlayers)
-        {
-            ClientGameStarted();
         }
 
         SetConnectionStatus(ConnectionStatus.Connected);
@@ -318,13 +319,13 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     private void ServerGameStarted()
     {
         _runner.SessionInfo.IsOpen = false;
-        
+
         Debug.Log("All players joined. Starting the game now...");
-        
+
         _volumeProfile.profile = ResourceManager.Instance.tracks[0].volumeProfile;
         LevelManager.LoadTrack(ResourceManager.Instance.tracks[0].buildIndex);
     }
-    
+
     private void ClientGameStarted()
     {
         Rpc_DisableSearchingUI();
