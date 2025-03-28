@@ -89,7 +89,7 @@ namespace Kart.Controls
         [Networked] private string KartName { get; set; }
         // Public properties
         public float VerticalInput => input.Move.y;
-
+        public bool canDrive;
 
         public Vector3 Velocity => kartVelocity;
 
@@ -132,6 +132,9 @@ namespace Kart.Controls
         
         public override void FixedUpdateNetwork()
         {
+            if(!canDrive)
+                return;
+            
             if (GetInput(out KartInput.NetworkInputData networkInputData))
             {
                 input = networkInputData;

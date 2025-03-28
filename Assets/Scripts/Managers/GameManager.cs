@@ -48,6 +48,7 @@ namespace Kart
         [Rpc]
         public void RPC_PrepareForRace()
         {
+            RPC_DisableKartDriving();
             CurrentGameState = GameState.PreGame;
             PointsTable.CheckAndAddNewPlayers(RoomPlayer.Players);
 
@@ -59,20 +60,50 @@ namespace Kart
             {
                 Debug.LogWarning("No Track assigned to the GameManager.");
             }
+            
+            RPC_ResetTimer();
         }
 
         [Rpc]
         private void RPC_StartGame()
         {
+            RPC_ResetTimer();
             Strategy = strategyFactory.GetGameMode(currentGameType);
             Strategy.InitializeMode();
             CurrentGameState = GameState.Running;
+            RPC_EnableKartDriving();
+        }
+        
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private void RPC_ResetTimer()
+        {
+            ElapsedTime = 0f;
+        }
+        
+        [Rpc]
+        private void RPC_DisableKartDriving()
+        {
+            foreach (var kart in Players)
+            {
+                kart.canDrive = false;
+            }
+        }
+        
+        [Rpc]
+        private void RPC_EnableKartDriving()
+        {
+            foreach (var kart in Players)
+            {
+                kart.canDrive = true;
+            }
         }
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.F) && HasStateAuthority)
+            if (HasStateAuthority && CurrentGameState == GameState.PreGame && ElapsedTime >= 30f)
+            {
                 RPC_StartGame();
+            }
 
             if (CurrentGameState is GameState.Finished or GameState.PreGame)
                 return;

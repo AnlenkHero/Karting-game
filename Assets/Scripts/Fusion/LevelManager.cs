@@ -1,14 +1,11 @@
 ﻿using System.Collections;
 using Fusion;
-using Kart;
-using Kart.Fusion;
 using Kart.Helpers;
 using Kart.Managers;
 using Kart.UI;
 using UnityEngine;
 
-
-namespace Managers
+namespace Kart.Fusion
 {
     public class LevelManager : NetworkSceneManagerDefault
     {
@@ -38,12 +35,10 @@ namespace Managers
 
 
             yield return base.LoadSceneCoroutine(sceneRef, sceneParams);
-
-            // Delay one frame, so we're sure level objects has spawned locally
+            
             yield return null;
-
-            // Now we can safely spawn karts
-            if (GameManager.CurrentTrack != null && sceneRef.AsIndex > MAIN_MENU_SCENE)
+            
+            if (GameManager.CurrentTrack != null && sceneRef.AsIndex > MAIN_MENU_SCENE && GameManager.Instance.CurrentGameState < GameState.Running)
             {
                 if (Runner.GameMode == GameMode.Host)
                 {

@@ -12,7 +12,6 @@ using Kart.Helpers;
 using Kart.Managers;
 using Kart.Settings;
 using Kart.UI;
-using Managers;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
@@ -138,7 +137,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
                 SessionName = sessionName,
                 ObjectProvider = _pool,
                 SceneManager = _levelManager,
-                PlayerCount = 2,
+                PlayerCount = 1,
                 EnableClientSessionCreation = enableCreation,
                 MatchmakingMode = MatchmakingMode.FillRoom
             };
