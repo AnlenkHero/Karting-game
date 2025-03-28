@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Fusion;
 using Kart.Controls;
 using Kart.Fusion;
+using Kart.Managers;
 using Kart.ModeStrategy;
 using UnityEngine;
 using Kart.TrackPackage;
+
 
 namespace Kart
 {
@@ -132,6 +135,13 @@ namespace Kart
             Debug.Log("Game Ended with standings.");
             Strategy.RpcOnRaceFinished();
             CurrentGameState = GameState.Finished;
+            StartCoroutine(WaiForSceneChange(ResourceManager.Instance.tracks[0].buildIndex));
+        }
+
+        protected IEnumerator WaiForSceneChange(int sceneId)
+        {
+            yield return new WaitForSeconds(15f);
+            LevelManager.LoadTrack(sceneId);
         }
     }
 }

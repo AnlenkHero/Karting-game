@@ -137,7 +137,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
                 SessionName = sessionName,
                 ObjectProvider = _pool,
                 SceneManager = _levelManager,
-                PlayerCount = 1,
+                PlayerCount = 2,
                 EnableClientSessionCreation = enableCreation,
                 MatchmakingMode = MatchmakingMode.FillRoom
             };
@@ -232,6 +232,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
         {
             ClientGameStarted();
         }
+
         if (runner.IsServer)
         {
             if (_gameMode == GameMode.AutoHostOrClient)
@@ -253,6 +254,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
         Debug.Log($"{player.PlayerId} disconnected.");
+        var roomPlayer = RoomPlayer.GetPlayer(runner, player);
+        GameManager.Instance.PointsTable.CheckAndDeletePlayer(roomPlayer);
         RoomPlayer.RemovePlayer(runner, player);
         SetConnectionStatus(ConnectionStatus);
     }

@@ -48,6 +48,14 @@ namespace Kart.Fusion
             }
         }
         
+        public void CheckAndDeletePlayer(RoomPlayer player)
+        {
+            if (playerPoints.ContainsKey(player))
+            {
+                playerPoints.Remove(player);
+            }
+        }
+        
         public List<KeyValuePair<RoomPlayer, float>> GetSortedPlayerPointsList()
         {
             return playerPoints

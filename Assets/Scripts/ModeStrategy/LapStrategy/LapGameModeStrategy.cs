@@ -17,7 +17,7 @@ namespace Kart.ModeStrategy.LapStrategy
         private readonly GameEndUiView gameEndUiView;
 
         private int requiredLaps;
-        private readonly List<PlayerLapData> playerLapData = new();
+        private List<PlayerLapData> playerLapData = new();
         private int finishedCount;
         private bool halfFinishTriggered;
         private float halfFinishDeadline;
@@ -44,6 +44,7 @@ namespace Kart.ModeStrategy.LapStrategy
                 var newPlayer = new PlayerLapData
                 {
                     player = roomPlayer,
+
                     lapStartTime = GameManager.Instance.ElapsedTime,
                     lastCheckpointCrossTime = GameManager.Instance.ElapsedTime
                 };
@@ -166,6 +167,13 @@ namespace Kart.ModeStrategy.LapStrategy
         private IEnumerable<LapStandings> GetStandings()
         {
             playerLapData.Sort(ComparePlayerResults);
+            foreach (PlayerLapData data in playerLapData.ToList())
+            {
+                if (data.player.Object == null)
+                {
+                    playerLapData.Remove(data);
+                }
+            }
 
             return playerLapData
                 .Select((kvp, i) => BuildStandingsEntry(kvp, i + 1));
@@ -200,7 +208,7 @@ namespace Kart.ModeStrategy.LapStrategy
                 }
             }
 
-            gameEndUiView.ShowEndGameUI(pointsForRace);
+            gameEndUiView.ShowEndGameUI(GameManager.Instance.PointsTable);
 
             foreach (var rp in RoomPlayer.Players)
             {

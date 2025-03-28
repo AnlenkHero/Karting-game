@@ -126,6 +126,12 @@ namespace Kart.Fusion
 
         private static void OnStateChanged(RoomPlayer changed) => PlayerChanged?.Invoke(changed);
 
+        public static RoomPlayer GetPlayer(NetworkRunner runner, PlayerRef player)
+        {
+            var roomPlayer = Players.FirstOrDefault(x => x.Object.InputAuthority == player);
+            return roomPlayer != null ? roomPlayer : null;
+        }
+
         public static void RemovePlayer(NetworkRunner runner, PlayerRef p)
         {
             var roomPlayer = Players.FirstOrDefault(x => x.Object.InputAuthority == p);
