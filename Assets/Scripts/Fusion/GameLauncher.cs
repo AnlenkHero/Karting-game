@@ -46,8 +46,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     private void Start()
     {
         Application.runInBackground = true;
-        Application.targetFrameRate = Screen.currentResolution.refreshRate;
-        QualitySettings.vSyncCount = 1;
+
 
         DontDestroyOnLoad(gameObject);
 
@@ -137,7 +136,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
                 SessionName = sessionName,
                 ObjectProvider = _pool,
                 SceneManager = _levelManager,
-                PlayerCount = 2,
+                PlayerCount = 1,
                 EnableClientSessionCreation = enableCreation,
                 MatchmakingMode = MatchmakingMode.FillRoom
             };
