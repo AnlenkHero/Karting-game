@@ -37,7 +37,7 @@ namespace Kart.UI
             if (context.phase != InputActionPhase.Performed)
                 return;
 
-            if (GameManager.Instance != null && GameManager.Instance.CurrentGameState == GameState.Running &&
+            if (GameManager.Instance != null && GameManager.Instance.CurrentGameState >= GameState.Cutscene &&
                 InterfaceManager.Instance.ActiveScreen == InterfaceManager.Instance.RootScreen)
             {
                 screenHandler.ShowScreen(screenHandler.EscapeMenuScreen);

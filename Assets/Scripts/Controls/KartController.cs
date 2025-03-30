@@ -110,6 +110,7 @@ namespace Kart.Controls
             Runner.SetIsSimulated(Object, true);
             if (HasInputAuthority)
             {
+                playerText.gameObject.SetActive(false);
                 RPC_SetKartName(RoomPlayer.Local.Username.Value);
                 cameraController.SetupCamera();
             }
