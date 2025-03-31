@@ -70,33 +70,6 @@ namespace Kart.Fusion
             }
         }
 
-        public void Spawn(NetworkRunner networkRunner, RoomPlayer player, NetworkPrefabRef kart)
-        {
-            runner = networkRunner;
-
-            if (runner.GameMode == GameMode.Host)
-            {
-                var index = RoomPlayer.Players.IndexOf(player);
-                var point = index + Random.Range(-5, 5);
-
-                var prefab = kart;
-
-
-                // Spawn player
-                var entity = runner.Spawn(
-                    prefab,
-                    new Vector3(110 + point, 16, -394),
-                    new Quaternion?(),
-                    player.Object.InputAuthority
-                );
-                Kart = entity.GetComponent<KartController>();
-
-
-                Debug.Log($"Spawning kart for {player.Username} as {entity.name}");
-                entity.transform.name = $"Kart ({player.Username})";
-            }
-        }
-
         [Rpc]
         public void RPC_SetPlayerStats(NetworkString<_32> username, int kartId)
         {
