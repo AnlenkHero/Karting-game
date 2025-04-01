@@ -6,19 +6,19 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Launch.unity
+    path: Assets/Project Files/Scenes/Launch.unity
     guid: 4f186baa6360c2b49a9c0f4777b44b0d
   - enabled: 1
-    path: Assets/Scenes/MainMenu.unity
+    path: Assets/Project Files/Scenes/MainMenu.unity
     guid: db6ed0e33c38ee74a9154fb59135dacc
   - enabled: 1
-    path: Assets/Scenes/SimpleRacerDemo.unity
+    path: Assets/Project Files/Scenes/SimpleRacer.unity
     guid: 4817021b6c78d6c4c95b28d5b1926bd9
   - enabled: 1
-    path: Assets/Scenes/Lobby.unity
+    path: Assets/Project Files/Scenes/Lobby.unity
     guid: b6672ef67d106284b8ad4b81ffbe0375
   - enabled: 1
-    path: Assets/Scenes/LobbyTutorial_Done.unity
+    path: Assets/Project Files/Scenes/LobbyTutorial_Done.unity
     guid: be8200a558cfff84b8ce074fa6e33558
   - enabled: 0
     path: Assets/Scenes/test.unity
