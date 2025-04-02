@@ -1,15 +1,18 @@
 using Unity.Cinemachine;
 using UnityEngine;
 
-public class KartCameraController : MonoBehaviour
+namespace Kart.Project_Files.Scripts.Controls
 {
-    [SerializeField] private CinemachineCamera cinemachineCamera;
-    [SerializeField] private Camera playerCamera;
-    
-    public void SetupCamera()
+    public class KartCameraController : MonoBehaviour
     {
-        playerCamera.gameObject.SetActive(true);
-        cinemachineCamera.gameObject.SetActive(true);
-        if (Camera.main != null) Camera.main.gameObject.SetActive(false);
+        [SerializeField] private CinemachineCamera cinemachineCamera;
+        [SerializeField] private Camera playerCamera;
+    
+        public void SetupCamera()
+        {
+            playerCamera.gameObject.SetActive(true);
+            cinemachineCamera.gameObject.SetActive(true);
+            if (Camera.main != null) Camera.main.gameObject.SetActive(false);
+        }
     }
 }

@@ -5,7 +5,7 @@ using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Kart
+namespace Kart.Project_Files.Scripts.Controls
 {
     public class KartInput : NetworkBehaviour, INetworkRunnerCallbacks
     {

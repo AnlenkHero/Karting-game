@@ -3,7 +3,7 @@ using Fusion;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Kart.Helpers
+namespace Kart.Project_Files.Scripts.Helpers
 {
     /// <summary>
     /// Pool of all free instances of a single type of NetworkObject's

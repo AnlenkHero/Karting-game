@@ -1,9 +1,9 @@
-﻿using Kart.Managers;
+﻿using Kart.Project_Files.Scripts.Managers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Kart.UI
+namespace Kart.Project_Files.Scripts.Audio
 {
     public class UIAudio : MonoBehaviour, ISelectHandler, IPointerEnterHandler
     {

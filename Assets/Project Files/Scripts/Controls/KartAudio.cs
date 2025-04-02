@@ -1,8 +1,8 @@
 ﻿using System.Collections;
-using Kart.Surface;
+using Kart.Project_Files.Scripts.Surface;
 using UnityEngine;
 
-namespace Kart.Controls
+namespace Kart.Project_Files.Scripts.Controls
 {
     public class KartAudio : MonoBehaviour
     {

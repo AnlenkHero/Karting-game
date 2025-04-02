@@ -1,35 +1,37 @@
-﻿using Kart.Fusion;
-using Kart.Helpers;
+﻿using Kart.Project_Files.Scripts.Fusion;
+using Kart.Project_Files.Scripts.Helpers;
 using UnityEngine;
-using Kart.UI.Strategy;
 
-public class GameEndUiView : MonoBehaviour
+namespace Kart.Project_Files.Scripts.UI.Strategy
 {
-    [SerializeField] private GameObject container;
-    [SerializeField] private GameEndUiStanding standingPrefab;
-    [SerializeField] private Transform standingsParent;
-
-    public void ShowEndGameUI(PointsTable standings)
+    public class GameEndUiView : MonoBehaviour
     {
-        container.SetActive(true);
-        ComposeStandingsMessage(standings);
-    }
+        [SerializeField] private GameObject container;
+        [SerializeField] private GameEndUiStanding standingPrefab;
+        [SerializeField] private Transform standingsParent;
 
-    private void ComposeStandingsMessage(PointsTable standings)
-    {
-        standingsParent.ClearExistingElementsInParent();
-        var sortedList = standings.GetSortedPlayerPointsList();
-        
-        for (int playerPoints = 0; playerPoints < sortedList.Count; playerPoints++)
+        public void ShowEndGameUI(PointsTable standings)
         {
-            int position = playerPoints + 1;
-            var standing = Instantiate(standingPrefab, standingsParent);
-            standing.SetData(sortedList[playerPoints].Key.Username.ToString(), position, sortedList[playerPoints].Value, null);
+            container.SetActive(true);
+            ComposeStandingsMessage(standings);
         }
-    }
 
-    public void HideEndGameUI()
-    {
-        container.SetActive(false);
+        private void ComposeStandingsMessage(PointsTable standings)
+        {
+            standingsParent.ClearExistingElementsInParent();
+            var sortedList = standings.GetSortedPlayerPointsList();
+        
+            for (int playerPoints = 0; playerPoints < sortedList.Count; playerPoints++)
+            {
+                int position = playerPoints + 1;
+                var standing = Instantiate(standingPrefab, standingsParent);
+                standing.SetData(sortedList[playerPoints].Key.Username.ToString(), position, sortedList[playerPoints].Value, null);
+            }
+        }
+
+        public void HideEndGameUI()
+        {
+            container.SetActive(false);
+        }
     }
 }

@@ -1,7 +1,7 @@
-﻿using Kart.Controls;
+﻿using Kart.Project_Files.Scripts.Controls;
 using UnityEngine;
 
-namespace Kart.Resources
+namespace Kart.Project_Files.Scripts.Definitions
 {
     [CreateAssetMenu(fileName = "New Kart Definition", menuName = "Scriptable Object/Kart Definiton")]
     public class KartDefinition : ScriptableObject

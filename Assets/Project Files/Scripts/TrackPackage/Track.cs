@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Resources;
+﻿using System.Collections;
 using Fusion;
-using Kart.Fusion;
-using Unity.Mathematics;
+using Kart.Project_Files.Scripts.Fusion;
+using Kart.Project_Files.Scripts.Managers.Game;
 using UnityEngine;
-using ResourceManager = Kart.Managers.ResourceManager;
+using ResourceManager = Kart.Project_Files.Scripts.Managers.ResourceManager;
 
-namespace Kart.TrackPackage
+namespace Kart.Project_Files.Scripts.TrackPackage
 {
     public class Track : NetworkBehaviour
     {

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Kart.TrackPackage
+namespace Kart.Project_Files.Scripts.TrackPackage
 {
     [CreateAssetMenu(fileName = "TrackData", menuName = "Kart/TrackData")]
     public class TrackData : ScriptableObject

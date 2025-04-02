@@ -1,7 +1,7 @@
 using Fusion;
 using TMPro;
 
-namespace Kart.UI
+namespace Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy
 {
     public class LapsStandingView : NetworkBehaviour
     {

@@ -1,8 +1,8 @@
-﻿using Kart.Helpers;
-using Kart.UI;
+﻿using Kart.Project_Files.Scripts.Helpers;
+using Kart.Project_Files.Scripts.UI.Screens;
 using UnityEngine;
 
-namespace Kart.Managers
+namespace Kart.Project_Files.Scripts.Managers.Interface
 {
     public class InterfaceManager : MonoBehaviour
     {

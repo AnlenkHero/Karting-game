@@ -1,24 +1,24 @@
-﻿using Kart.Managers;
+﻿using Kart.Project_Files.Scripts.Managers;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Kart.Audio
+namespace Kart.Project_Files.Scripts.Audio
 {
     public class VolumeSlider : MonoBehaviour
     {
         [SerializeField] private Slider slider;
         public string mixerParameter;
         public string mixerGroup;
-        private float lastVal;
+        private float _lastVal;
 
         private void OnEnable()
         {
-            lastVal = slider.value = PlayerPrefs.GetFloat(mixerParameter, 0.75f);
+            _lastVal = slider.value = PlayerPrefs.GetFloat(mixerParameter, 0.75f);
             slider.onValueChanged.AddListener((val) =>
             {
-                if (Mathf.Approximately(Mathf.Round(val * 10), Mathf.Round(lastVal * 10))) return;
+                if (Mathf.Approximately(Mathf.Round(val * 10), Mathf.Round(_lastVal * 10))) return;
                 AudioManager.Play("hoverUI", mixerGroup);
-                lastVal = val;
+                _lastVal = val;
                 AudioManager.SetVolume(mixerParameter, val);
             });
         }

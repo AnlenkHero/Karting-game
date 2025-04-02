@@ -2,7 +2,7 @@
 using Fusion;
 using UnityEngine;
 
-namespace Kart.Helpers
+namespace Kart.Project_Files.Scripts.Helpers
 {
 	/// <summary>
 	/// Example of a Fusion Object Pool.

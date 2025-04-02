@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Kart.Resources
+namespace Kart.Project_Files.Scripts.Definitions
 {
     [CreateAssetMenu(fileName = "New Track", menuName = "Scriptable Object/Track Definition")]
     public class TrackDefinition : ScriptableObject

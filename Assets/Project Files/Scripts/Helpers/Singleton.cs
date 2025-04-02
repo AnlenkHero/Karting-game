@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Kart.Helpers
+namespace Kart.Project_Files.Scripts.Helpers
 {
 	/// <summary>
 	/// Be aware this will not prevent a non singleton constructor

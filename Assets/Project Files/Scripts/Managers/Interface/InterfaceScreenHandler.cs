@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using Kart.Project_Files.Scripts.UI.Screens;
 using UnityEngine;
 
-namespace Kart.UI
+namespace Kart.Project_Files.Scripts.Managers.Interface
 {
     public class InterfaceScreenHandler : MonoBehaviour
     {

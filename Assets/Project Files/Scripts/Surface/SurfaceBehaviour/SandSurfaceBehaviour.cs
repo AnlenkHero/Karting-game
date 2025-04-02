@@ -1,7 +1,7 @@
-﻿using Kart.Controls;
+﻿using Kart.Project_Files.Scripts.Controls;
 using UnityEngine;
 
-namespace Kart.Surface.SurfaceBehaviour
+namespace Kart.Project_Files.Scripts.Surface.SurfaceBehaviour
 {
     [CreateAssetMenu(fileName = "SandSurfaceBehavior", menuName = "Kart/Surface Behaviors/Sand")]
     public class SandSurfaceBehavior : SurfaceBehavior

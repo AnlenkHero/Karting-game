@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Kart.Surface
+namespace Kart.Project_Files.Scripts.Surface
 {
     [RequireComponent(typeof(Collider))]
     public class SurfaceArea : MonoBehaviour

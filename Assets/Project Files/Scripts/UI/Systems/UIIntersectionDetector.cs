@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Kart.UI
+namespace Kart.Project_Files.Scripts.UI.Systems
 {
     public class UIIntersectionDetector : MonoBehaviour
     {

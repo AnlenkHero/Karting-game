@@ -1,4 +1,4 @@
-﻿namespace Kart.ModeStrategy.LapStrategy
+﻿namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
 {
     [System.Serializable]
     public struct LapStandings

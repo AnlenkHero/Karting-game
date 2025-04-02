@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Kart.Project_Files.Scripts.Controls;
 using UnityEngine;
-using Kart.Controls;
 
-namespace Kart.Surface
+namespace Kart.Project_Files.Scripts.Surface
 {
     public class SurfaceDetector : MonoBehaviour
     {
@@ -25,7 +25,6 @@ namespace Kart.Surface
 
         private void Awake()
         {
-            // Ensure defaultSurface is assigned to avoid null references.
             if (defaultSurface == null)
             {
                 Debug.LogError("Default surface is not assigned in the Inspector!", this);
@@ -70,7 +69,6 @@ namespace Kart.Surface
 
         private void UpdateCurrentSurface()
         {
-            // Determine the highest priority SurfaceArea (or fall back to defaultSurface)
             var newSurfaceArea = overlappingSurfaceAreas
                 .OrderBy(sa => sa.priority)
                 .LastOrDefault();
@@ -87,21 +85,17 @@ namespace Kart.Surface
                     Debug.LogWarning("SurfaceArea's surface is null.", newSurfaceArea);
                 }
             }
-
-            // If the surface hasn't changed, no update is needed.
+            
             if (newSurface == currentSurface) return;
-
-            // If a transition is already running, stop it.
+            
             if (transitionRoutine != null)
             {
                 StopCoroutine(transitionRoutine);
                 transitionRoutine = null;
             }
-
-            // Start the transition between surfaces.
+            
             transitionRoutine = StartCoroutine(SmoothTransitionRoutine(currentSurface, newSurface));
-
-            // Update continuous effect flag based on the new surface.
+            
             isContinuousEffect = newSurface.isContinuousEffect && newSurface.customBehavior != null;
             currentSurface = newSurface;
 
@@ -128,7 +122,7 @@ namespace Kart.Surface
             }
 
             float elapsed = 0f;
-            // Use newSurface's friction values as a fallback if oldSurface is null.
+
             float startForwardFriction = oldSurface != null ? oldSurface.forwardFriction : newSurface.forwardFriction;
             float startSidewaysFriction = oldSurface != null ? oldSurface.sidewaysFriction : newSurface.sidewaysFriction;
 
@@ -139,8 +133,7 @@ namespace Kart.Surface
 
                 float currentForwardFriction = Mathf.Lerp(startForwardFriction, newSurface.forwardFriction, t);
                 float currentSidewaysFriction = Mathf.Lerp(startSidewaysFriction, newSurface.sidewaysFriction, t);
-
-                // Lerp the multipliers toward the new surface values.
+                
                 kartController.slowdownMultiplier = Mathf.Lerp(kartController.slowdownMultiplier, newSurface.slowdownMultiplier, t);
                 kartController.frictionMultiplier = Mathf.Lerp(kartController.frictionMultiplier, newSurface.frictionMultiplier, t);
                 kartController.steeringSensitivityMultiplier = Mathf.Lerp(kartController.steeringSensitivityMultiplier, newSurface.steeringSensitivityMultiplier, t);

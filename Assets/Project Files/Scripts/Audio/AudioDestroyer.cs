@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Kart.Audio
+namespace Kart.Project_Files.Scripts.Audio
 {
     public class AudioDestroyer : MonoBehaviour
     {

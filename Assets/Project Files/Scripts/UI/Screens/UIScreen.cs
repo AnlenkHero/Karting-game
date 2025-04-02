@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Kart.UI
+namespace Kart.Project_Files.Scripts.UI.Screens
 {
     public class UIScreen : MonoBehaviour
     {
-        [SerializeField] private Selectable firstSelected = null;
+        [SerializeField] private Selectable firstSelected;
         
         public void Show()
         {

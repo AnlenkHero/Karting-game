@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Kart
+namespace Kart.Project_Files.Scripts.Helpers
 {
     public class FollowTarget : MonoBehaviour
     {

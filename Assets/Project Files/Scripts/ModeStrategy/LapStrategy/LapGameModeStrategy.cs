@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using Fusion;
-using Kart.Controls;
-using Kart.Fusion;
-using Kart.TrackPackage;
-using Kart.UI.Strategy;
+using Kart.Project_Files.Scripts.Controls;
+using Kart.Project_Files.Scripts.Fusion;
+using Kart.Project_Files.Scripts.Managers.Game;
+using Kart.Project_Files.Scripts.TrackPackage;
+using Kart.Project_Files.Scripts.UI.Strategy;
+using Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy;
 using UnityEngine;
 
-namespace Kart.ModeStrategy.LapStrategy
+namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
 {
     public class LapsGameModeStrategy : ICheckpointGameModeStrategy
     {

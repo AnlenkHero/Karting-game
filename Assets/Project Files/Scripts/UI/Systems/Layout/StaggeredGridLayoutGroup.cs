@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Kart.UI
+namespace Kart.Project_Files.Scripts.UI.Systems.Layout
 {
     [AddComponentMenu("Layout/Staggered Grid Layout Group")]
     public class StaggeredGridLayoutGroup : LayoutGroup
@@ -12,11 +12,11 @@ namespace Kart.UI
 
         [Header("Cell Settings")]
         [Tooltip("Width and height of each cell.")]
-        public Vector2 cellSize = new Vector2(100f, 50f);
+        public Vector2 cellSize = new (100f, 50f);
 
         [Header("Spacing Settings")]
         [Tooltip("Spacing between cells (horizontal and vertical).")]
-        public Vector2 spacing = new Vector2(0f, 50f);
+        public Vector2 spacing = new (0f, 50f);
 
         [Header("Stagger Settings")]
         [Tooltip("If true, odd columns will be offset vertically.")]

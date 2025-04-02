@@ -1,10 +1,9 @@
-﻿using TMPro;
+﻿using System;
+using Kart.Project_Files.Scripts.Fusion;
+using TMPro;
 using UnityEngine;
-using System;
-using Kart.Fusion;
-using Kart.Settings;
 
-namespace Kart.UI
+namespace Kart.Project_Files.Scripts.Settings
 {
     public class NicknameSettings : MonoBehaviour, IUserSettingsOption
     {

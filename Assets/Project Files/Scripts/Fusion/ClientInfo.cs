@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Kart.Fusion
+namespace Kart.Project_Files.Scripts.Fusion
 {
     public static class ClientInfo {
         public static string Username {

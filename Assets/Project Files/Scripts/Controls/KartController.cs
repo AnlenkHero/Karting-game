@@ -1,11 +1,13 @@
 using System.Linq;
 using Fusion;
-using Kart.Fusion;
+using Kart.Project_Files.Scripts.AI;
+using Kart.Project_Files.Scripts.Fusion;
+using Kart.Project_Files.Scripts.Managers.Game;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
 
-namespace Kart.Controls
+namespace Kart.Project_Files.Scripts.Controls
 {
     [System.Serializable]
     public class AxleInfo

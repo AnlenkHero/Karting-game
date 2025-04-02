@@ -1,11 +1,11 @@
-﻿using Kart.Managers;
+﻿using Kart.Project_Files.Scripts.Managers;
 using UnityEngine;
 
-namespace Kart.Fusion
+namespace Kart.Project_Files.Scripts.Fusion
 {
     public static class ServerInfo {
 
-        public const int UserCapacity = 8; //the actual hard limit
+        public const int UserCapacity = 8; 
 
         public static string LobbyName;
         public static string TrackName => ResourceManager.Instance.tracks[TrackId].trackName;

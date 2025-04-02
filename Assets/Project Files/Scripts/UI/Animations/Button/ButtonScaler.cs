@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Kart.UI
+namespace Kart.Project_Files.Scripts.UI.Animations.Button
 {
     public class ButtonScaler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {

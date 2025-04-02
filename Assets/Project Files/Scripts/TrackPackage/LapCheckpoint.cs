@@ -1,8 +1,9 @@
-﻿using Kart.Controls;
-using Kart.ModeStrategy;
+﻿using Kart.Project_Files.Scripts.Controls;
+using Kart.Project_Files.Scripts.Managers.Game;
+using Kart.Project_Files.Scripts.ModeStrategy;
 using UnityEngine;
 
-namespace Kart.TrackPackage
+namespace Kart.Project_Files.Scripts.TrackPackage
 {
     [RequireComponent(typeof(Collider))]
     public class LapCheckpoint : MonoBehaviour

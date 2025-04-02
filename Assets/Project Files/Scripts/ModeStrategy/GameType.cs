@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Kart.ModeStrategy
+namespace Kart.Project_Files.Scripts.ModeStrategy
 {
     [CreateAssetMenu(fileName = "GameType", menuName = "GameModes/New GameType")]
     public class GameType : ScriptableObject

@@ -1,9 +1,9 @@
-﻿using Kart.Helpers;
-using Kart.ModeStrategy;
-using Kart.Resources;
+﻿using Kart.Project_Files.Scripts.Definitions;
+using Kart.Project_Files.Scripts.Helpers;
+using Kart.Project_Files.Scripts.ModeStrategy;
 using UnityEngine;
 
-namespace Kart.Managers
+namespace Kart.Project_Files.Scripts.Managers
 {
     public class ResourceManager : MonoBehaviour
     {

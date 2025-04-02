@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 
-namespace Kart.Settings
+namespace Kart.Project_Files.Scripts.Settings
 {
     public class GraphicsSettings : MonoBehaviour
     {

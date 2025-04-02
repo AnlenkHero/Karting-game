@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Kart
+namespace Kart.Project_Files.Scripts.AI
 {
     [CreateAssetMenu (fileName = "AIDriverData", menuName = "Kart/AIDriverData")]
     public class AIDriverData : ScriptableObject

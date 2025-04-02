@@ -1,17 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Kart.Fusion
+namespace Kart.Project_Files.Scripts.Fusion
 {
     public class PointsTable
     {
-        // Static dictionary mapping a RoomPlayer to their cumulative points.
         private  readonly Dictionary<RoomPlayer, float> playerPoints = new Dictionary<RoomPlayer, float>();
-
-        // Provides read-only access to the points.
         public  IReadOnlyDictionary<RoomPlayer, float> PlayerPoints => playerPoints;
-
-        // Adds (or increments) points for a given RoomPlayer.
+        
         public  void AddPoints(RoomPlayer player, float points)
         {
             if (player == null)
@@ -26,8 +22,7 @@ namespace Kart.Fusion
                 playerPoints.Add(player, points);
             }
         }
-
-        // Gets the current points for a given RoomPlayer.
+        
         public  float GetPoints(RoomPlayer player)
         {
             if (player == null)
@@ -35,8 +30,7 @@ namespace Kart.Fusion
 
             return playerPoints.TryGetValue(player, out float points) ? points : 0f;
         }
-
-        // Checks the list of current players and adds any new ones with 0 points.
+        
         public  void CheckAndAddNewPlayers(IEnumerable<RoomPlayer> currentPlayers)
         {
             foreach (var player in currentPlayers)
@@ -62,8 +56,7 @@ namespace Kart.Fusion
                 .OrderByDescending(entry => entry.Value)
                 .ToList();
         }
-
-        // Returns the RoomPlayer with the highest cumulative points.
+        
         public  RoomPlayer GetWinner()
         {
             RoomPlayer winner = null;

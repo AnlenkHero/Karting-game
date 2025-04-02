@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Fusion;
-using Kart.Controls;
+using Kart.Project_Files.Scripts.Controls;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
-namespace Kart.Fusion
+namespace Kart.Project_Files.Scripts.Fusion
 {
     public class RoomPlayer : NetworkBehaviour
     {

@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Kart.UI.Strategy
+namespace Kart.Project_Files.Scripts.UI.Strategy
 {
     public class GameEndUiStanding : MonoBehaviour
     {

@@ -1,6 +1,6 @@
-﻿using Kart.Controls;
+﻿using Kart.Project_Files.Scripts.Controls;
 
-namespace Kart.Surface
+namespace Kart.Project_Files.Scripts.Surface
 {
     public interface ISurfaceBehavior
     {

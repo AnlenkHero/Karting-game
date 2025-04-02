@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.UI.Extensions;
 
-namespace Kart.UI
+namespace Kart.Project_Files.Scripts.UI.Systems
 {
     public class RadialDragRotate : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {

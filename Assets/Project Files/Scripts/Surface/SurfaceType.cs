@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Kart.Surface
+namespace Kart.Project_Files.Scripts.Surface
 {
     [CreateAssetMenu(fileName = "New Surface", menuName = "Kart/Surface Type")]
     public class SurfaceType : ScriptableObject

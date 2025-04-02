@@ -1,10 +1,10 @@
 ﻿using System;
-using Kart.Controls;
+using Kart.Project_Files.Scripts.Controls;
+using Kart.Project_Files.Scripts.Helpers;
 using UnityEngine;
 using UnityUtils;
-using Utilities;
 
-namespace Kart
+namespace Kart.Project_Files.Scripts.AI
 {
     public class AIInput : MonoBehaviour, IDrive
     {

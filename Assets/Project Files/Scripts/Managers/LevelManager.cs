@@ -1,11 +1,14 @@
 ﻿using System.Collections;
 using Fusion;
-using Kart.Fusion;
-using Kart.Helpers;
-using Kart.UI;
+using Kart.Project_Files.Scripts.Fusion;
+using Kart.Project_Files.Scripts.Helpers;
+using Kart.Project_Files.Scripts.Managers.Game;
+using Kart.Project_Files.Scripts.Managers.Interface;
+using Kart.Project_Files.Scripts.UI.Animations;
+using Kart.Project_Files.Scripts.UI.Screens;
 using UnityEngine;
 
-namespace Kart.Managers
+namespace Kart.Project_Files.Scripts.Managers
 {
     public class LevelManager : NetworkSceneManagerDefault
     {

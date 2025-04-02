@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using Fusion;
-using Kart.ModeStrategy.LapStrategy;
+using Kart.Project_Files.Scripts.ModeStrategy.LapStrategy;
 using UnityEngine;
 
-namespace Kart.UI.Strategy
+namespace Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy
 {
     public class LapsUiView : NetworkBehaviour
     {

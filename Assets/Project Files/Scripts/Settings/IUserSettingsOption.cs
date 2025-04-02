@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Kart.Settings
+namespace Kart.Project_Files.Scripts.Settings
 {
     public interface IUserSettingsOption
     {

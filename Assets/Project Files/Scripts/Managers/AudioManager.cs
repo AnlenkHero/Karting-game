@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using Kart.Audio;
-using Kart.Helpers;
+using Kart.Project_Files.Scripts.Audio;
+using Kart.Project_Files.Scripts.Helpers;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.UI;
 
-namespace Kart.Managers
+namespace Kart.Project_Files.Scripts.Managers
 {
     public class AudioManager : MonoBehaviour
     {

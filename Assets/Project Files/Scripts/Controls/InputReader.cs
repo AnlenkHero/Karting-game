@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using static PlayerInputActions;
 
-namespace Kart.Controls {
+namespace Kart.Project_Files.Scripts.Controls {
     [CreateAssetMenu(fileName = "Input reader", menuName = "Kart/Input Reader")]
     public class InputReader : ScriptableObject, IPlayerActions, IDrive
     {

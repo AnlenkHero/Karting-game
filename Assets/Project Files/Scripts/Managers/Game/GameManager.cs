@@ -1,15 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Fusion;
-using Kart.Controls;
-using Kart.Fusion;
-using Kart.Managers;
-using Kart.ModeStrategy;
+using Kart.Project_Files.Scripts.Controls;
+using Kart.Project_Files.Scripts.Fusion;
+using Kart.Project_Files.Scripts.ModeStrategy;
+using Kart.Project_Files.Scripts.TrackPackage;
 using UnityEngine;
-using Kart.TrackPackage;
 
-
-namespace Kart
+namespace Kart.Project_Files.Scripts.Managers.Game
 {
     public class GameManager : NetworkBehaviour
     {

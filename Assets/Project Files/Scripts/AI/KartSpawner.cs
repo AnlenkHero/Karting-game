@@ -1,11 +1,9 @@
-
-using Kart.Controls;
+using Kart.Project_Files.Scripts.Controls;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityUtils;
-using Utilities;
 
-namespace Kart
+namespace Kart.Project_Files.Scripts.AI
 {
     public class KartSpawner : MonoBehaviour
     {

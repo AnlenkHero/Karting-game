@@ -1,6 +1,6 @@
-﻿using Kart.Fusion;
+﻿using Kart.Project_Files.Scripts.Fusion;
 
-namespace Kart.ModeStrategy.LapStrategy
+namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
 {
     public class PlayerLapData
     {

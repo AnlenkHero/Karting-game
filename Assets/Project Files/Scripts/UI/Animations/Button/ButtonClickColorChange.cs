@@ -1,12 +1,11 @@
 ﻿using PrimeTween;
 using UnityEngine;
-using UnityEngine.UI;
 
-namespace Kart.UI
+namespace Kart.Project_Files.Scripts.UI.Animations.Button
 {
     public class ButtonClickColorChange : MonoBehaviour
     {
-        [SerializeField] private Button button;
+        [SerializeField] private UnityEngine.UI.Button button;
         [SerializeField] private Color color;
         [SerializeField] private float animationDuration;
         private Color initialColor;

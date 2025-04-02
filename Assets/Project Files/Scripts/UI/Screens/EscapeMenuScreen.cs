@@ -1,10 +1,9 @@
-﻿using System;
-using Kart.Managers;
-using TMPro;
+﻿using Kart.Project_Files.Scripts.Fusion;
+using Kart.Project_Files.Scripts.Managers.Interface;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Kart.UI
+namespace Kart.Project_Files.Scripts.UI.Screens
 {
     public class EscapeMenuScreen : MonoBehaviour
     {

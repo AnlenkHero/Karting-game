@@ -1,8 +1,8 @@
-﻿using Kart.Managers;
+﻿using Kart.Project_Files.Scripts.Managers.Game;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Kart.UI
+namespace Kart.Project_Files.Scripts.Managers.Interface
 {
     public class InterfaceInputHandler : MonoBehaviour, PlayerInputActions.IUIActions
     {

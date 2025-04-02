@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using Fusion;
-using Kart.Controls;
+﻿using Fusion;
+using Kart.Project_Files.Scripts.Controls;
 
-namespace Kart.ModeStrategy
+namespace Kart.Project_Files.Scripts.ModeStrategy
 {
     public interface IGameModeStrategy
     {

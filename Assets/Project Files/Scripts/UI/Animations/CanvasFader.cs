@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace Kart.UI
+namespace Kart.Project_Files.Scripts.UI.Animations
 {
     [RequireComponent(typeof(CanvasGroup))]
     public class CanvasFader : MonoBehaviour

@@ -1,10 +1,12 @@
 using System;
 using Fusion;
-using Kart.ModeStrategy.LapStrategy;
-using Kart.UI.Strategy;
+using Kart.Project_Files.Scripts.Managers.Game;
+using Kart.Project_Files.Scripts.ModeStrategy.LapStrategy;
+using Kart.Project_Files.Scripts.UI.Strategy;
+using Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy;
 using UnityEngine;
 
-namespace Kart.ModeStrategy
+namespace Kart.Project_Files.Scripts.ModeStrategy
 {
     public class GameModeStrategyFactory : NetworkBehaviour
     {

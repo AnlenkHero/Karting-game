@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using DG.Tweening;
 
-namespace Kart.UI
+namespace Kart.Project_Files.Scripts.UI.Systems
 {
     public class MenuEventSystemHandler : MonoBehaviour
     {
