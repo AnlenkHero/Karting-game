@@ -16,7 +16,8 @@ namespace Kart.Project_Files.Scripts.Audio
             _lastVal = slider.value = PlayerPrefs.GetFloat(mixerParameter, 0.75f);
             slider.onValueChanged.AddListener((val) =>
             {
-                if (Mathf.Approximately(Mathf.Round(val * 10), Mathf.Round(_lastVal * 10))) return;
+                if (Mathf.Approximately(val, _lastVal)) return;
+
                 AudioManager.Play("hoverUI", mixerGroup);
                 _lastVal = val;
                 AudioManager.SetVolume(mixerParameter, val);

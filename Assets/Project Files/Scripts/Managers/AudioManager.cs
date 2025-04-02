@@ -41,10 +41,6 @@ namespace Kart.Project_Files.Scripts.Managers
             InitMixer();
         }
 
-        private void InitSliders()
-        {
-
-        }
         private void InitBanks()
         {
             soundBank.Build();
@@ -61,10 +57,7 @@ namespace Kart.Project_Files.Scripts.Managers
 
         public void PlayUI(string clip)
         {
-            if (!Instance.soundBank.TryGetAudio(clip, out AudioClip audioClip)) return;
-
-            uiSource.clip = audioClip;
-            uiSource.Play();
+            Play(clip, MixerTarget.UI);
         }
 
         public static void Play(string clip, AudioMixerGroup mixerTarget, Vector3? position = null)
@@ -162,7 +155,7 @@ namespace Kart.Project_Files.Scripts.Managers
             Instance.masterMixer.SetFloat(volumeParam, ToDecibels(value));
             SetPref(volumeParam, value);
         }
-        
+
         public static float ToDecibels(float value)
         {
             if (value == 0) return -80;

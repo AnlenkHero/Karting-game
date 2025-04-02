@@ -23281,7 +23281,7 @@ MonoBehaviour:
   container: {fileID: 1721711533}
   standingPrefab: {fileID: 811920245088193586, guid: c9da0e00a840e91408df19b20b26910d,
     type: 3}
-  standingsParent: {fileID: 404447020}
+  standingsParent: {fileID: 1172854062}
 --- !u!4 &1377069760 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 438062, guid: e87a3acfe1e8b0642a783fab11506a12,

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Kart.Project_Files.Scripts.Audio;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,13 +8,13 @@ namespace Kart.Project_Files.Scripts.UI.Systems
     public class UIIntersectionDetector : MonoBehaviour
     {
         [Header("References")] 
-        public RectTransform rotatingRect;
-        public Button[] menuButtons;
-        public RectTransform replicationTarget;
-        public Button replicationButton;
-        public Image replicationImage;
+        [SerializeField] private RectTransform rotatingRect;
+        [SerializeField] private Button[] menuButtons;
+        [SerializeField] private RectTransform replicationTarget;
+        [SerializeField] private Button replicationButton;
+        [SerializeField] private Image replicationImage;
         private Button _currentReplicatedButton;
-        
+
         void Update()
         {
             Vector3[] rotatingCorners = new Vector3[4];

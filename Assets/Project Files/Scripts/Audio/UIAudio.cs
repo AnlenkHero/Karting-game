@@ -7,16 +7,22 @@ namespace Kart.Project_Files.Scripts.Audio
 {
     public class UIAudio : MonoBehaviour, ISelectHandler, IPointerEnterHandler
     {
-        [SerializeField] private Button button;
+        [SerializeField] private Selectable selectable;
 
+        private void Reset()
+        {
+            selectable = GetComponent<Selectable>();
+        }
         private void Awake()
         {
-            button.onClick.AddListener(() => AudioManager.Instance.PlayUI("clickUI"));
+            if (selectable == null)
+            {
+                selectable = GetComponent<Selectable>();
+            }
         }
-
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (!button || button.interactable)
+            if (!selectable || selectable.interactable)
                 AudioManager.Instance.PlayUI("hoverUI");
         }
 
@@ -24,7 +30,7 @@ namespace Kart.Project_Files.Scripts.Audio
         {
             if (eventData is PointerEventData) return;
 
-            if (!button || button.interactable)
+            if (!selectable || selectable.interactable)
                 AudioManager.Instance.PlayUI("hoverUI");
         }
     }
