@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Kart.Project_Files.Scripts.Managers.Interface;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -12,12 +13,54 @@ namespace Kart.Project_Files.Scripts.UI.Systems
         [SerializeField] private RectTransform rectTransform;
         [SerializeField] private Transform wheelTransform;
         [SerializeField] private float maxRotation = 1080f;
-        [SerializeField] private float overshootDamping = 0.1f; 
+        // This damping is used for digital device input (gamepad/keyboard)
+        [SerializeField] private float overshootDamping = 0.1f;
+        // Use a higher damping factor for pointer input (mouse) to reduce overshoot.
+        [SerializeField] private float pointerOvershootDamping = 1.0f;
+        [SerializeField] private float gamepadRotationSpeed = 180f;
+
+        private InterfaceInputHandler _inputHandler;
         private float _angle;
         private float _previousAngle;
+        private bool _isBouncingBack;
+        private bool _isPointerDragging;
+
+        private void Awake()
+        {
+            _inputHandler = InterfaceManager.Instance.inputHandler;
+        }
+
+        private void Update()
+        {
+            HandleOtherDevicesInput();
+        }
+
+        private void HandleOtherDevicesInput()
+        {
+            float horizontalInput = _inputHandler != null ? -_inputHandler.navigationInput.x : 0f;
+            if (!_isPointerDragging && Mathf.Abs(horizontalInput) > 0.01f)
+            {
+                if (_isBouncingBack)
+                {
+                    StopCoroutine(nameof(BounceBackCoroutine));
+                    _isBouncingBack = false;
+                }
+                float deltaAngle = horizontalInput * gamepadRotationSpeed * Time.deltaTime;
+                RotateWheelByDelta(deltaAngle, overshootDamping);
+            }
+            else if (!_isPointerDragging) 
+            {
+                float targetAngle = Mathf.Clamp(_angle, -maxRotation, maxRotation);
+                if (Mathf.Abs(_angle - targetAngle) > 0.1f && !_isBouncingBack)
+                {
+                    StartCoroutine(BounceBackCoroutine(targetAngle));
+                }
+            }
+        }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            _isPointerDragging = true;
             if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
                     rectTransform, eventData.position, eventData.pressEventCamera, out var localPoint))
             {
@@ -34,50 +77,33 @@ namespace Kart.Project_Files.Scripts.UI.Systems
             float currentAngle = Mathf.Atan2(localPoint.y, localPoint.x) * Mathf.Rad2Deg;
             float deltaAngle = currentAngle - _previousAngle;
             
-            switch (deltaAngle)
-            {
-                case > 180:
-                    deltaAngle -= 360;
-                    break;
-                case < -180:
-                    deltaAngle += 360;
-                    break;
-            }
-            
-            float newAngleCandidate = _angle + deltaAngle;
-            
-            if (newAngleCandidate > maxRotation)
-            {
-                float overshoot = newAngleCandidate - maxRotation;
-                deltaAngle *= 1f / (1f + overshoot * overshootDamping);
-                newAngleCandidate = _angle + deltaAngle;
-            }
-            else if (newAngleCandidate < -maxRotation)
-            {
-                float overshoot = -maxRotation - newAngleCandidate;
-                deltaAngle *= 1f / (1f + overshoot * overshootDamping);
-                newAngleCandidate = _angle + deltaAngle;
-            }
-            
-            _angle = newAngleCandidate;
-            wheelTransform.rotation = Quaternion.Euler(0, 0, _angle);
-            LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
+            if (deltaAngle > 180)
+                deltaAngle -= 360;
+            else if (deltaAngle < -180)
+                deltaAngle += 360;
+
+            RotateWheelByDelta(deltaAngle, pointerOvershootDamping);
 
             _previousAngle = currentAngle;
         }
-        
+
         public void OnEndDrag(PointerEventData eventData)
         {
+            _isPointerDragging = false;
             float targetAngle = Mathf.Clamp(_angle, -maxRotation, maxRotation);
             if (Mathf.Abs(_angle - targetAngle) > 0.1f)
             {
-                StopCoroutine(nameof(BounceBackCoroutine));
+                if (_isBouncingBack)
+                {
+                    StopCoroutine(nameof(BounceBackCoroutine));
+                }
                 StartCoroutine(BounceBackCoroutine(targetAngle));
             }
         }
 
         private IEnumerator BounceBackCoroutine(float targetAngle)
         {
+            _isBouncingBack = true;
             float duration = 0.2f;
             float startAngle = _angle;
             float elapsed = 0f;
@@ -95,6 +121,29 @@ namespace Kart.Project_Files.Scripts.UI.Systems
 
             _angle = targetAngle;
             wheelTransform.rotation = Quaternion.Euler(0, 0, targetAngle);
+            LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
+            _isBouncingBack = false;
+        }
+        
+        public void RotateWheelByDelta(float deltaAngle, float damping)
+        {
+            float newAngleCandidate = _angle + deltaAngle;
+
+            if (newAngleCandidate > maxRotation)
+            {
+                float overshoot = newAngleCandidate - maxRotation;
+                deltaAngle *= 1f / (1f + overshoot * damping);
+                newAngleCandidate = _angle + deltaAngle;
+            }
+            else if (newAngleCandidate < -maxRotation)
+            {
+                float overshoot = -maxRotation - newAngleCandidate;
+                deltaAngle *= 1f / (1f + overshoot * damping);
+                newAngleCandidate = _angle + deltaAngle;
+            }
+
+            _angle = newAngleCandidate;
+            wheelTransform.rotation = Quaternion.Euler(0, 0, _angle);
             LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
         }
     }

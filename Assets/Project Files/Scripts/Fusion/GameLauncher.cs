@@ -137,7 +137,7 @@ namespace Kart.Project_Files.Scripts.Fusion
                     SessionName = sessionName,
                     ObjectProvider = _pool,
                     SceneManager = _levelManager,
-                    PlayerCount = 1,
+                    PlayerCount = 2,
                     EnableClientSessionCreation = enableCreation,
                     MatchmakingMode = MatchmakingMode.FillRoom
                 };
@@ -228,10 +228,6 @@ namespace Kart.Project_Files.Scripts.Fusion
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
             Debug.Log($"Player {player} Joined!");
-            if (runner.SessionInfo.PlayerCount == runner.SessionInfo.MaxPlayers)
-            {
-                ClientGameStarted();
-            }
 
             if (runner.IsServer)
             {
@@ -246,6 +242,10 @@ namespace Kart.Project_Files.Scripts.Fusion
                 {
                     ServerGameStarted();
                 }
+            }
+            if (runner.SessionInfo.PlayerCount == runner.SessionInfo.MaxPlayers)
+            {
+                ClientGameStarted();
             }
 
             SetConnectionStatus(ConnectionStatus.Connected);
@@ -331,6 +331,7 @@ namespace Kart.Project_Files.Scripts.Fusion
         private void ClientGameStarted()
         {
             Rpc_DisableSearchingUI();
+            _volumeProfile.profile = ResourceManager.Instance.tracks[0].volumeProfile;
             InterfaceManager.Instance.SetRootScreen(null);
         }
 

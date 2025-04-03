@@ -1,12 +1,12 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Kart.Project_Files.Scripts.UI.Animations
 {
-    [RequireComponent(typeof(CanvasGroup))]
     public class CanvasFader : MonoBehaviour
     {
-        public CanvasGroup group;
+        public Image group;
 
         public float fadeInTime = 0f;
         public float fadeOutTime = 1f;
@@ -28,16 +28,16 @@ namespace Kart.Project_Files.Scripts.UI.Animations
             float from = fadeIn ? 0 : 1;
             float to = fadeIn ? 1 : 0;
             float fadeFactor = fadeIn ? fadeInTime : fadeOutTime;
-            float t = fading ? Mathf.InverseLerp(from, to, group.alpha) : 0;
+            float t = fading ? Mathf.InverseLerp(from, to, group.color.a) : 0;
 
             fading = true;
             while (t < 1)
             {
                 t += Time.deltaTime / fadeFactor;
-                group.alpha = Mathf.Lerp(from, to, t);
+                group.color = new Color(group.color.r,group.color.g,group.color.b,Mathf.Lerp(from, to, t));
                 yield return null;
             }
-            group.alpha = to;
+            group.color = new Color(group.color.r,group.color.g,group.color.b,to);
             fading = false;
 
             if (!fadeIn) gameObject.SetActive(false);

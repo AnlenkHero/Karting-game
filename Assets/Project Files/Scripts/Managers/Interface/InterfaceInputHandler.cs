@@ -8,6 +8,7 @@ namespace Kart.Project_Files.Scripts.Managers.Interface
     {
         [SerializeField] private InterfaceManager interfaceManager;
         private PlayerInputActions _inputActions;
+        public Vector2 navigationInput;
 
         private void OnEnable()
         {
@@ -47,6 +48,10 @@ namespace Kart.Project_Files.Scripts.Managers.Interface
 
         public void OnNavigate(InputAction.CallbackContext context)
         {
+            if (context.phase != InputActionPhase.Performed)
+                return;
+
+            navigationInput = context.ReadValue<Vector2>();
         }
 
         public void OnSubmit(InputAction.CallbackContext context)

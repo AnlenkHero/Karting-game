@@ -9,8 +9,8 @@ namespace Kart.Project_Files.Scripts.Managers.Interface
         public static InterfaceManager Instance => Singleton<InterfaceManager>.Instance;
 
         [SerializeField] private InterfaceScreenHandler screenHandler;
-        [SerializeField] private InterfaceInputHandler inputHandler;
         [SerializeField] private GameObject loadingScreen;
+        public InterfaceInputHandler inputHandler;
 
         private void Awake()
         {

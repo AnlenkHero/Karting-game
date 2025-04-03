@@ -34,7 +34,7 @@ namespace Kart.Project_Files.Scripts.Managers
         protected override IEnumerator LoadSceneCoroutine(SceneRef sceneRef, NetworkLoadSceneParameters sceneParams)
         {
             Debug.Log($"Loading scene {sceneRef}");
-            ShowLoadingScreen(true);
+            PreLoadScene();
 
 
             yield return base.LoadSceneCoroutine(sceneRef, sceneParams);
@@ -53,31 +53,13 @@ namespace Kart.Project_Files.Scripts.Managers
                 }
             }
             
-            ShowLoadingScreen(false);
+            PostLoadScene();
         }
 
-        private void PreLoadScene(int scene)
+        private void PreLoadScene()
         {
-            /*if (scene > MAIN_MENU_SCENE)
-            {
-                // Show an empty dummy UI screen - this will stay on during the game so that the game has a place in the navigation stack. Without this, Back() will break
-                Debug.Log("Showing Dummy");
-                UIScreen.Focus(_dummyScreen);
-            }
-            else if(scene==MAIN_MENU_SCENE)
-            {
-                foreach (RoomPlayer player in RoomPlayer.Players)
-                {
-                    player.IsReady = false;
-                }
-                UIScreen.activeScreen.BackTo(_lobbyScreen);
-            }
-            else
-            {
-                UIScreen.BackToInitial();
-            }
             fader.gameObject.SetActive(true);
-            fader.FadeIn();*/
+            fader.FadeIn();
         }
 
         private void PostLoadScene()
