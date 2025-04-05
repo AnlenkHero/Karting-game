@@ -16,11 +16,9 @@ namespace Kart.Project_Files.Scripts.Settings
             _settingPanels = new List<IUserSettingsOption>();
             foreach (var panel in settingsPanels)
             {
-                if (panel is IUserSettingsOption settingPanel)
-                {
-                    _settingPanels.Add(settingPanel);
-                    settingPanel.OnValidityChanged += UpdateConfirmButtonState;
-                }
+                if (panel is not IUserSettingsOption settingPanel) continue;
+                _settingPanels.Add(settingPanel);
+                settingPanel.OnValidityChanged += UpdateConfirmButtonState;
             }
         }
 

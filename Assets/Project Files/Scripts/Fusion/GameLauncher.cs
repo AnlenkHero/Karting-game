@@ -137,7 +137,7 @@ namespace Kart.Project_Files.Scripts.Fusion
                     SessionName = sessionName,
                     ObjectProvider = _pool,
                     SceneManager = _levelManager,
-                    PlayerCount = 2,
+                    PlayerCount = 3,
                     EnableClientSessionCreation = enableCreation,
                     MatchmakingMode = MatchmakingMode.FillRoom
                 };
@@ -308,6 +308,7 @@ namespace Kart.Project_Files.Scripts.Fusion
 
         public void OnSceneLoadDone(NetworkRunner runner)
         {
+            
         }
 
         public void OnSceneLoadStart(NetworkRunner runner)

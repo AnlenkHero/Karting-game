@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Fusion;
 using Kart.Project_Files.Scripts.Controls;
+using Kart.Project_Files.Scripts.OtherNetworking;
 using UnityEngine;
 
 namespace Kart.Project_Files.Scripts.Fusion
@@ -26,10 +27,11 @@ namespace Kart.Project_Files.Scripts.Fusion
 
         [Networked] public NetworkBool IsReady { get; set; }
         [Networked] public NetworkString<_32> Username { get; set; }
-        [Networked] public NetworkBool HasFinished { get; set; }
         [Networked] public KartController Kart { get; set; }
         [Networked] public EGameState GameState { get; set; }
         [Networked] public int KartId { get; set; }
+        [Networked] public NetworkString<_32> CountryCode { get; set; }
+        [Networked] public NetworkBool CountryPrivacy { get; set; }
 
         public bool IsLeader => Object != null && Object.IsValid && Object.HasStateAuthority;
         public NetworkRunner runner;
@@ -47,6 +49,8 @@ namespace Kart.Project_Files.Scripts.Fusion
                 Local = this;
                 PlayerChanged?.Invoke(this);
                 RPC_SetPlayerStats(ClientInfo.Username, ClientInfo.KartId);
+                RPC_SetCountryCode(ClientInfo.CountryCode);
+                RPC_SetCountryPrivacy(ClientInfo.CountryPrivacy);
             }
 
             Players.Add(this);
@@ -67,6 +71,27 @@ namespace Kart.Project_Files.Scripts.Fusion
                         break;
                 }
             }
+        }
+
+        [Rpc]
+        private void RPC_SetCountryCode(string countryCode)
+        {
+            if (!string.IsNullOrEmpty(countryCode))
+            {
+                CountryCode = countryCode;
+                Debug.Log($"Country code set for {Username}: {countryCode}");
+            }
+            else
+            {
+                Debug.LogError("Failed to load country code.");
+            }
+        }
+
+        [Rpc]
+        private void RPC_SetCountryPrivacy(bool countryPrivacy)
+        {
+            CountryPrivacy = countryPrivacy;
+            Debug.Log($"Country privacy set for {Username}: {countryPrivacy}");
         }
 
         [Rpc]

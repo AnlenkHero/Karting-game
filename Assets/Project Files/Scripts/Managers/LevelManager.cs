@@ -35,15 +35,16 @@ namespace Kart.Project_Files.Scripts.Managers
         {
             Debug.Log($"Loading scene {sceneRef}");
             PreLoadScene();
-
-
+            
             yield return base.LoadSceneCoroutine(sceneRef, sceneParams);
             
             yield return null;
             
+            PostLoadScene();
+            
             if (GameManager.CurrentTrack != null && sceneRef.AsIndex > MAIN_MENU_SCENE && GameManager.Instance.CurrentGameState < GameState.Running)
             {
-                if (Runner.GameMode == GameMode.Host)
+                if (Runner.IsServer)
                 {
                     foreach (var player in RoomPlayer.Players)
                     {
@@ -52,8 +53,6 @@ namespace Kart.Project_Files.Scripts.Managers
                     }
                 }
             }
-            
-            PostLoadScene();
         }
 
         private void PreLoadScene()

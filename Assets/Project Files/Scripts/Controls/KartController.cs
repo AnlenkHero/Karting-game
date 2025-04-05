@@ -3,9 +3,12 @@ using Fusion;
 using Kart.Project_Files.Scripts.AI;
 using Kart.Project_Files.Scripts.Fusion;
 using Kart.Project_Files.Scripts.Managers.Game;
+using Kart.Project_Files.Scripts.OtherNetworking;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityUtils;
 
 namespace Kart.Project_Files.Scripts.Controls
 {
@@ -89,6 +92,9 @@ namespace Kart.Project_Files.Scripts.Controls
         
         [Networked] private Vector3 NetworkedVelocity { get; set; }
         [Networked] private string KartName { get; set; }
+        [SerializeField] private RawImage countryFlagImage;
+
+        [SerializeField] private GameObject playerUIGameObject;
         // Public properties
         public float VerticalInput => input.Move.y;
         public bool canDrive;
@@ -112,8 +118,9 @@ namespace Kart.Project_Files.Scripts.Controls
             Runner.SetIsSimulated(Object, true);
             if (HasInputAuthority)
             {
-                playerText.gameObject.SetActive(false);
+                playerUIGameObject.gameObject.SetActive(false);
                 RPC_SetKartName(RoomPlayer.Local.Username.Value);
+                RPC_SetKartFlag(RoomPlayer.Local.CountryCode.Value, RoomPlayer.Local.CountryPrivacy);
                 cameraController.SetupCamera();
             }
         }
@@ -121,6 +128,14 @@ namespace Kart.Project_Files.Scripts.Controls
         private void RPC_SetKartName(string newName, RpcInfo info = default)
         {
             KartName = newName;
+        }
+        
+        [Rpc]
+        private void RPC_SetKartFlag(string countryCode, bool showCountry, RpcInfo info = default)
+        {
+            if (!countryCode.IsNullOrWhiteSpace() && !showCountry)
+                return;
+            CountryFlagLoader.LoadFlag(this, countryCode, texture2D => countryFlagImage.texture = texture2D);
         }
         private void Awake()
         {
