@@ -3182,6 +3182,7 @@ GameObject:
   - component: {fileID: 429740312}
   - component: {fileID: 429740311}
   - component: {fileID: 429740318}
+  - component: {fileID: 429740319}
   m_Layer: 5
   m_Name: Game Launcher Canvas
   m_TagString: Untagged
@@ -3208,6 +3209,8 @@ MonoBehaviour:
   _disconnectUI: {fileID: 1449109647}
   _volumeProfile: {fileID: 1420965947}
   _levelManager: {fileID: 429740312}
+  _gameLauncherNetworkHandler: {fileID: 4989868834018589648, guid: d5b63947568e5b24099b139f5824df68,
+    type: 3}
   _searchingUI: {fileID: 1451919257}
 --- !u!114 &429740312
 MonoBehaviour:
@@ -3334,6 +3337,24 @@ MonoBehaviour:
   leaveButton: {fileID: 1098520873}
   escapeMenuScreen: {fileID: 1534342000}
   settingsScreen: {fileID: 37042517}
+--- !u!114 &429740319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 429740309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 107023536
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &447321397
 GameObject:
   m_ObjectHideFlags: 0
@@ -6650,6 +6671,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 275fb4a917f0c5e448192fd63c2f41df, type: 2}
   tracks:
   - {fileID: 11400000, guid: 250b7a2ae8905a840a5dba2c202d08ea, type: 2}
+  - {fileID: 11400000, guid: 5f4c7fb5d31910f49ac1fcd595675ccc, type: 2}
 --- !u!4 &729406058
 Transform:
   m_ObjectHideFlags: 0

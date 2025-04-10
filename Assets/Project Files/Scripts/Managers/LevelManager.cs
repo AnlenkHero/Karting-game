@@ -35,7 +35,6 @@ namespace Kart.Project_Files.Scripts.Managers
         {
             Debug.Log($"Loading scene {sceneRef}");
             PreLoadScene();
-            
             yield return base.LoadSceneCoroutine(sceneRef, sceneParams);
             
             yield return null;

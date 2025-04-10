@@ -1486,7 +1486,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cinemachineCamera: {fileID: 6330468716067753424}
-  playerCamera: {fileID: 8074575883894406374}
 --- !u!1 &4276915522015950635
 GameObject:
   m_ObjectHideFlags: 0
@@ -1705,7 +1704,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &964822200203672057
 Transform:
   m_ObjectHideFlags: 0

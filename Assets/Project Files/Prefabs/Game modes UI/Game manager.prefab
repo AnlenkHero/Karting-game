@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2700369827158769374}
   - component: {fileID: 8664994249155721416}
   - component: {fileID: 2381045445098666758}
+  - component: {fileID: 5431135539223658425}
   m_Layer: 0
   m_Name: Game manager
   m_TagString: Untagged
@@ -45,10 +46,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18a597f45c814b01999883a98492e28c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  strategyFactory: {fileID: 0}
+  _StrategyFactory: {fileID: 0}
   currentGameType: {fileID: 11400000, guid: 275fb4a917f0c5e448192fd63c2f41df, type: 2}
-  currentTrack: {fileID: 0}
   _ElapsedTime: 0
+  _TrackListManager: {fileID: 5431135539223658425}
 --- !u!114 &2381045445098666758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67,4 +68,19 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 8664994249155721416}
+  - {fileID: 5431135539223658425}
   ForceRemoteRenderTimeframe: 0
+--- !u!114 &5431135539223658425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4122623340284064478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10ac0b2c246545d68c52b66ec2a7565a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _CurrentRaceCount: 0
+  _CurrentTrackIndex: 0

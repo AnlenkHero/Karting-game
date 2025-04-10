@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,11 +34,11 @@ namespace Kart.Project_Files.Scripts.Fusion
         [SerializeField] private DisconnectUI _disconnectUI;
         [SerializeField] private Volume _volumeProfile;
         [SerializeField] private LevelManager _levelManager;
-
+        [SerializeField] private GameLauncherNetworkHandler _gameLauncherNetworkHandler;
         [SerializeField] private DummySearchingUI _searchingUI;
 
         public static ConnectionStatus ConnectionStatus = ConnectionStatus.Disconnected;
-
+        
         private GameMode _gameMode;
         private NetworkRunner _runner;
         private FusionObjectPoolRoot _pool;
@@ -85,7 +86,6 @@ namespace Kart.Project_Files.Scripts.Fusion
             _gameMode = GameMode.AutoHostOrClient;
             _runner.ProvideInput = true;
             _runner.AddCallbacks(this);
-
             _pool = go.AddComponent<FusionObjectPoolRoot>();
 
             Debug.Log($"Created gameobject {go.name} - joining matchmaking lobby");
@@ -137,7 +137,7 @@ namespace Kart.Project_Files.Scripts.Fusion
                     SessionName = sessionName,
                     ObjectProvider = _pool,
                     SceneManager = _levelManager,
-                    PlayerCount = 3,
+                    PlayerCount = 2,
                     EnableClientSessionCreation = enableCreation,
                     MatchmakingMode = MatchmakingMode.FillRoom
                 };
@@ -197,7 +197,8 @@ namespace Kart.Project_Files.Scripts.Fusion
             SetConnectionStatus(ConnectionStatus.Disconnected);
         }
 
-        public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
+        public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request,
+            byte[] token)
         {
             if (runner.TryGetSceneInfo(out var scene) && scene.SceneCount > 0)
             {
@@ -224,6 +225,7 @@ namespace Kart.Project_Files.Scripts.Fusion
         public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
         {
         }
+        
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
@@ -232,7 +234,10 @@ namespace Kart.Project_Files.Scripts.Fusion
             if (runner.IsServer)
             {
                 if (_gameMode == GameMode.AutoHostOrClient)
+                {
                     runner.Spawn(_gameManagerPrefab, Vector3.zero, Quaternion.identity);
+                    runner.Spawn(_gameLauncherNetworkHandler, Vector3.zero, Quaternion.identity);
+                }
 
                 var roomPlayer = runner.Spawn(_roomPlayerPrefab, Vector3.zero, Quaternion.identity, player);
                 roomPlayer.GameState = RoomPlayer.EGameState.Lobby;
@@ -243,6 +248,7 @@ namespace Kart.Project_Files.Scripts.Fusion
                     ServerGameStarted();
                 }
             }
+            
             if (runner.SessionInfo.PlayerCount == runner.SessionInfo.MaxPlayers)
             {
                 ClientGameStarted();
@@ -298,7 +304,8 @@ namespace Kart.Project_Files.Scripts.Fusion
         {
         }
 
-        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
+        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key,
+            ArraySegment<byte> data)
         {
         }
 
@@ -308,7 +315,6 @@ namespace Kart.Project_Files.Scripts.Fusion
 
         public void OnSceneLoadDone(NetworkRunner runner)
         {
-            
         }
 
         public void OnSceneLoadStart(NetworkRunner runner)
@@ -317,27 +323,42 @@ namespace Kart.Project_Files.Scripts.Fusion
 
         /// <summary>
         /// Called by the server once all slots are filled. We close the session and hide the searching UI.
-        /// You can also load a game scene here if desired.
         /// </summary>
         private void ServerGameStarted()
         {
-            _runner.SessionInfo.IsOpen = false;
+            StartCoroutine(WaitForServerGameStart());
+        }
 
+        private IEnumerator WaitForServerGameStart()
+        {
+            _runner.SessionInfo.IsOpen = false;
             Debug.Log("All players joined. Starting the game now...");
 
-            _volumeProfile.profile = ResourceManager.Instance.tracks[0].volumeProfile;
-            LevelManager.LoadTrack(ResourceManager.Instance.tracks[0].buildIndex);
+            yield return new WaitForSeconds(12f);
+            GameManager.Instance.TrackListManager.AdvanceToNextRaceTrack();
+            GameLauncherNetworkHandler.Instance.Init(_volumeProfile);
+            GameLauncherNetworkHandler.Instance.Rpc_SetVolumeProfile(GameManager.Instance.TrackListManager.CurrentTrackIndex);
+            //_volumeProfile.profile = GameManager.Instance.TrackListManager.CurrentTrackDefinition.volumeProfile;
+            LevelManager.LoadTrack(GameManager.Instance.TrackListManager.CurrentTrackDefinition.buildIndex);
+        }
+        
+
+        private IEnumerator WaitForClientGameStart()
+        {
+            DisableSearchingUI();
+            yield return new WaitForSeconds(10f);
+            GameLauncherNetworkHandler.Instance.Init(_volumeProfile);
+            //_volumeProfile.profile = GameManager.Instance.TrackListManager.CurrentTrackDefinition.volumeProfile;
+            InterfaceManager.Instance.SetRootScreen(null);
         }
 
         private void ClientGameStarted()
         {
-            Rpc_DisableSearchingUI();
-            _volumeProfile.profile = ResourceManager.Instance.tracks[0].volumeProfile;
-            InterfaceManager.Instance.SetRootScreen(null);
+            StartCoroutine(WaitForClientGameStart());
         }
 
-        [Rpc]
-        private void Rpc_DisableSearchingUI()
+
+        private void DisableSearchingUI()
         {
             _searchingUI.gameObject.SetActive(false);
             _searchingUI.StopSearching();

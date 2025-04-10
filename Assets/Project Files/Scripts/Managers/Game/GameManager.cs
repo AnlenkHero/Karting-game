@@ -11,7 +11,7 @@ namespace Kart.Project_Files.Scripts.Managers.Game
 {
     public class GameManager : NetworkBehaviour
     {
-        [Networked] public GameModeStrategyFactory strategyFactory { get; set; }
+        [Networked] public GameModeStrategyFactory StrategyFactory { get; set; }
 
         public PointsTable PointsTable = new();
         public static GameManager Instance { get; private set; }
@@ -22,6 +22,7 @@ namespace Kart.Project_Files.Scripts.Managers.Game
         [Networked] public float ElapsedTime { get; private set; }
         public IGameModeStrategy Strategy { get; private set; }
         public GameState CurrentGameState { get; private set; }
+        [Networked] public RaceTrackListManager TrackListManager { get; set; }
 
 
         public override void Spawned()
@@ -32,7 +33,7 @@ namespace Kart.Project_Files.Scripts.Managers.Game
                 Destroy(gameObject);
                 return;
             }
-
+            
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
@@ -47,61 +48,20 @@ namespace Kart.Project_Files.Scripts.Managers.Game
         }
 
         [Rpc]
-        public void RPC_PrepareForRace()
+        public void RpcHidePlayer(int index)
         {
-            RPC_DisableKartDriving();
-            CurrentGameState = GameState.PreGame;
-            PointsTable.CheckAndAddNewPlayers(RoomPlayer.Players);
-
-            if (CurrentTrack != null)
-            {
-                CurrentTrack.Initialize();
-            }
-            else
-            {
-                Debug.LogWarning("No Track assigned to the GameManager.");
-            }
-            
-            RPC_ResetTimer();
+            StartCoroutine(WaitForPlayerHide(3));
+            Players[index].gameObject.SetActive(false);
         }
 
-        [Rpc]
-        private void RPC_StartGame()
+        private IEnumerator WaitForPlayerHide(float seconds)
         {
-            RPC_ResetTimer();
-            Strategy = strategyFactory.GetGameMode(currentGameType);
-            Strategy.InitializeMode();
-            CurrentGameState = GameState.Running;
-            RPC_EnableKartDriving();
+            yield return new WaitForSeconds(seconds);
         }
         
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        private void RPC_ResetTimer()
+        public void Update()
         {
-            ElapsedTime = 0f;
-        }
-        
-        [Rpc]
-        private void RPC_DisableKartDriving()
-        {
-            foreach (var kart in Players)
-            {
-                kart.canDrive = false;
-            }
-        }
-        
-        [Rpc]
-        private void RPC_EnableKartDriving()
-        {
-            foreach (var kart in Players)
-            {
-                kart.canDrive = true;
-            }
-        }
-
-        private void Update()
-        {
-            if (HasStateAuthority && CurrentGameState == GameState.PreGame && ElapsedTime >= 30f)
+            if (HasStateAuthority && CurrentGameState == GameState.PreGame && ElapsedTime >= 5f)
             {
                 RPC_StartGame();
             }
@@ -118,6 +78,61 @@ namespace Kart.Project_Files.Scripts.Managers.Game
             EndGameWithStandings();
         }
 
+        [Rpc]
+        public void RPC_PrepareForRace()
+        {
+            RPC_DisableKartDriving();
+            CurrentGameState = GameState.PreGame;
+            PointsTable.CheckAndAddNewPlayers(RoomPlayer.Players);
+            if (HasStateAuthority)
+                RPC_ResetTimer();
+        }
+        
+        [Rpc]
+        private void RPC_StartGame()
+        {
+            if (CurrentTrack != null)
+            {
+                CurrentTrack.Initialize();
+            }
+            else
+            {
+                Debug.LogWarning("No Track assigned to the GameManager.");
+            }
+
+            if (HasStateAuthority)
+                RPC_ResetTimer();
+
+            Strategy = StrategyFactory.GetGameMode(currentGameType);
+            Strategy.InitializeMode();
+            CurrentGameState = GameState.Running;
+            RPC_EnableKartDriving();
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private void RPC_ResetTimer()
+        {
+            ElapsedTime = 0f;
+        }
+
+        [Rpc]
+        private void RPC_DisableKartDriving()
+        {
+            foreach (var kart in Players)
+            {
+                kart.canDrive = false;
+            }
+        }
+
+        [Rpc]
+        private void RPC_EnableKartDriving()
+        {
+            foreach (var kart in Players)
+            {
+                kart.canDrive = true;
+            }
+        }
+
         public void EndGame(KartController winner)
         {
             Debug.Log("Game Ended! Winner: " + (winner != null ? winner.name : "No winner"));
@@ -130,16 +145,44 @@ namespace Kart.Project_Files.Scripts.Managers.Game
 
         private void EndGameWithStandings()
         {
-            Debug.Log("Game Ended with standings.");
+            Debug.Log("Race Ended with standings.");
             Strategy.RpcOnRaceFinished();
             CurrentGameState = GameState.Finished;
-            StartCoroutine(WaiForSceneChange(ResourceManager.Instance.tracks[0].buildIndex));
+
+            if (TrackListManager.CurrentRaceCount >= RaceTrackListManager.MaxRaces)
+            {
+                RoomPlayer sessionWinner = PointsTable.GetWinner();
+                Debug.Log("Session Completed! Global Winner: " +
+                          (sessionWinner != null ? sessionWinner.name : "No winner"));
+
+                if (HasStateAuthority)
+                    StartCoroutine(WaiForSceneChangeAndLoadSessionResults());
+            }
+            else
+            {
+                if (HasStateAuthority)
+                    StartCoroutine(WaiForSceneChangeAndStartNextRace());
+            }
         }
 
-        protected IEnumerator WaiForSceneChange(int sceneId)
+        private IEnumerator WaiForSceneChangeAndStartNextRace()
         {
-            yield return new WaitForSeconds(15f);
-            LevelManager.LoadTrack(sceneId);
+            TrackListManager.AdvanceToNextRaceTrack();
+            yield return new WaitForSeconds(3f);
+            GameLauncherNetworkHandler.Instance.Rpc_SetVolumeProfile(TrackListManager.CurrentTrackIndex);
+            LevelManager.LoadTrack(TrackListManager.CurrentTrackDefinition.buildIndex);
+        }
+
+        private IEnumerator WaiForSceneChangeAndLoadSessionResults()
+        {
+            yield return new WaitForSeconds(3f);
+            //LevelManager.LoadScene("SessionResults");
+            foreach (var rp in RoomPlayer.Players)
+            {
+                Debug.Log($"{rp.Username}, {Instance.PointsTable.GetPoints(rp)}");
+            }
+
+            Debug.Log("Loading Session Results Screen...");
         }
     }
 }

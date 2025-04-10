@@ -110,6 +110,22 @@ namespace Kart.Project_Files.Scripts.Controls
         public float SignedVelocityMagnitude => Velocity.magnitude * Direction;
 
         #region Unity Lifecycle
+        public override void Despawned(NetworkRunner runner, bool hasState)
+        {
+            base.Despawned(runner, hasState);
+
+            // 🧼 Clean pooled visual/audio/UI state here too
+            if (playerCamera != null)
+                playerCamera.enabled = false;
+
+            if (playerAudioListener != null)
+                playerAudioListener.enabled = false;
+
+            if (playerUIGameObject != null)
+                playerUIGameObject.SetActive(false);
+
+            KartName = "";
+        }
 
         public override void Spawned()
         {

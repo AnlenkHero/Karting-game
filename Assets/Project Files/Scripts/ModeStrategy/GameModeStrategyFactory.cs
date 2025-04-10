@@ -15,7 +15,7 @@ namespace Kart.Project_Files.Scripts.ModeStrategy
         public override void Spawned()
         {
             base.Spawned();
-            GameManager.Instance.strategyFactory = this;
+            GameManager.Instance.StrategyFactory = this;
         }
 
 

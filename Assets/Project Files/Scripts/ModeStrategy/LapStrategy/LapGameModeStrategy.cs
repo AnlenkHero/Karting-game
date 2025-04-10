@@ -108,7 +108,8 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
                 CompleteLap(kart, data);
 
                 if (data.currentLap < requiredLaps || data.hasFinished) return;
-
+                var kartIndex = GameManager.Players.IndexOf(kart);
+                GameManager.Instance.RpcHidePlayer(kartIndex);
                 MarkFinishedPlayer(kart, data);
                 CheckHalfPlayersFinished();
             }
