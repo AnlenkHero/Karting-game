@@ -27,7 +27,7 @@ namespace Kart.Project_Files.Scripts.Fusion
 
         [Networked] public NetworkBool IsReady { get; set; }
         [Networked] public NetworkString<_32> Username { get; set; }
-         public KartController Kart { get; set; }
+        [Networked] public KartController Kart { get; set; }
         [Networked] public EGameState GameState { get; set; }
         [Networked] public int KartId { get; set; }
         [Networked] public NetworkString<_32> CountryCode { get; set; }

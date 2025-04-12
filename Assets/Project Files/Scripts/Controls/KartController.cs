@@ -77,7 +77,7 @@ namespace Kart.Project_Files.Scripts.Controls
         [SerializeField] private CinemachineCamera playerCamera;
         [SerializeField] private AudioListener playerAudioListener;
         [SerializeField] private Rigidbody rb;
-        [SerializeField] private KartCameraController cameraController;
+        
 
         [Header("Player Debug Info")] [SerializeField]
         private TextMeshPro playerText;
@@ -89,12 +89,13 @@ namespace Kart.Project_Files.Scripts.Controls
         private float driftVelocity;
         private float currentSteeringAngle;
         private float steeringVelocity;
-        
+
         [Networked] private Vector3 NetworkedVelocity { get; set; }
         [Networked] private string KartName { get; set; }
         [SerializeField] private RawImage countryFlagImage;
 
         [SerializeField] private GameObject playerUIGameObject;
+        public KartCameraController cameraController;
         // Public properties
         public float VerticalInput => input.Move.y;
         public bool canDrive;
@@ -110,21 +111,17 @@ namespace Kart.Project_Files.Scripts.Controls
         public float SignedVelocityMagnitude => Velocity.magnitude * Direction;
 
         #region Unity Lifecycle
+
         public override void Despawned(NetworkRunner runner, bool hasState)
         {
             base.Despawned(runner, hasState);
-
-            // 🧼 Clean pooled visual/audio/UI state here too
-            if (playerCamera != null)
-                playerCamera.enabled = false;
-
-            if (playerAudioListener != null)
-                playerAudioListener.enabled = false;
-
-            if (playerUIGameObject != null)
+            if (hasState)
+            {
+                GameManager.Players.Remove(this);
                 playerUIGameObject.SetActive(false);
-
-            KartName = "";
+                playerAudioListener.enabled = false;
+                cameraController.DespawnCamera();
+            }
         }
 
         public override void Spawned()
@@ -140,12 +137,13 @@ namespace Kart.Project_Files.Scripts.Controls
                 cameraController.SetupCamera();
             }
         }
+
         [Rpc]
         private void RPC_SetKartName(string newName, RpcInfo info = default)
         {
             KartName = newName;
         }
-        
+
         [Rpc]
         private void RPC_SetKartFlag(string countryCode, bool showCountry, RpcInfo info = default)
         {
@@ -153,6 +151,7 @@ namespace Kart.Project_Files.Scripts.Controls
                 return;
             CountryFlagLoader.LoadFlag(this, countryCode, texture2D => countryFlagImage.texture = texture2D);
         }
+
         private void Awake()
         {
             InitializeComponents();
@@ -163,17 +162,17 @@ namespace Kart.Project_Files.Scripts.Controls
             playerText.SetText(
                 $"{KartName} Velocity: {NetworkedVelocity.magnitude:F1}");
         }
-        
+
         public override void FixedUpdateNetwork()
         {
-            if(!canDrive)
+            if (!canDrive)
                 return;
-            
+
             if (GetInput(out KartInput.NetworkInputData networkInputData))
             {
                 input = networkInputData;
                 Move(input.Move);
-                
+
                 NetworkedVelocity = kartVelocity;
             }
         }

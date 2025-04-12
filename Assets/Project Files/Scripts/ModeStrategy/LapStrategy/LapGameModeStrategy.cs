@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Fusion;
@@ -25,7 +26,7 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
         private float halfFinishDeadline;
         private int halfPlayersCount;
         private readonly float halfPlayersFinishedTimer = 60f;
-
+        public static event Action OnLocalPlayerFinished; 
         public LapsGameModeStrategy(GameType gameType, LapsUiView lapsUiView, GameEndUiView gameEndUiView)
         {
             this.gameType = gameType;
@@ -79,7 +80,10 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
         {
             var data = playerLapData.FirstOrDefault(x => x.player.Kart == kart);
             if (data == null)
+            {
+                Debug.Log("PlayerLapData not found for kart: " + kart.name);
                 return;
+            }
 
             int expectedNextCheckpoint = data.currentCheckpoint + 1;
 
@@ -98,7 +102,10 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
         {
             var data = playerLapData.FirstOrDefault(x => x.player.Kart == kart);
             if (data == null || data.hasFinished)
+            {
+                Debug.Log("PlayerLapData not found for kart: " + kart.name);
                 return;
+            }
 
 
             int totalCheckpoints = GameManager.CurrentTrack.checkpoints.Length;
@@ -108,8 +115,16 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
                 CompleteLap(kart, data);
 
                 if (data.currentLap < requiredLaps || data.hasFinished) return;
-                var kartIndex = GameManager.Players.IndexOf(kart);
-                GameManager.Instance.RpcHidePlayer(kartIndex);
+                if (RoomPlayer.Local.Kart == kart)
+                {
+                    Debug.Log("Your kart finished");
+                    OnLocalPlayerFinished?.Invoke();
+                }
+                var kartIndex = RoomPlayer.Players.IndexOf(data.player);
+                GameManager.Instance.Runner.Despawn(RoomPlayer.Players[kartIndex].Kart.Object);
+                //GameLauncher.Instance._pool.ClearPools();
+                //var kartIndex = GameManager.Players.IndexOf(kart);
+                //GameManager.Instance.RpcHidePlayer(kartIndex);
                 MarkFinishedPlayer(kart, data);
                 CheckHalfPlayersFinished();
             }

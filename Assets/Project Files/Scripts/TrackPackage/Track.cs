@@ -76,6 +76,7 @@ namespace Kart.Project_Files.Scripts.TrackPackage
                 player.Object.InputAuthority
             );
             
+            GameLauncher.Instance._pool.ClearPool(entity.Object);
             player.GameState = RoomPlayer.EGameState.GameCutscene;
             player.Kart = entity;
 

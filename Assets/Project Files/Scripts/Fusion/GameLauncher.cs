@@ -41,7 +41,7 @@ namespace Kart.Project_Files.Scripts.Fusion
         
         private GameMode _gameMode;
         private NetworkRunner _runner;
-        private FusionObjectPoolRoot _pool;
+        public FusionObjectPoolRoot _pool;
 
         public static GameLauncher Instance => Singleton<GameLauncher>.Instance;
 
@@ -137,7 +137,7 @@ namespace Kart.Project_Files.Scripts.Fusion
                     SessionName = sessionName,
                     ObjectProvider = _pool,
                     SceneManager = _levelManager,
-                    PlayerCount = 2,
+                    PlayerCount = 3,
                     EnableClientSessionCreation = enableCreation,
                     MatchmakingMode = MatchmakingMode.FillRoom
                 };
