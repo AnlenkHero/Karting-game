@@ -226,6 +226,7 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
                 }
             }
 
+            lapsUiView.DisableUI();
             gameEndUiView.ShowEndGameUI(GameManager.Instance.PointsTable);
 
             foreach (var rp in RoomPlayer.Players)

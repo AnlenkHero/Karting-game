@@ -137,7 +137,7 @@ namespace Kart.Project_Files.Scripts.Fusion
                     SessionName = sessionName,
                     ObjectProvider = _pool,
                     SceneManager = _levelManager,
-                    PlayerCount = 3,
+                    PlayerCount = 2,
                     EnableClientSessionCreation = enableCreation,
                     MatchmakingMode = MatchmakingMode.FillRoom
                 };
@@ -336,9 +336,7 @@ namespace Kart.Project_Files.Scripts.Fusion
 
             yield return new WaitForSeconds(12f);
             GameManager.Instance.TrackListManager.AdvanceToNextRaceTrack();
-            GameLauncherNetworkHandler.Instance.Init(_volumeProfile);
             GameLauncherNetworkHandler.Instance.Rpc_SetVolumeProfile(GameManager.Instance.TrackListManager.CurrentTrackIndex);
-            //_volumeProfile.profile = GameManager.Instance.TrackListManager.CurrentTrackDefinition.volumeProfile;
             LevelManager.LoadTrack(GameManager.Instance.TrackListManager.CurrentTrackDefinition.buildIndex);
         }
         
@@ -346,9 +344,9 @@ namespace Kart.Project_Files.Scripts.Fusion
         private IEnumerator WaitForClientGameStart()
         {
             DisableSearchingUI();
+            Debug.Log("Client game started. Loading track...");
             yield return new WaitForSeconds(10f);
             GameLauncherNetworkHandler.Instance.Init(_volumeProfile);
-            //_volumeProfile.profile = GameManager.Instance.TrackListManager.CurrentTrackDefinition.volumeProfile;
             InterfaceManager.Instance.SetRootScreen(null);
         }
 

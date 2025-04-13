@@ -174,5 +174,10 @@ namespace Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy
                 message += $" - {status}";
             return message;
         }
+
+        public void DisableUI()
+        {
+            parent.gameObject.SetActive(false);
+        }
     }
 }
