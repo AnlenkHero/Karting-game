@@ -52,7 +52,7 @@ namespace Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy
 
         #region RPC Methods
 
-        [Rpc]
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         private void RpcClear()
         {
             standingsEntry.Clear();
@@ -62,7 +62,7 @@ namespace Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy
             UpdateStandingsUI();
         }
 
-        [Rpc]
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         private void RpcSetExpectedStandingsCount(int count)
         {
             expectedStandingsCount = count;
@@ -78,7 +78,7 @@ namespace Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy
             StartUIDebounce();
         }
 
-        [Rpc]
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         private void RpcUpdateStanding(int index, int rank, string playerName, string lastLapTime, string status)
         {
             if (index >= 0 && index < standingsEntry.Count)
