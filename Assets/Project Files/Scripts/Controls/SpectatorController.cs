@@ -1,6 +1,7 @@
 ﻿using System;
 using Kart.Project_Files.Scripts.Managers.Game;
 using Kart.Project_Files.Scripts.ModeStrategy.LapStrategy;
+using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -9,6 +10,7 @@ namespace Kart.Project_Files.Scripts.Controls
 {
     public class SpectatorController : MonoBehaviour
     {
+        [SerializeField] private TextMeshProUGUI spectatorText;
         private KartCameraController _currentCinemachineCamera;
         private KartCameraController _nextCinemachineCamera;
         private bool _canSpectate;
@@ -27,6 +29,7 @@ namespace Kart.Project_Files.Scripts.Controls
         private void SetSpectateState()
         {
             _canSpectate = true;
+            spectatorText.gameObject.SetActive(true);
             SetupCamera();
         }
 
@@ -36,6 +39,7 @@ namespace Kart.Project_Files.Scripts.Controls
             {
                 _currentCinemachineCamera = GameManager.Players[currentCameraIndex].cameraController;
                 _currentCinemachineCamera.SetupCamera();
+                spectatorText.text = $"Spectating: {GameManager.Players[currentCameraIndex].KartName}";
             }
         }
 
@@ -44,20 +48,27 @@ namespace Kart.Project_Files.Scripts.Controls
             if (GameManager.Players.Count != 0)
             {
                 currentCameraIndex++;
-                if(currentCameraIndex >= GameManager.Players.Count)
+                if (currentCameraIndex >= GameManager.Players.Count)
                     currentCameraIndex = 0;
 
-                
+
                 _nextCinemachineCamera = GameManager.Players[currentCameraIndex].cameraController;
                 _currentCinemachineCamera.DespawnCamera();
                 _currentCinemachineCamera = _nextCinemachineCamera;
                 _currentCinemachineCamera.SetupCamera();
+                spectatorText.text = $"Spectating: {GameManager.Players[currentCameraIndex].KartName}";
             }
         }
+
         public void Update()
         {
-            if (!_canSpectate)
+            if (!_canSpectate || GameManager.Instance == null ||
+                GameManager.Instance.CurrentGameState == GameState.Finished)
+            {
+                spectatorText.gameObject.SetActive(false);
                 return;
+            }
+
             if (Input.GetKeyDown(KeyCode.Mouse0) || !_currentCinemachineCamera && GameManager.Players.Count != 0)
             {
                 ChooseNextCamera();

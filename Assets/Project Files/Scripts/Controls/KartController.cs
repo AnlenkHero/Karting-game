@@ -89,14 +89,14 @@ namespace Kart.Project_Files.Scripts.Controls
         private float driftVelocity;
         private float currentSteeringAngle;
         private float steeringVelocity;
-
-        [Networked] private Vector3 NetworkedVelocity { get; set; }
-        [Networked] private string KartName { get; set; }
+        
         [SerializeField] private RawImage countryFlagImage;
 
         [SerializeField] private GameObject playerUIGameObject;
         public KartCameraController cameraController;
         // Public properties
+        [Networked] public Vector3 NetworkedVelocity { get; set; }
+        [Networked] public string KartName { get; set; }
         public float VerticalInput => input.Move.y;
         public bool canDrive;
 
