@@ -3,11 +3,7 @@ using Fusion;
 using Kart.Project_Files.Scripts.AI;
 using Kart.Project_Files.Scripts.Fusion;
 using Kart.Project_Files.Scripts.Managers.Game;
-using Kart.Project_Files.Scripts.OtherNetworking;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityUtils;
 
 namespace Kart.Project_Files.Scripts.Controls
 {
@@ -89,11 +85,6 @@ namespace Kart.Project_Files.Scripts.Controls
         [SerializeField] private AIDriverData driverData;
         [SerializeField] private AudioListener playerAudioListener;
         [SerializeField] private Rigidbody rb;
-        
-        [Header("Player UI")] 
-        [SerializeField] private TextMeshPro playerText;
-        [SerializeField] private RawImage countryFlagImage;
-        [SerializeField] private GameObject playerUIGameObject;
 
         [Header("Public Properties")] 
         public KartCameraController cameraController;
@@ -110,25 +101,13 @@ namespace Kart.Project_Files.Scripts.Controls
         public override void Spawned()
         {
             base.Spawned();
-            _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
-            GameManager.Players.Add(this);
-            Runner.SetIsSimulated(Object, true);
-            if (!HasInputAuthority) return;
-            playerUIGameObject.gameObject.SetActive(false);
-            RPC_SetKartName(RoomPlayer.Local.Username.Value);
-            RPC_SetKartFlag(RoomPlayer.Local.CountryCode.Value, RoomPlayer.Local.CountryPrivacy);
-            cameraController.SetupCamera();
-        }
-
-        private void Awake()
-        {
-            InitializeComponents();
+            InitializeLocalComponents();
+            InitializeGlobalNetworkedData();
+            InitializeNetworkedDataWithInputAuthority();
         }
 
         private void Update()
         {
-            playerText.SetText(
-                $"{KartName} Velocity: {NetworkedVelocity.magnitude:F1}");
             UpdateVisualWheelRotation();
         }
 
@@ -147,13 +126,22 @@ namespace Kart.Project_Files.Scripts.Controls
             base.Despawned(runner, hasState);
             if (!hasState) return;
             GameManager.Players.Remove(this);
-            playerUIGameObject.SetActive(false);
             playerAudioListener.enabled = false;
             cameraController.DespawnCamera();
         }
 
         #endregion
 
+        #region RPC
+
+        [Rpc]
+        private void RPC_SetKartName(string newName)
+        {
+            KartName = newName;
+        }
+
+        #endregion
+        
         #region Networked
 
         private void UpdateNetworkedVariables()
@@ -161,24 +149,6 @@ namespace Kart.Project_Files.Scripts.Controls
             FrontWheelSteeringAngle = _currentSteeringAngle;
             NetworkedVelocity = _kartVelocity;
             WheelSpin = rb.linearVelocity.z * 100f;
-        }
-
-        #endregion
-        
-        #region RPC
-
-        [Rpc]
-        private void RPC_SetKartName(string newName, RpcInfo info = default)
-        {
-            KartName = newName;
-        }
-
-        [Rpc]
-        private void RPC_SetKartFlag(string countryCode, bool showCountry, RpcInfo info = default)
-        {
-            if (!countryCode.IsNullOrWhiteSpace() && !showCountry)
-                return;
-            CountryFlagLoader.LoadFlag(this, countryCode, texture2D => countryFlagImage.texture = texture2D);
         }
 
         #endregion
@@ -563,7 +533,7 @@ namespace Kart.Project_Files.Scripts.Controls
             //     input = driveInput;
         }
 
-        private void InitializeComponents()
+        private void InitializeLocalComponents()
         {
             if (playerInput is IDrive driveInput)
             {
@@ -580,6 +550,20 @@ namespace Kart.Project_Files.Scripts.Controls
                 axleInfo.originalForwardFriction = axleInfo.leftWheel.forwardFriction;
                 axleInfo.originalSidewaysFriction = axleInfo.leftWheel.sidewaysFriction;
             }
+        }
+
+        private void InitializeGlobalNetworkedData()
+        {
+            _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
+            GameManager.Players.Add(this);
+            Runner.SetIsSimulated(Object, true);
+        }
+        
+        private void InitializeNetworkedDataWithInputAuthority()
+        {
+            if (!HasInputAuthority) return;
+            RPC_SetKartName(RoomPlayer.Local.Username.Value);
+            cameraController.SetupCamera();
         }
 
         #endregion

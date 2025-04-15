@@ -1211,6 +1211,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf43812287403574db49d559759fe05c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _NetworkedVelocity: {x: 0, y: 0, z: 0}
+  _KartName: 
+  _WheelSpin: 0
+  _FrontWheelSteeringAngle: 0
   axleInfos:
   - leftWheel: {fileID: 2346572847892964815}
     rightWheel: {fileID: 2023436694079492717}
@@ -1283,20 +1287,10 @@ MonoBehaviour:
   playerInput: {fileID: 11400000, guid: d64638e4f0f6ab4438403808c01f1c24, type: 2}
   circuit: {fileID: 0}
   driverData: {fileID: 0}
-  playerCamera: {fileID: 0}
   playerAudioListener: {fileID: 45326721118962872}
   rb: {fileID: 6928867683519373489}
-  playerText: {fileID: 3467204900170528272}
-  countryFlagImage: {fileID: 6190400270883964877}
-  playerUIGameObject: {fileID: 9043977032581601484}
   cameraController: {fileID: -6631633984282294309}
-  _NetworkedVelocity: {x: 0, y: 0, z: 0}
-  _KartName: 
   canDrive: 0
-  _WheelSpin: 0
-  _FrontWheelSteeringAngle: 0
-  leftFrontWheel: {fileID: 3241855866338047445}
-  rightFrontWheel: {fileID: 339389150644952318}
 --- !u!114 &7796417255384366297
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1355,6 +1349,7 @@ MonoBehaviour:
   - {fileID: 5012061265976231298}
   - {fileID: 3854737302072727914}
   - {fileID: 3368549938626467386}
+  - {fileID: 8375450572136811825}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &3368549938626467386
 MonoBehaviour:
@@ -2978,6 +2973,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1978811372649100399}
   - component: {fileID: 8610997349014335329}
+  - component: {fileID: 8375450572136811825}
   m_Layer: 5
   m_Name: Player UI
   m_TagString: Untagged
@@ -3031,6 +3027,22 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &8375450572136811825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9043977032581601484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28f322fd4ba64a2c82daa43ac1fc2ffe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  kartController: {fileID: 5012061265976231298}
+  playerText: {fileID: 3467204900170528272}
+  countryFlagImage: {fileID: 6190400270883964877}
+  playerUIGameObject: {fileID: 9043977032581601484}
 --- !u!1 &9163385066889324836
 GameObject:
   m_ObjectHideFlags: 0
