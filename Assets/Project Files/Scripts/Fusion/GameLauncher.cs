@@ -334,7 +334,7 @@ namespace Kart.Project_Files.Scripts.Fusion
             _runner.SessionInfo.IsOpen = false;
             Debug.Log("All players joined. Starting the game now...");
 
-            yield return new WaitForSeconds(12f);
+            yield return new WaitForSeconds(5f);
             GameManager.Instance.TrackListManager.AdvanceToNextRaceTrack();
             GameLauncherNetworkHandler.Instance.Rpc_SetVolumeProfile(GameManager.Instance.TrackListManager.CurrentTrackIndex);
             LevelManager.LoadTrack(GameManager.Instance.TrackListManager.CurrentTrackDefinition.buildIndex);
@@ -345,7 +345,7 @@ namespace Kart.Project_Files.Scripts.Fusion
         {
             DisableSearchingUI();
             Debug.Log("Client game started. Loading track...");
-            yield return new WaitForSeconds(10f);
+            yield return new WaitForSeconds(3f);
             GameLauncherNetworkHandler.Instance.Init(_volumeProfile);
             InterfaceManager.Instance.SetRootScreen(null);
         }

@@ -1286,11 +1286,17 @@ MonoBehaviour:
   playerCamera: {fileID: 0}
   playerAudioListener: {fileID: 45326721118962872}
   rb: {fileID: 6928867683519373489}
-  cameraController: {fileID: -6631633984282294309}
   playerText: {fileID: 3467204900170528272}
   countryFlagImage: {fileID: 6190400270883964877}
   playerUIGameObject: {fileID: 9043977032581601484}
+  cameraController: {fileID: -6631633984282294309}
+  _NetworkedVelocity: {x: 0, y: 0, z: 0}
+  _KartName: 
   canDrive: 0
+  _WheelSpin: 0
+  _FrontWheelSteeringAngle: 0
+  leftFrontWheel: {fileID: 3241855866338047445}
+  rightFrontWheel: {fileID: 339389150644952318}
 --- !u!114 &7796417255384366297
 MonoBehaviour:
   m_ObjectHideFlags: 0

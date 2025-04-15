@@ -77,7 +77,7 @@ namespace Kart.Project_Files.Scripts.Controls
         [SerializeField] private CinemachineCamera playerCamera;
         [SerializeField] private AudioListener playerAudioListener;
         [SerializeField] private Rigidbody rb;
-        
+
 
         [Header("Player Debug Info")] [SerializeField]
         private TextMeshPro playerText;
@@ -89,11 +89,13 @@ namespace Kart.Project_Files.Scripts.Controls
         private float driftVelocity;
         private float currentSteeringAngle;
         private float steeringVelocity;
-        
+
         [SerializeField] private RawImage countryFlagImage;
 
         [SerializeField] private GameObject playerUIGameObject;
+
         public KartCameraController cameraController;
+
         // Public properties
         [Networked] public Vector3 NetworkedVelocity { get; set; }
         [Networked] public string KartName { get; set; }
@@ -109,6 +111,15 @@ namespace Kart.Project_Files.Scripts.Controls
         // Use rb.rotation * Vector3.forward instead of transform.forward
         public float Direction => Mathf.Sign(Vector3.Dot(rb.rotation * Vector3.forward, rb.linearVelocity));
         public float SignedVelocityMagnitude => Velocity.magnitude * Direction;
+
+        [Networked] public float WheelSpin { get; set; }
+        [Networked] public float FrontWheelSteeringAngle { get; set; }
+        private ChangeDetector _changeDetector;
+
+        [SerializeField] private Transform leftFrontWheel;
+        [SerializeField] private Transform rightFrontWheel;
+        private Quaternion leftWheelInitialRotation;
+        private Quaternion rightWheelInitialRotation;
 
         #region Unity Lifecycle
 
@@ -127,6 +138,9 @@ namespace Kart.Project_Files.Scripts.Controls
         public override void Spawned()
         {
             base.Spawned();
+            _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
+            leftWheelInitialRotation = leftFrontWheel.transform.localRotation;
+            rightWheelInitialRotation = rightFrontWheel.transform.localRotation;
             GameManager.Players.Add(this);
             Runner.SetIsSimulated(Object, true);
             if (HasInputAuthority)
@@ -161,21 +175,41 @@ namespace Kart.Project_Files.Scripts.Controls
         {
             playerText.SetText(
                 $"{KartName} Velocity: {NetworkedVelocity.magnitude:F1}");
+            leftFrontWheel.transform.localRotation = Quaternion.Euler(WheelSpin, FrontWheelSteeringAngle, 0);
+            rightFrontWheel.transform.localRotation = Quaternion.Euler(WheelSpin, FrontWheelSteeringAngle, 0);
+            axleInfos[1].leftWheel.transform.GetChild(0).localRotation = Quaternion.Euler(WheelSpin, 0, 0);
+            axleInfos[1].rightWheel.transform.GetChild(0).localRotation = Quaternion.Euler(WheelSpin, 0, 0);
         }
 
         public override void FixedUpdateNetwork()
         {
             if (!canDrive)
                 return;
-
+            WheelSpin = rb.linearVelocity.z * 100f;
             if (GetInput(out KartInput.NetworkInputData networkInputData))
             {
                 input = networkInputData;
                 Move(input.Move);
+                FrontWheelSteeringAngle = currentSteeringAngle;
+                // After all physics updates, sync the wheel values on the owner.
 
                 NetworkedVelocity = kartVelocity;
             }
         }
+
+
+        private void UpdateVisualWheelRotation()
+        {
+            foreach (var axle in axleInfos)
+            {
+                float yAngle = axle.steering ? FrontWheelSteeringAngle : 0;
+        
+                axle.leftWheel.transform.GetChild(0).localRotation = Quaternion.Euler(WheelSpin, yAngle, 0);
+                axle.rightWheel.transform.GetChild(0).localRotation = Quaternion.Euler(WheelSpin, yAngle, 0);
+            }
+        }
+
+        
 
         #endregion
 
@@ -549,10 +583,9 @@ namespace Kart.Project_Files.Scripts.Controls
         private void UpdateWheelVisuals(WheelCollider wheelCollider)
         {
             if (wheelCollider.transform.childCount == 0) return;
-
-            Transform visualWheel = wheelCollider.transform.GetChild(0);
             wheelCollider.GetWorldPose(out var position, out var rotation);
-            visualWheel.transform.rotation = rotation;
+            //FrontWheelSteeringAngle = -rotation.y;
+            //WheelSpin = rotation.x;
         }
 
         #endregion
