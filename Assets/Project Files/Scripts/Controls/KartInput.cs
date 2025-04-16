@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Kart.Project_Files.Scripts.Controls
 {
@@ -11,92 +10,28 @@ namespace Kart.Project_Files.Scripts.Controls
     {
         public struct NetworkInputData : INetworkInput
         {
-            public const uint ButtonAccelerate = 1 << 0;
-            public const uint ButtonReverse = 1 << 1;
-            public const uint ButtonDrift = 1 << 2;
-            public const uint ButtonLookbehind = 1 << 3;
-            public const uint UseItem = 1 << 4;
+            public const uint ButtonDrift = 1 << 0;
+            public const uint ButtonLookbehind = 1 << 1;
+            public const uint UseItem = 1 << 2;
 
             public uint Buttons;
-            public uint OneShots;
 
-            private int _steer;
+            public Vector2 Move;
 
-            public float Steer
-            {
-                get => _steer * .001f;
-                set => _steer = (int)(value * 1000);
-            }
-
-            public Vector2 Move
-            {
-                get
-                {
-                    var move = Vector2.zero;
-                    if (IsDown(ButtonAccelerate))
-                    {
-                        move.y = 1;
-                    }
-
-                    if (IsDown(ButtonReverse))
-                    {
-                        move.y = -1;
-                    }
-
-                    move.x = Steer;
-
-                    return move;
-                }
-            }
-
-
-            public bool IsUp(uint button) => IsDown(button) == false;
-            public bool IsDown(uint button) => (Buttons & button) == button;
-
-            public bool IsDownThisFrame(uint button) => (OneShots & button) == button;
-            public bool IsAccelerate => IsDown(ButtonAccelerate);
-            public bool IsReverse => IsDown(ButtonReverse);
+            private bool IsDown(uint button) => (Buttons & button) == button;
+            
             public bool IsDriftPressed => IsDown(ButtonDrift);
-            public bool IsDriftPressedThisFrame => IsDownThisFrame(ButtonDrift);
         }
-
-        public Gamepad gamepad;
-
-        [SerializeField] private InputAction accelerate;
-        [SerializeField] private InputAction reverse;
-        [SerializeField] private InputAction drift;
-        [SerializeField] private InputAction steer;
-        [SerializeField] private InputAction lookBehind;
-        [SerializeField] private InputAction useItem;
-        [SerializeField] private InputAction pause;
-
-        private bool _useItemPressed;
-        private bool _driftPressed;
+        
+        private PlayerInputActions _inputActions;
 
         public override void Spawned()
         {
             base.Spawned();
 
             Runner.AddCallbacks(this);
-
-            accelerate = accelerate.Clone();
-            reverse = reverse.Clone();
-            drift = drift.Clone();
-            steer = steer.Clone();
-            lookBehind = lookBehind.Clone();
-            useItem = useItem.Clone();
-            pause = pause.Clone();
-
-            accelerate.Enable();
-            reverse.Enable();
-            drift.Enable();
-            steer.Enable();
-            lookBehind.Enable();
-            useItem.Enable();
-            pause.Enable();
-
-            useItem.started += UseItemPressed;
-            drift.started += DriftPressed;
+            _inputActions = new PlayerInputActions();
+            _inputActions.Enable();
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)
@@ -114,49 +49,21 @@ namespace Kart.Project_Files.Scripts.Controls
 
         private void DisposeInputs()
         {
-            accelerate.Dispose();
-            reverse.Dispose();
-            drift.Dispose();
-            steer.Dispose();
-            lookBehind.Dispose();
-            useItem.Dispose();
-            pause.Dispose();
-            // disposal should handle these
-            //useItem.started -= UseItemPressed;
-            //drift.started -= DriftPressed;
-            //pause.started -= PausePressed;
+            _inputActions.Dispose();
+            _inputActions = null;
         }
-
-        private void UseItemPressed(InputAction.CallbackContext ctx) => _useItemPressed = true;
-        private void DriftPressed(InputAction.CallbackContext ctx) => _driftPressed = true;
-
-
-        /// This isn't networked, so is not inside the <see cref="NetworkInputData"/> struct
-        public bool IsLookBehindPressed => ReadBool(lookBehind);
-
-        private static bool ReadBool(InputAction action) => action.ReadValue<float>() != 0;
-        private static float ReadFloat(InputAction action) => action.ReadValue<float>();
+        
 
         public void OnInput(NetworkRunner runner, NetworkInput input)
         {
-            gamepad = Gamepad.current;
-
             var userInput = new NetworkInputData();
-
-            if (ReadBool(accelerate)) userInput.Buttons |= NetworkInputData.ButtonAccelerate;
-            if (ReadBool(reverse)) userInput.Buttons |= NetworkInputData.ButtonReverse;
-            if (ReadBool(drift)) userInput.Buttons |= NetworkInputData.ButtonDrift;
-            if (ReadBool(lookBehind)) userInput.Buttons |= NetworkInputData.ButtonLookbehind;
-
-            if (_driftPressed) userInput.OneShots |= NetworkInputData.ButtonDrift;
-            if (_useItemPressed) userInput.OneShots |= NetworkInputData.UseItem;
-
-            userInput.Steer = ReadFloat(steer);
-
+            userInput.Move = _inputActions.Player.Move.ReadValue<Vector2>();
+            if (_inputActions.Player.HandBrake.ReadValue<float>() != 0.0f)
+            {
+                userInput.Buttons |= NetworkInputData.ButtonDrift;
+            }
+            
             input.Set(userInput);
-
-            _driftPressed = false;
-            _useItemPressed = false;
         }
 
         public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)

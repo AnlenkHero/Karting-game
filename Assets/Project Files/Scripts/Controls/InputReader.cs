@@ -7,7 +7,7 @@ namespace Kart.Project_Files.Scripts.Controls {
     public class InputReader : ScriptableObject, IPlayerActions, IDrive
     {
         public Vector2 Move => inputActions.Player.Move.ReadValue<Vector2>();
-        public bool IsBraking => inputActions.Player.Brake.ReadValue<float>() > 0;
+        public bool IsBraking => inputActions.Player.HandBrake.ReadValue<float>() > 0;
 
         PlayerInputActions inputActions;
         
@@ -34,8 +34,10 @@ namespace Kart.Project_Files.Scripts.Controls {
             // noop
         }
 
-        public void OnBrake(InputAction.CallbackContext context) {
-            // noop
+        public void OnHandBrake(InputAction.CallbackContext context)
+        {
+            throw new System.NotImplementedException();
         }
+        
     }
 }
