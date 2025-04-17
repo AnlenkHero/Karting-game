@@ -2,6 +2,7 @@
 using Kart.Project_Files.Scripts.Managers.Game;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 namespace Kart.Project_Files.Scripts.Managers.Interface
 {
@@ -34,12 +35,13 @@ namespace Kart.Project_Files.Scripts.Managers.Interface
 
             var kart = KartController.LocalKartController;
             var gameState = GameManager.Instance?.CurrentGameState;
+            var currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
             bool isRoot = interfaceManager.ActiveScreen == interfaceManager.RootScreen;
             
             if (kart != null)
                 kart.canDrive = false;
             
-            if (gameState >= GameState.Cutscene && isRoot)
+            if (gameState is >= GameState.PreGame and < GameState.Finished && isRoot && currentSceneIndex > LevelManager.MAIN_MENU_SCENE)
             {
                 interfaceManager.ShowScreen(interfaceManager.EscapeMenuScreen);
                 return;
