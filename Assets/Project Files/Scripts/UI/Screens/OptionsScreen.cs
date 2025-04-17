@@ -15,7 +15,6 @@ namespace Kart.Project_Files.Scripts.UI.Screens
         [SerializeField] private Button graphicsButton;
         [SerializeField] private Button audioButton;
         [SerializeField] private Button userButton;
-        [SerializeField] private Button backButton;
 
         private void OnEnable()
         {
@@ -27,7 +26,6 @@ namespace Kart.Project_Files.Scripts.UI.Screens
             graphicsButton.onClick.AddListener(Graphics);
             audioButton.onClick.AddListener(Audio);
             userButton.onClick.AddListener(User);
-            backButton.onClick.AddListener(Back);
         }
         
         private void Graphics()
@@ -43,11 +41,6 @@ namespace Kart.Project_Files.Scripts.UI.Screens
         private void User()
         {
             InterfaceManager.Instance.ShowScreen(userScreen);
-        }
-        
-        private void Back()
-        {
-            InterfaceManager.Instance.CloseActiveScreen();
         }
     }
 }

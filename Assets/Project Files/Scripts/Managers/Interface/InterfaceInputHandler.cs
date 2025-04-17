@@ -1,4 +1,5 @@
-﻿using Kart.Project_Files.Scripts.Managers.Game;
+﻿using Kart.Project_Files.Scripts.Controls;
+using Kart.Project_Files.Scripts.Managers.Game;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -27,23 +28,44 @@ namespace Kart.Project_Files.Scripts.Managers.Interface
         }
 
 
-        public void OnCancel(InputAction.CallbackContext context)
+        public void OnEscape(InputAction.CallbackContext context)
         {
-            if (context.phase != InputActionPhase.Performed)
-                return;
+            if (context.phase != InputActionPhase.Performed) return;
 
-            if (GameManager.Instance != null && GameManager.Instance.CurrentGameState >= GameState.Cutscene &&
-                interfaceManager.ActiveScreen == interfaceManager.RootScreen)
+            var kart = KartController.LocalKartController;
+            var gameState = GameManager.Instance?.CurrentGameState;
+            bool isRoot = interfaceManager.ActiveScreen == interfaceManager.RootScreen;
+            
+            if (kart != null)
+                kart.canDrive = false;
+            
+            if (gameState >= GameState.Cutscene && isRoot)
             {
                 interfaceManager.ShowScreen(interfaceManager.EscapeMenuScreen);
+                return;
             }
-            else
-            {
-                if (interfaceManager.ActiveScreen != interfaceManager.RootScreen)
-                {
-                    interfaceManager.CloseToRoot();
-                }
-            }
+
+            if (isRoot) return;
+            
+            interfaceManager.CloseToRoot();
+
+            if (kart != null && gameState >= GameState.Running)
+                kart.canDrive = true;
+        }
+
+        public void OnBack(InputAction.CallbackContext context)
+        {
+            if (context.phase != InputActionPhase.Performed) return;
+            if (interfaceManager.ActiveScreen == interfaceManager.RootScreen) return;
+            
+            interfaceManager.CloseActiveScreen();
+
+            var kart = KartController.LocalKartController;
+            bool isNowRoot = interfaceManager.ActiveScreen == interfaceManager.RootScreen;
+            var gameState = GameManager.Instance?.CurrentGameState;
+
+            if (kart != null && isNowRoot && gameState >= GameState.Running)
+                kart.canDrive = true;
         }
 
         public void OnNavigate(InputAction.CallbackContext context)
@@ -53,6 +75,8 @@ namespace Kart.Project_Files.Scripts.Managers.Interface
 
             navigationInput = context.ReadValue<Vector2>();
         }
+
+        #region Unused Interface Methods
 
         public void OnSubmit(InputAction.CallbackContext context)
         {
@@ -85,5 +109,7 @@ namespace Kart.Project_Files.Scripts.Managers.Interface
         public void OnTrackedDeviceOrientation(InputAction.CallbackContext context)
         {
         }
+
+        #endregion
     }
 }

@@ -38,9 +38,9 @@ namespace Kart.Project_Files.Scripts.Controls
         #region RPC
 
         [Rpc]
-        private void RPC_SetKartFlag(string countryCode, bool showCountry, RpcInfo info = default)
+        private void RPC_SetKartFlag(string countryCode, bool showCountry)
         {
-            if (!countryCode.IsNullOrWhiteSpace() && !showCountry)
+            if (!countryCode.IsNullOrWhiteSpace() || !showCountry)
             {
                 countryFlagImage.gameObject.SetActive(false);
                 return;

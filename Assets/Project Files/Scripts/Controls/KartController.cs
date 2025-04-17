@@ -17,6 +17,12 @@ namespace Kart.Project_Files.Scripts.Controls
         public WheelFrictionCurve originalForwardFriction;
         public WheelFrictionCurve originalSidewaysFriction;
     }
+    public class WheelVisual
+    {
+        public Transform Mesh;
+        public bool   IsSteerable;
+        public float  SpinAngle;
+    }
 
     public class KartController : NetworkBehaviour
     {
@@ -29,7 +35,8 @@ namespace Kart.Project_Files.Scripts.Controls
 
         [Header("Axle Information")] 
         [SerializeField] private AxleInfo[] axleInfos;
-
+        private WheelVisual[] _wheelVisuals;
+        
         [Header("Motor Attributes")] 
         [SerializeField] private float maxMotorTorque = 10f;
         [SerializeField] private float maxSpeed = 100f;
@@ -87,6 +94,7 @@ namespace Kart.Project_Files.Scripts.Controls
         [SerializeField] private Rigidbody rb;
 
         [Header("Public Properties")] 
+        public static KartController LocalKartController;
         public KartCameraController cameraController;
         public float VerticalInput => _input.Move.y;
         public bool canDrive;
@@ -95,9 +103,8 @@ namespace Kart.Project_Files.Scripts.Controls
         public float MaxReverseSpeed => maxSpeed / speedRatio;
         public float Direction => Mathf.Sign(Vector3.Dot(rb.rotation * Vector3.forward, rb.linearVelocity));
         public float SignedVelocityMagnitude => Velocity.magnitude * Direction;
-
+        
         #region Unity Lifecycle
-
         public override void Spawned()
         {
             base.Spawned();
@@ -113,12 +120,13 @@ namespace Kart.Project_Files.Scripts.Controls
 
         public override void FixedUpdateNetwork()
         {
+            UpdateNetworkedVariablesWithoutInput();
             if (!canDrive) return;
             if (!GetInput(out KartInput.NetworkInputData networkInputData)) return;
             
             _input = networkInputData;
             Move(_input.Move);
-            UpdateNetworkedVariables();
+            UpdateNetworkedVariablesWithInput();
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)
@@ -144,11 +152,14 @@ namespace Kart.Project_Files.Scripts.Controls
         
         #region Networked
 
-        private void UpdateNetworkedVariables()
+        private void UpdateNetworkedVariablesWithoutInput()
+        {
+            NetworkedVelocity = _kartVelocity;
+            WheelSpin = rb.linearVelocity.z * 10f;
+        }
+        private void UpdateNetworkedVariablesWithInput()
         {
             FrontWheelSteeringAngle = _currentSteeringAngle;
-            NetworkedVelocity = _kartVelocity;
-            WheelSpin = rb.linearVelocity.z * 100f;
         }
 
         #endregion
@@ -515,14 +526,19 @@ namespace Kart.Project_Files.Scripts.Controls
 
         private void UpdateVisualWheelRotation()
         {
-            foreach (var axle in axleInfos)
-            {
-                float yAngle = axle.steering ? FrontWheelSteeringAngle : 0;
+            float deltaSpin = WheelSpin * Time.deltaTime;
+            float steerY   = FrontWheelSteeringAngle;
 
-                axle.leftWheel.transform.GetChild(0).localRotation = Quaternion.Euler(WheelSpin, yAngle, 0);
-                axle.rightWheel.transform.GetChild(0).localRotation = Quaternion.Euler(WheelSpin, yAngle, 0);
+            foreach (var wheelVisual in _wheelVisuals)
+            {
+                wheelVisual.SpinAngle = (wheelVisual.SpinAngle + deltaSpin) % 360f;
+                
+                float y = wheelVisual.IsSteerable ? steerY : 0f;
+                
+                wheelVisual.Mesh.localRotation = Quaternion.Euler(wheelVisual.SpinAngle, y, 0f);
             }
         }
+
 
         #endregion
 
@@ -533,6 +549,27 @@ namespace Kart.Project_Files.Scripts.Controls
             //     input = driveInput;
         }
 
+        private void InitializeWheelVisuals()
+        {
+            _wheelVisuals = new WheelVisual[axleInfos.Length * 2];
+            int index = 0;
+            
+            foreach (var axle in axleInfos)
+            {
+                _wheelVisuals[index++] = new WheelVisual {
+                    Mesh         = axle.leftWheel .transform.GetChild(0),
+                    IsSteerable  = axle.steering,
+                    SpinAngle    = 0f
+                };
+                
+                _wheelVisuals[index++] = new WheelVisual {
+                    Mesh         = axle.rightWheel.transform.GetChild(0),
+                    IsSteerable  = axle.steering,
+                    SpinAngle    = 0f
+                };
+            }
+        }
+        
         private void InitializeLocalComponents()
         {
             if (playerInput is IDrive driveInput)
@@ -542,6 +579,8 @@ namespace Kart.Project_Files.Scripts.Controls
 
             //   input.Enable();
 
+           InitializeWheelVisuals();
+            
             rb.centerOfMass = centerOfMass.localPosition;
             _originalCenterOfMass = centerOfMass.localPosition;
 
@@ -562,6 +601,7 @@ namespace Kart.Project_Files.Scripts.Controls
         private void InitializeNetworkedDataWithInputAuthority()
         {
             if (!HasInputAuthority) return;
+            LocalKartController = this;
             RPC_SetKartName(RoomPlayer.Local.Username.Value);
             cameraController.SetupCamera();
         }

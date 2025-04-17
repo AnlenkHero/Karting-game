@@ -42,11 +42,6 @@ namespace Kart.Project_Files.Scripts.Controls
             Runner.RemoveCallbacks(this);
         }
 
-        private void OnDestroy()
-        {
-            DisposeInputs();
-        }
-
         private void DisposeInputs()
         {
             _inputActions.Dispose();

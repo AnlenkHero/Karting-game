@@ -315,7 +315,6 @@ MonoBehaviour:
   graphicsButton: {fileID: 545766545}
   audioButton: {fileID: 837106591}
   userButton: {fileID: 706209506}
-  backButton: {fileID: 729269828}
 --- !u!1 &50426629
 GameObject:
   m_ObjectHideFlags: 0
@@ -405,6 +404,7 @@ GameObject:
   - component: {fileID: 59872191}
   - component: {fileID: 59872195}
   - component: {fileID: 59872194}
+  - component: {fileID: 59872196}
   m_Layer: 5
   m_Name: Back Button
   m_TagString: Untagged
@@ -475,19 +475,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 59872192}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 990392535}
-        m_TargetAssemblyTypeName: Kart.UI.InterfaceManager, Assembly-CSharp
-        m_MethodName: CloseActiveScreen
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &59872192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -552,6 +540,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 59872191}
+--- !u!114 &59872196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 59872189}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6351590d24e249c8bb9a9bc87dfc64cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  backButton: {fileID: 59872191}
 --- !u!1 &82288753
 GameObject:
   m_ObjectHideFlags: 0
@@ -3212,6 +3213,7 @@ MonoBehaviour:
   _gameLauncherNetworkHandler: {fileID: 4989868834018589648, guid: d5b63947568e5b24099b139f5824df68,
     type: 3}
   _searchingUI: {fileID: 1451919257}
+  _pool: {fileID: 0}
 --- !u!114 &429740312
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3699,6 +3701,7 @@ GameObject:
   - component: {fileID: 455047790}
   - component: {fileID: 455047794}
   - component: {fileID: 455047793}
+  - component: {fileID: 455047795}
   m_Layer: 5
   m_Name: Back Button
   m_TagString: Untagged
@@ -3769,19 +3772,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 455047791}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 990392535}
-        m_TargetAssemblyTypeName: Kart.UI.InterfaceManager, Assembly-CSharp
-        m_MethodName: CloseActiveScreen
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &455047791
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3846,6 +3837,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 455047790}
+--- !u!114 &455047795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 455047788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6351590d24e249c8bb9a9bc87dfc64cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  backButton: {fileID: 455047790}
 --- !u!1 &464098372
 GameObject:
   m_ObjectHideFlags: 0
@@ -6489,6 +6493,7 @@ GameObject:
   - component: {fileID: 729269828}
   - component: {fileID: 729269832}
   - component: {fileID: 729269831}
+  - component: {fileID: 729269833}
   m_Layer: 5
   m_Name: Back Button
   m_TagString: Untagged
@@ -6559,19 +6564,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 729269829}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 990392535}
-        m_TargetAssemblyTypeName: Kart.UI.InterfaceManager, Assembly-CSharp
-        m_MethodName: CloseActiveScreen
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &729269829
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6636,6 +6629,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 729269828}
+--- !u!114 &729269833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 729269826}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6351590d24e249c8bb9a9bc87dfc64cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  backButton: {fileID: 729269828}
 --- !u!1 &729406056
 GameObject:
   m_ObjectHideFlags: 0
@@ -8338,6 +8344,7 @@ GameObject:
   - component: {fileID: 978700451}
   - component: {fileID: 978700455}
   - component: {fileID: 978700454}
+  - component: {fileID: 978700456}
   m_Layer: 5
   m_Name: Back Button
   m_TagString: Untagged
@@ -8408,19 +8415,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 978700452}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 990392535}
-        m_TargetAssemblyTypeName: Kart.UI.InterfaceManager, Assembly-CSharp
-        m_MethodName: CloseActiveScreen
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &978700452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8485,6 +8480,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 978700451}
+--- !u!114 &978700456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 978700449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6351590d24e249c8bb9a9bc87dfc64cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  backButton: {fileID: 978700451}
 --- !u!1 &978791957
 GameObject:
   m_ObjectHideFlags: 0
@@ -12243,6 +12251,7 @@ GameObject:
   - component: {fileID: 1509787908}
   - component: {fileID: 1509787913}
   - component: {fileID: 1509787912}
+  - component: {fileID: 1509787914}
   m_Layer: 5
   m_Name: Confirm Button
   m_TagString: Untagged
@@ -12293,19 +12302,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1509787909}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 990392535}
-        m_TargetAssemblyTypeName: Kart.UI.InterfaceManager, Assembly-CSharp
-        m_MethodName: CloseActiveScreen
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1509787909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12390,6 +12387,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 1509787908}
+--- !u!114 &1509787914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1509787907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6351590d24e249c8bb9a9bc87dfc64cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  backButton: {fileID: 1509787908}
 --- !u!1 &1510751628
 GameObject:
   m_ObjectHideFlags: 0
@@ -13419,6 +13429,7 @@ GameObject:
   - component: {fileID: 1596117732}
   - component: {fileID: 1596117736}
   - component: {fileID: 1596117735}
+  - component: {fileID: 1596117737}
   m_Layer: 5
   m_Name: Return Button
   m_TagString: Untagged
@@ -13489,19 +13500,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1596117733}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 990392535}
-        m_TargetAssemblyTypeName: Kart.UI.InterfaceManager, Assembly-CSharp
-        m_MethodName: CloseActiveScreen
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1596117733
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13566,6 +13565,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 1596117732}
+--- !u!114 &1596117737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1596117730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 282524a2126e435db399aacfd199a857, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  returnButton: {fileID: 1596117732}
 --- !u!1 &1601490718
 GameObject:
   m_ObjectHideFlags: 0
