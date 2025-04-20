@@ -41,8 +41,10 @@ namespace Kart.Project_Files.Scripts.Fusion
         
         private GameMode _gameMode;
         private NetworkRunner _runner;
+        private bool _isSearchingLobby;
         public FusionObjectPoolRoot _pool;
-
+        private Coroutine _serverStartRoutine;
+        private Coroutine _clientStartRoutine;
         public static GameLauncher Instance => Singleton<GameLauncher>.Instance;
 
         private void Start()
@@ -64,6 +66,7 @@ namespace Kart.Project_Files.Scripts.Fusion
         /// </summary>
         public async Task JoinOrCreateLobby()
         {
+            _isSearchingLobby = true;
             SetConnectionStatus(ConnectionStatus.Connecting);
 
             // 2) Show the searching UI while matchmaking
@@ -137,7 +140,7 @@ namespace Kart.Project_Files.Scripts.Fusion
                     SessionName = sessionName,
                     ObjectProvider = _pool,
                     SceneManager = _levelManager,
-                    PlayerCount = 1,
+                    PlayerCount = 2,
                     EnableClientSessionCreation = enableCreation,
                     MatchmakingMode = MatchmakingMode.FillRoom
                 };
@@ -178,6 +181,19 @@ namespace Kart.Project_Files.Scripts.Fusion
 
         public void LeaveSession()
         {
+            Debug.Log("Leaving session...");
+            if (_serverStartRoutine != null)
+            {
+                StopCoroutine(_serverStartRoutine);
+                _serverStartRoutine = null;
+            }
+            if (_clientStartRoutine != null)
+            {
+                StopCoroutine(_clientStartRoutine);
+                _clientStartRoutine = null;
+            }
+
+            _isSearchingLobby = false;
             if (_runner != null)
                 _runner.Shutdown();
             else
@@ -241,17 +257,17 @@ namespace Kart.Project_Files.Scripts.Fusion
 
                 var roomPlayer = runner.Spawn(_roomPlayerPrefab, Vector3.zero, Quaternion.identity, player);
                 roomPlayer.GameState = RoomPlayer.EGameState.Lobby;
-
-                // 3) Check if we reached MaxPlayers -> automatically start the game
-                if (runner.SessionInfo.PlayerCount == runner.SessionInfo.MaxPlayers)
-                {
-                    ServerGameStarted();
-                }
+                
             }
             
             if (runner.SessionInfo.PlayerCount == runner.SessionInfo.MaxPlayers)
             {
+                _isSearchingLobby = true;
                 ClientGameStarted();
+            }
+            if (runner.IsServer && runner.SessionInfo.PlayerCount == runner.SessionInfo.MaxPlayers)
+            {
+                ServerGameStarted();
             }
 
             SetConnectionStatus(ConnectionStatus.Connected);
@@ -268,6 +284,14 @@ namespace Kart.Project_Files.Scripts.Fusion
 
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
         {
+            if (_isSearchingLobby)
+            {
+                Debug.Log("Session closed during matchmaking → restart search");
+                LeaveSession();
+                _ = JoinOrCreateLobby();
+                return;
+            }
+
             Debug.Log($"OnShutdown {shutdownReason}");
             SetConnectionStatus(ConnectionStatus.Disconnected);
 
@@ -326,18 +350,31 @@ namespace Kart.Project_Files.Scripts.Fusion
         /// </summary>
         private void ServerGameStarted()
         {
-            StartCoroutine(WaitForServerGameStart());
+            _serverStartRoutine = StartCoroutine(WaitForServerGameStart());
         }
 
         private IEnumerator WaitForServerGameStart()
         {
             _runner.SessionInfo.IsOpen = false;
-            Debug.Log("All players joined. Starting the game now...");
+            Debug.Log("SERVER: All players joined. Starting the game now...");
 
             yield return new WaitForSeconds(5f);
-            GameManager.Instance.TrackListManager.AdvanceToNextRaceTrack();
-            GameLauncherNetworkHandler.Instance.Rpc_SetVolumeProfile(GameManager.Instance.TrackListManager.CurrentTrackIndex);
-            LevelManager.LoadTrack(GameManager.Instance.TrackListManager.CurrentTrackDefinition.buildIndex);
+            if( _runner == null)
+                yield break;
+            if (_runner.SessionInfo.PlayerCount != _runner.SessionInfo.MaxPlayers)
+            {
+                Debug.Log("SERVER: Not all players are present. Restarting session search.");
+                _runner.SessionInfo.IsOpen = true;
+            }
+            else if(_runner)
+            {
+                Debug.Log("SERVER: All players joined. Starting the game now...");
+                _isSearchingLobby = false;
+                GameManager.Instance.TrackListManager.AdvanceToNextRaceTrack();
+                GameLauncherNetworkHandler.Instance.Rpc_SetVolumeProfile(GameManager.Instance.TrackListManager
+                    .CurrentTrackIndex);
+                LevelManager.LoadTrack(GameManager.Instance.TrackListManager.CurrentTrackDefinition.buildIndex);
+            }
         }
         
 
@@ -345,14 +382,28 @@ namespace Kart.Project_Files.Scripts.Fusion
         {
             DisableSearchingUI();
             Debug.Log("Client game started. Loading track...");
-            yield return new WaitForSeconds(3f);
-            GameLauncherNetworkHandler.Instance.Init(_volumeProfile);
-            InterfaceManager.Instance.SetRootScreen(null);
+            yield return new WaitForSeconds(4.5f);
+            if (!_isSearchingLobby || _runner == null)
+                yield break;
+            if (_runner.SessionInfo.PlayerCount != _runner.SessionInfo.MaxPlayers)
+            {
+                Debug.Log("CLIENT: Not all players are present. Restarting session search.");
+                _searchingUI.gameObject.SetActive(true);
+                _searchingUI.StartSearching();
+            }
+            else if(_runner)
+            {
+                Debug.Log("CLIENT: All players joined. Starting the game now...");
+                _isSearchingLobby = false;
+                GameLauncherNetworkHandler.Instance.Init(_volumeProfile);
+                InterfaceManager.Instance.SetRootScreen(null);
+            }
+            
         }
 
         private void ClientGameStarted()
         {
-            StartCoroutine(WaitForClientGameStart());
+            _clientStartRoutine = StartCoroutine(WaitForClientGameStart());
         }
 
 
