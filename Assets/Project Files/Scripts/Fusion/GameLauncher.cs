@@ -29,22 +29,23 @@ namespace Kart.Project_Files.Scripts.Fusion
     [RequireComponent(typeof(LevelManager))]
     public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     {
-        [SerializeField] private GameManager _gameManagerPrefab;
-        [SerializeField] private RoomPlayer _roomPlayerPrefab;
-        [SerializeField] private DisconnectUI _disconnectUI;
-        [SerializeField] private Volume _volumeProfile;
-        [SerializeField] private LevelManager _levelManager;
-        [SerializeField] private GameLauncherNetworkHandler _gameLauncherNetworkHandler;
-        [SerializeField] private DummySearchingUI _searchingUI;
-
-        public static ConnectionStatus ConnectionStatus = ConnectionStatus.Disconnected;
-
+        [SerializeField] private GameManager gameManagerPrefab;
+        [SerializeField] private RoomPlayer roomPlayerPrefab;
+        [SerializeField] private DisconnectUI disconnectUI;
+        [SerializeField] private Volume volumeProfile;
+        [SerializeField] private LevelManager levelManager;
+        [SerializeField] private GameLauncherNetworkHandler gameLauncherNetworkHandler;
+        [SerializeField] private DummySearchingUI searchingUI;
+        
         private GameMode _gameMode;
         private NetworkRunner _runner;
-        private bool _isSearchingMatchMakingSession;
-        public FusionObjectPoolRoot _pool;
         private Coroutine _serverStartRoutine;
         private Coroutine _clientStartRoutine;
+        public bool isSearchingMatchMakingSession;
+        
+        [Header("Public Variables")] 
+        public FusionObjectPoolRoot Pool { get; private set; }
+        public static ConnectionStatus ConnectionStatus = ConnectionStatus.Disconnected;
         public static GameLauncher Instance => Singleton<GameLauncher>.Instance;
 
         private void Start()
@@ -68,7 +69,7 @@ namespace Kart.Project_Files.Scripts.Fusion
             _gameMode = GameMode.AutoHostOrClient;
             _runner.ProvideInput = true;
             _runner.AddCallbacks(this);
-            _pool = go.AddComponent<FusionObjectPoolRoot>();
+            Pool = go.AddComponent<FusionObjectPoolRoot>();
 
             Debug.Log($"Created gameobject {go.name} - joining matchmaking lobby");
         }
@@ -156,8 +157,8 @@ namespace Kart.Project_Files.Scripts.Fusion
             {
                 GameMode = _gameMode,
                 SessionName = sessionName,
-                ObjectProvider = _pool,
-                SceneManager = _levelManager,
+                ObjectProvider = Pool,
+                SceneManager = levelManager,
                 PlayerCount = 2,
                 EnableClientSessionCreation = enableCreation,
                 MatchmakingMode = MatchmakingMode.FillRoom
@@ -183,7 +184,7 @@ namespace Kart.Project_Files.Scripts.Fusion
             else if (_runner)
             {
                 Debug.Log("SERVER: All players joined. Starting the game now...");
-                _isSearchingMatchMakingSession = false;
+                isSearchingMatchMakingSession = false;
                 GameManager.Instance.TrackListManager.AdvanceToNextRaceTrack();
                 GameLauncherNetworkHandler.Instance.Rpc_SetVolumeProfile(GameManager.Instance.TrackListManager
                     .CurrentTrackIndex);
@@ -196,18 +197,18 @@ namespace Kart.Project_Files.Scripts.Fusion
             ToggleSearchingUIVisibility(false);
             Debug.Log("Client game started. Loading track...");
             yield return new WaitForSeconds(4.5f);
-            if (!_isSearchingMatchMakingSession || _runner == null) yield break;
+            if (!isSearchingMatchMakingSession || _runner == null) yield break;
             if (_runner.SessionInfo.PlayerCount != _runner.SessionInfo.MaxPlayers)
             {
                 Debug.Log("CLIENT: Not all players are present. Restarting session search.");
-                _searchingUI.gameObject.SetActive(true);
-                _searchingUI.StartSearching();
+                searchingUI.gameObject.SetActive(true);
+                searchingUI.StartSearching();
             }
             else if (_runner)
             {
                 Debug.Log("CLIENT: All players joined. Starting the game now...");
-                _isSearchingMatchMakingSession = false;
-                GameLauncherNetworkHandler.Instance.Init(_volumeProfile);
+                isSearchingMatchMakingSession = false;
+                GameLauncherNetworkHandler.Instance.Init(volumeProfile);
                 InterfaceManager.Instance.SetRootScreen(null);
             }
         }
@@ -245,11 +246,11 @@ namespace Kart.Project_Files.Scripts.Fusion
             {
                 if (_gameMode == GameMode.AutoHostOrClient)
                 {
-                    runner.Spawn(_gameManagerPrefab, Vector3.zero, Quaternion.identity);
-                    runner.Spawn(_gameLauncherNetworkHandler, Vector3.zero, Quaternion.identity);
+                    runner.Spawn(gameManagerPrefab, Vector3.zero, Quaternion.identity);
+                    runner.Spawn(gameLauncherNetworkHandler, Vector3.zero, Quaternion.identity);
                 }
 
-                var roomPlayer = runner.Spawn(_roomPlayerPrefab, Vector3.zero, Quaternion.identity, player);
+                var roomPlayer = runner.Spawn(roomPlayerPrefab, Vector3.zero, Quaternion.identity, player);
                 roomPlayer.GameState = RoomPlayer.EGameState.Lobby;
             }
 
@@ -262,7 +263,7 @@ namespace Kart.Project_Files.Scripts.Fusion
         {
             if (runner.SessionInfo.PlayerCount != runner.SessionInfo.MaxPlayers) return;
 
-            _isSearchingMatchMakingSession = true;
+            isSearchingMatchMakingSession = true;
             ClientGameStarted();
             if (runner.IsServer)
             {
@@ -276,7 +277,7 @@ namespace Kart.Project_Files.Scripts.Fusion
 
         private bool RestartSearchOnEmergencyShutdown()
         {
-            if (!_isSearchingMatchMakingSession) return false;
+            if (!isSearchingMatchMakingSession) return false;
 
             Debug.Log("Session closed during matchmaking → restart search");
             LeaveSession();
@@ -291,7 +292,7 @@ namespace Kart.Project_Files.Scripts.Fusion
             ToggleSearchingUIVisibility(false);
             StopRoutine(ref _serverStartRoutine);
             StopRoutine(ref _clientStartRoutine);
-            _isSearchingMatchMakingSession = false;
+            isSearchingMatchMakingSession = false;
 
             if (_runner != null) _runner.Shutdown();
             else SetConnectionStatus(ConnectionStatus.Disconnected);
@@ -310,7 +311,7 @@ namespace Kart.Project_Files.Scripts.Fusion
             LeaveSession();
             SetConnectionStatus(ConnectionStatus.Failed);
             (string status, string message) = ConnectFailedReasonToHuman(reason);
-            _disconnectUI.ShowMessage(status, message);
+            disconnectUI.ShowMessage(status, message);
         }
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
@@ -329,7 +330,7 @@ namespace Kart.Project_Files.Scripts.Fusion
             Debug.Log($"OnShutdown {shutdownReason}");
             SetConnectionStatus(ConnectionStatus.Disconnected);
             (string status, string message) = ShutdownReasonToHuman(shutdownReason);
-            _disconnectUI.ShowMessage(status, message);
+            disconnectUI.ShowMessage(status, message);
 
             DisposeNetworkedData();
         }
@@ -341,8 +342,8 @@ namespace Kart.Project_Files.Scripts.Fusion
             if (_runner)
                 Destroy(_runner.gameObject);
 
-            _pool?.ClearPools();
-            _pool = null;
+            Pool?.ClearPools();
+            Pool = null;
             _runner = null;
         }
 
@@ -423,7 +424,7 @@ namespace Kart.Project_Files.Scripts.Fusion
 
         private void PrepareForSearching()
         {
-            _isSearchingMatchMakingSession = true;
+            isSearchingMatchMakingSession = true;
             SetConnectionStatus(ConnectionStatus.Connecting);
             ToggleSearchingUIVisibility(true);
         }
@@ -460,10 +461,10 @@ namespace Kart.Project_Files.Scripts.Fusion
 
         private void ToggleSearchingUIVisibility(bool visible)
         {
-            if (_searchingUI == null) return;
-            _searchingUI.gameObject.SetActive(visible);
-            if (visible) _searchingUI.StartSearching();
-            else _searchingUI.StopSearching();
+            if (searchingUI == null) return;
+            searchingUI.gameObject.SetActive(visible);
+            if (visible) searchingUI.StartSearching();
+            else searchingUI.StopSearching();
         }
 
         #endregion

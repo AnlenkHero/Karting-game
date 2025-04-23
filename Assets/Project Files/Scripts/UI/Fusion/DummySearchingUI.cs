@@ -7,27 +7,27 @@ namespace Kart.Project_Files.Scripts.UI.Fusion
     {
         [SerializeField] private TextMeshProUGUI timerText;
 
-        private float elapsedTime = 0f;
-        private bool isSearching = false;
+        private float _elapsedTime;
+        private bool _isSearching;
         
         public void StartSearching()
         {
-            elapsedTime = 0f;
-            isSearching = true;
+            _elapsedTime = 0f;
+            _isSearching = true;
         }
 
 
         public void StopSearching()
         {
-            isSearching = false;
+            _isSearching = false;
         }
 
         private void Update()
         {
-            if (!isSearching) return;
+            if (!_isSearching) return;
             
-            elapsedTime += Time.deltaTime;
-            timerText.text = "Searching... " + Mathf.FloorToInt(elapsedTime).ToString() + "s";
+            _elapsedTime += Time.deltaTime;
+            timerText.text = "Searching... " + Mathf.FloorToInt(_elapsedTime) + "s";
         }
     }
 }
