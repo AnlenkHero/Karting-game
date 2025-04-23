@@ -32,7 +32,7 @@ namespace Kart.Project_Files.Scripts.UI.Screens
                 if (_isMatchmakingInProgress) return;
                 _isMatchmakingInProgress = true;
 
-                await GameLauncher.Instance.JoinOrCreateLobby();
+                await GameLauncher.Instance.JoinOrCreateMatchmakingLobby();
 
                 matchmakingButton.gameObject.SetActive(false);
                 cancelMatchmakingButton.gameObject.SetActive(true);

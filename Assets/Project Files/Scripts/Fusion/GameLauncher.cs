@@ -38,10 +38,10 @@ namespace Kart.Project_Files.Scripts.Fusion
         [SerializeField] private DummySearchingUI _searchingUI;
 
         public static ConnectionStatus ConnectionStatus = ConnectionStatus.Disconnected;
-        
+
         private GameMode _gameMode;
         private NetworkRunner _runner;
-        private bool _isSearchingLobby;
+        private bool _isSearchingMatchMakingSession;
         public FusionObjectPoolRoot _pool;
         private Coroutine _serverStartRoutine;
         private Coroutine _clientStartRoutine;
@@ -50,36 +50,15 @@ namespace Kart.Project_Files.Scripts.Fusion
         private void Start()
         {
             Application.runInBackground = true;
-
-
             DontDestroyOnLoad(gameObject);
-
-            // Load your main menu scene at startup
             SceneManager.LoadScene(LevelManager.MAIN_MENU_SCENE);
         }
 
-        public void SetCreateLobby() => _gameMode = GameMode.Host;
-        public void SetJoinLobby() => _gameMode = GameMode.Client;
+        #region Session Creation/Join
 
-        /// <summary>
-        /// Called by a button or similar. Joins (or creates) a matchmaking lobby.
-        /// </summary>
-        public async Task JoinOrCreateLobby()
+        private void CreateFusionRunner()
         {
-            _isSearchingLobby = true;
-            SetConnectionStatus(ConnectionStatus.Connecting);
-
-            // 2) Show the searching UI while matchmaking
-            if (_searchingUI)
-            {
-                _searchingUI.gameObject.SetActive(true);
-                _searchingUI.StartSearching();
-            }
-
-            if (_runner != null)
-                LeaveSession();
-
-            GameObject go = new GameObject("Session");
+            GameObject go = new GameObject("MAIN Runner Session GO");
             DontDestroyOnLoad(go);
 
             _runner = go.AddComponent<NetworkRunner>();
@@ -92,11 +71,25 @@ namespace Kart.Project_Files.Scripts.Fusion
             _pool = go.AddComponent<FusionObjectPoolRoot>();
 
             Debug.Log($"Created gameobject {go.name} - joining matchmaking lobby");
+        }
 
-            var joinLobbyResult = await _runner.JoinSessionLobby(SessionLobby.Custom, "MyMatchmakingLobby");
+        public async Task JoinOrCreateMatchmakingLobby()
+        {
+            PrepareForSearching();
+
+            if (_runner != null)
+                LeaveSession();
+
+            CreateFusionRunner();
+            await TryToJoinMatchmakingLobby();
+        }
+
+        private async Task TryToJoinMatchmakingLobby()
+        {
+            var joinLobbyResult = await _runner.JoinSessionLobby(SessionLobby.Custom, "MatchmakingLobby");
             if (joinLobbyResult.Ok)
             {
-                Debug.Log("Successfully joined lobby: MyMatchmakingLobby. Awaiting session list update...");
+                Debug.Log("Successfully joined lobby: MatchmakingLobby. Awaiting session list update...");
             }
             else
             {
@@ -109,41 +102,35 @@ namespace Kart.Project_Files.Scripts.Fusion
         {
             Debug.Log("Session list updated. Count: " + sessionList.Count);
 
-            // Filter sessions: open, not full, name starts with "MyMatchmakingSession"
-            SessionInfo targetSession = sessionList
-                .Where(session => session.IsOpen)
-                .Where(session => session.PlayerCount < session.MaxPlayers)
-                .FirstOrDefault(session => session.Name.StartsWith("MyMatchmakingSession"));
+            SessionInfo targetSession = FindExistingSession(sessionList);
 
             if (targetSession != null)
             {
                 Debug.Log("Found joinable session: " + targetSession.Name);
-                StartGameSession(targetSession.Name, enableCreation: false);
+                StartMatchmakingGameSession(targetSession.Name, enableCreation: false);
             }
             else
             {
                 Debug.Log("No joinable session found. Creating a new session.");
-                string newSessionName = "MyMatchmakingSession_" + Guid.NewGuid().ToString("N").Substring(0, 8);
-                StartGameSession(newSessionName, enableCreation: true);
+                var newSessionName = GenerateSessionName();
+                StartMatchmakingGameSession(newSessionName, enableCreation: true);
             }
         }
 
-        private async void StartGameSession(string sessionName, bool enableCreation)
+        private SessionInfo FindExistingSession(List<SessionInfo> sessionList)
+        {
+            return sessionList
+                .FirstOrDefault(
+                    s => s.IsOpen && s.PlayerCount < s.MaxPlayers && s.Name.StartsWith("MatchmakingSession"));
+        }
+
+        private async void StartMatchmakingGameSession(string sessionName, bool enableCreation)
         {
             try
             {
                 Debug.Log($"Starting game session: {sessionName} (Enable Creation: {enableCreation})");
 
-                var startArgs = new StartGameArgs
-                {
-                    GameMode = _gameMode,
-                    SessionName = sessionName,
-                    ObjectProvider = _pool,
-                    SceneManager = _levelManager,
-                    PlayerCount = 2,
-                    EnableClientSessionCreation = enableCreation,
-                    MatchmakingMode = MatchmakingMode.FillRoom
-                };
+                var startArgs = ConfigureStartGameArgs(sessionName, enableCreation);
 
                 var result = await _runner.StartGame(startArgs);
                 if (result.Ok)
@@ -163,41 +150,71 @@ namespace Kart.Project_Files.Scripts.Fusion
             }
         }
 
-        private void SetConnectionStatus(ConnectionStatus status)
+        private StartGameArgs ConfigureStartGameArgs(string sessionName, bool enableCreation)
         {
-            Debug.Log($"Setting connection status to {status}");
-            ConnectionStatus = status;
-
-            if (!Application.isPlaying)
-                return;
-
-            if ((status == ConnectionStatus.Disconnected || status == ConnectionStatus.Failed) &&
-                SceneManager.GetActiveScene().buildIndex != LevelManager.MAIN_MENU_SCENE)
+            return new StartGameArgs
             {
-                SceneManager.LoadScene(LevelManager.MAIN_MENU_SCENE);
-                InterfaceManager.Instance.CloseToRoot();
+                GameMode = _gameMode,
+                SessionName = sessionName,
+                ObjectProvider = _pool,
+                SceneManager = _levelManager,
+                PlayerCount = 2,
+                EnableClientSessionCreation = enableCreation,
+                MatchmakingMode = MatchmakingMode.FillRoom
+            };
+        }
+
+        private void ServerGameStarted()
+        {
+            _serverStartRoutine = StartCoroutine(WaitForServerGameStart());
+        }
+
+        private IEnumerator WaitForServerGameStart()
+        {
+            _runner.SessionInfo.IsOpen = false;
+            Debug.Log("SERVER: All players joined. Starting the game now...");
+            yield return new WaitForSeconds(5f);
+            if (_runner == null) yield break;
+            if (_runner.SessionInfo.PlayerCount != _runner.SessionInfo.MaxPlayers)
+            {
+                Debug.Log("SERVER: Not all players are present. Restarting session search.");
+                _runner.SessionInfo.IsOpen = true;
+            }
+            else if (_runner)
+            {
+                Debug.Log("SERVER: All players joined. Starting the game now...");
+                _isSearchingMatchMakingSession = false;
+                GameManager.Instance.TrackListManager.AdvanceToNextRaceTrack();
+                GameLauncherNetworkHandler.Instance.Rpc_SetVolumeProfile(GameManager.Instance.TrackListManager
+                    .CurrentTrackIndex);
+                LevelManager.LoadTrack(GameManager.Instance.TrackListManager.CurrentTrackDefinition.buildIndex);
             }
         }
 
-        public void LeaveSession()
+        private IEnumerator WaitForClientGameStart()
         {
-            Debug.Log("Leaving session...");
-            if (_serverStartRoutine != null)
+            ToggleSearchingUIVisibility(false);
+            Debug.Log("Client game started. Loading track...");
+            yield return new WaitForSeconds(4.5f);
+            if (!_isSearchingMatchMakingSession || _runner == null) yield break;
+            if (_runner.SessionInfo.PlayerCount != _runner.SessionInfo.MaxPlayers)
             {
-                StopCoroutine(_serverStartRoutine);
-                _serverStartRoutine = null;
+                Debug.Log("CLIENT: Not all players are present. Restarting session search.");
+                _searchingUI.gameObject.SetActive(true);
+                _searchingUI.StartSearching();
             }
-            if (_clientStartRoutine != null)
+            else if (_runner)
             {
-                StopCoroutine(_clientStartRoutine);
-                _clientStartRoutine = null;
+                Debug.Log("CLIENT: All players joined. Starting the game now...");
+                _isSearchingMatchMakingSession = false;
+                GameLauncherNetworkHandler.Instance.Init(_volumeProfile);
+                InterfaceManager.Instance.SetRootScreen(null);
             }
+        }
 
-            _isSearchingLobby = false;
-            if (_runner != null)
-                _runner.Shutdown();
-            else
-                SetConnectionStatus(ConnectionStatus.Disconnected);
+        private void ClientGameStarted()
+        {
+            _clientStartRoutine = StartCoroutine(WaitForClientGameStart());
         }
 
         public void OnConnectedToServer(NetworkRunner runner)
@@ -206,12 +223,6 @@ namespace Kart.Project_Files.Scripts.Fusion
             SetConnectionStatus(ConnectionStatus.Connected);
         }
 
-        public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
-        {
-            Debug.Log("Disconnected from server");
-            LeaveSession();
-            SetConnectionStatus(ConnectionStatus.Disconnected);
-        }
 
         public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request,
             byte[] token)
@@ -225,23 +236,6 @@ namespace Kart.Project_Files.Scripts.Fusion
                 request.Accept();
         }
 
-        public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
-        {
-            Debug.Log($"Connect failed {reason}");
-            LeaveSession();
-            SetConnectionStatus(ConnectionStatus.Failed);
-            (string status, string message) = ConnectFailedReasonToHuman(reason);
-            _disconnectUI.ShowMessage(status, message);
-        }
-
-        public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
-        {
-        }
-
-        public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
-        {
-        }
-        
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
@@ -257,20 +251,66 @@ namespace Kart.Project_Files.Scripts.Fusion
 
                 var roomPlayer = runner.Spawn(_roomPlayerPrefab, Vector3.zero, Quaternion.identity, player);
                 roomPlayer.GameState = RoomPlayer.EGameState.Lobby;
-                
             }
-            
-            if (runner.SessionInfo.PlayerCount == runner.SessionInfo.MaxPlayers)
-            {
-                _isSearchingLobby = true;
-                ClientGameStarted();
-            }
-            if (runner.IsServer && runner.SessionInfo.PlayerCount == runner.SessionInfo.MaxPlayers)
+
+            AutoStartGameWhenMaxPlayers(runner);
+
+            SetConnectionStatus(ConnectionStatus.Connected);
+        }
+
+        private void AutoStartGameWhenMaxPlayers(NetworkRunner runner)
+        {
+            if (runner.SessionInfo.PlayerCount != runner.SessionInfo.MaxPlayers) return;
+
+            _isSearchingMatchMakingSession = true;
+            ClientGameStarted();
+            if (runner.IsServer)
             {
                 ServerGameStarted();
             }
+        }
 
-            SetConnectionStatus(ConnectionStatus.Connected);
+        #endregion
+
+        #region Session Leave/Shutdown
+
+        private bool RestartSearchOnEmergencyShutdown()
+        {
+            if (!_isSearchingMatchMakingSession) return false;
+
+            Debug.Log("Session closed during matchmaking → restart search");
+            LeaveSession();
+            _ = JoinOrCreateMatchmakingLobby();
+            ToggleSearchingUIVisibility(true);
+            return true;
+        }
+
+        public void LeaveSession()
+        {
+            Debug.Log("Leaving session...");
+            ToggleSearchingUIVisibility(false);
+            StopRoutine(ref _serverStartRoutine);
+            StopRoutine(ref _clientStartRoutine);
+            _isSearchingMatchMakingSession = false;
+
+            if (_runner != null) _runner.Shutdown();
+            else SetConnectionStatus(ConnectionStatus.Disconnected);
+        }
+
+        public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
+        {
+            Debug.Log("Disconnected from server");
+            LeaveSession();
+            SetConnectionStatus(ConnectionStatus.Disconnected);
+        }
+
+        public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
+        {
+            Debug.Log($"Connect failed {reason}");
+            LeaveSession();
+            SetConnectionStatus(ConnectionStatus.Failed);
+            (string status, string message) = ConnectFailedReasonToHuman(reason);
+            _disconnectUI.ShowMessage(status, message);
         }
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
@@ -284,20 +324,18 @@ namespace Kart.Project_Files.Scripts.Fusion
 
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
         {
-            if (_isSearchingLobby)
-            {
-                Debug.Log("Session closed during matchmaking → restart search");
-                LeaveSession();
-                _ = JoinOrCreateLobby();
-                return;
-            }
+            if (RestartSearchOnEmergencyShutdown()) return;
 
             Debug.Log($"OnShutdown {shutdownReason}");
             SetConnectionStatus(ConnectionStatus.Disconnected);
-
             (string status, string message) = ShutdownReasonToHuman(shutdownReason);
             _disconnectUI.ShowMessage(status, message);
 
+            DisposeNetworkedData();
+        }
+
+        private void DisposeNetworkedData()
+        {
             RoomPlayer.Players.Clear();
 
             if (_runner)
@@ -308,112 +346,7 @@ namespace Kart.Project_Files.Scripts.Fusion
             _runner = null;
         }
 
-        public void OnInput(NetworkRunner runner, NetworkInput input)
-        {
-        }
-
-        public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
-        {
-        }
-
-        public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)
-        {
-        }
-
-        public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
-        {
-        }
-
-        public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
-        {
-        }
-
-        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key,
-            ArraySegment<byte> data)
-        {
-        }
-
-        public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
-        {
-        }
-
-        public void OnSceneLoadDone(NetworkRunner runner)
-        {
-        }
-
-        public void OnSceneLoadStart(NetworkRunner runner)
-        {
-        }
-
-        /// <summary>
-        /// Called by the server once all slots are filled. We close the session and hide the searching UI.
-        /// </summary>
-        private void ServerGameStarted()
-        {
-            _serverStartRoutine = StartCoroutine(WaitForServerGameStart());
-        }
-
-        private IEnumerator WaitForServerGameStart()
-        {
-            _runner.SessionInfo.IsOpen = false;
-            Debug.Log("SERVER: All players joined. Starting the game now...");
-
-            yield return new WaitForSeconds(5f);
-            if( _runner == null)
-                yield break;
-            if (_runner.SessionInfo.PlayerCount != _runner.SessionInfo.MaxPlayers)
-            {
-                Debug.Log("SERVER: Not all players are present. Restarting session search.");
-                _runner.SessionInfo.IsOpen = true;
-            }
-            else if(_runner)
-            {
-                Debug.Log("SERVER: All players joined. Starting the game now...");
-                _isSearchingLobby = false;
-                GameManager.Instance.TrackListManager.AdvanceToNextRaceTrack();
-                GameLauncherNetworkHandler.Instance.Rpc_SetVolumeProfile(GameManager.Instance.TrackListManager
-                    .CurrentTrackIndex);
-                LevelManager.LoadTrack(GameManager.Instance.TrackListManager.CurrentTrackDefinition.buildIndex);
-            }
-        }
-        
-
-        private IEnumerator WaitForClientGameStart()
-        {
-            DisableSearchingUI();
-            Debug.Log("Client game started. Loading track...");
-            yield return new WaitForSeconds(4.5f);
-            if (!_isSearchingLobby || _runner == null)
-                yield break;
-            if (_runner.SessionInfo.PlayerCount != _runner.SessionInfo.MaxPlayers)
-            {
-                Debug.Log("CLIENT: Not all players are present. Restarting session search.");
-                _searchingUI.gameObject.SetActive(true);
-                _searchingUI.StartSearching();
-            }
-            else if(_runner)
-            {
-                Debug.Log("CLIENT: All players joined. Starting the game now...");
-                _isSearchingLobby = false;
-                GameLauncherNetworkHandler.Instance.Init(_volumeProfile);
-                InterfaceManager.Instance.SetRootScreen(null);
-            }
-            
-        }
-
-        private void ClientGameStarted()
-        {
-            _clientStartRoutine = StartCoroutine(WaitForClientGameStart());
-        }
-
-
-        private void DisableSearchingUI()
-        {
-            _searchingUI.gameObject.SetActive(false);
-            _searchingUI.StopSearching();
-        }
-
-        private static (string, string) ShutdownReasonToHuman(ShutdownReason reason)
+        private (string, string) ShutdownReasonToHuman(ShutdownReason reason)
         {
             switch (reason)
             {
@@ -468,7 +401,7 @@ namespace Kart.Project_Files.Scripts.Fusion
             }
         }
 
-        private static (string, string) ConnectFailedReasonToHuman(NetConnectFailedReason reason)
+        private (string, string) ConnectFailedReasonToHuman(NetConnectFailedReason reason)
         {
             switch (reason)
             {
@@ -483,5 +416,105 @@ namespace Kart.Project_Files.Scripts.Fusion
                     return ("Unknown Connection Failure", $"{(int)reason}");
             }
         }
+
+        #endregion
+
+        #region Helper Methods
+
+        private void PrepareForSearching()
+        {
+            _isSearchingMatchMakingSession = true;
+            SetConnectionStatus(ConnectionStatus.Connecting);
+            ToggleSearchingUIVisibility(true);
+        }
+
+        private string GenerateSessionName()
+        {
+            string newSessionName = "MatchmakingSession_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+            return newSessionName;
+        }
+
+        private void SetConnectionStatus(ConnectionStatus status)
+        {
+            Debug.Log($"Setting connection status to {status}");
+            ConnectionStatus = status;
+
+            if (!Application.isPlaying)
+                return;
+
+            if ((status != ConnectionStatus.Disconnected && status != ConnectionStatus.Failed) ||
+                SceneManager.GetActiveScene().buildIndex == LevelManager.MAIN_MENU_SCENE) return;
+
+            SceneManager.LoadScene(LevelManager.MAIN_MENU_SCENE);
+            InterfaceManager.Instance.CloseToRoot();
+        }
+
+
+        private void StopRoutine(ref Coroutine routine)
+        {
+            if (routine != null)
+                StopCoroutine(routine);
+            routine = null;
+        }
+
+
+        private void ToggleSearchingUIVisibility(bool visible)
+        {
+            if (_searchingUI == null) return;
+            _searchingUI.gameObject.SetActive(visible);
+            if (visible) _searchingUI.StartSearching();
+            else _searchingUI.StopSearching();
+        }
+
+        #endregion
+
+        #region Unused Fusion Methods
+
+        public void OnInput(NetworkRunner runner, NetworkInput input)
+        {
+        }
+
+        public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
+        {
+        }
+
+        public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)
+        {
+        }
+
+        public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
+        {
+        }
+
+        public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
+        {
+        }
+
+        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key,
+            ArraySegment<byte> data)
+        {
+        }
+
+        public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
+        {
+        }
+
+        public void OnSceneLoadDone(NetworkRunner runner)
+        {
+        }
+
+        public void OnSceneLoadStart(NetworkRunner runner)
+        {
+        }
+
+        public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
+        {
+        }
+
+        public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
+        {
+        }
+
+        #endregion
     }
 }

@@ -154,11 +154,11 @@ namespace Kart.Project_Files.Scripts.Controls
 
         private void UpdateNetworkedVariablesWithoutInput()
         {
-            NetworkedVelocity = _kartVelocity;
             WheelSpin = rb.linearVelocity.z * 10f;
         }
         private void UpdateNetworkedVariablesWithInput()
         {
+            NetworkedVelocity = _kartVelocity;
             FrontWheelSteeringAngle = _currentSteeringAngle;
         }
 
