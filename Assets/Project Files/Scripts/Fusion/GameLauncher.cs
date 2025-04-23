@@ -41,7 +41,7 @@ namespace Kart.Project_Files.Scripts.Fusion
         private NetworkRunner _runner;
         private Coroutine _serverStartRoutine;
         private Coroutine _clientStartRoutine;
-        public bool isSearchingMatchMakingSession;
+        private bool _isSearchingMatchMakingSession;
         
         [Header("Public Variables")] 
         public FusionObjectPoolRoot Pool { get; private set; }
@@ -184,7 +184,7 @@ namespace Kart.Project_Files.Scripts.Fusion
             else if (_runner)
             {
                 Debug.Log("SERVER: All players joined. Starting the game now...");
-                isSearchingMatchMakingSession = false;
+                _isSearchingMatchMakingSession = false;
                 GameManager.Instance.TrackListManager.AdvanceToNextRaceTrack();
                 GameLauncherNetworkHandler.Instance.Rpc_SetVolumeProfile(GameManager.Instance.TrackListManager
                     .CurrentTrackIndex);
@@ -197,7 +197,7 @@ namespace Kart.Project_Files.Scripts.Fusion
             ToggleSearchingUIVisibility(false);
             Debug.Log("Client game started. Loading track...");
             yield return new WaitForSeconds(4.5f);
-            if (!isSearchingMatchMakingSession || _runner == null) yield break;
+            if (!_isSearchingMatchMakingSession || _runner == null) yield break;
             if (_runner.SessionInfo.PlayerCount != _runner.SessionInfo.MaxPlayers)
             {
                 Debug.Log("CLIENT: Not all players are present. Restarting session search.");
@@ -207,7 +207,7 @@ namespace Kart.Project_Files.Scripts.Fusion
             else if (_runner)
             {
                 Debug.Log("CLIENT: All players joined. Starting the game now...");
-                isSearchingMatchMakingSession = false;
+                _isSearchingMatchMakingSession = false;
                 GameLauncherNetworkHandler.Instance.Init(volumeProfile);
                 InterfaceManager.Instance.SetRootScreen(null);
             }
@@ -263,7 +263,7 @@ namespace Kart.Project_Files.Scripts.Fusion
         {
             if (runner.SessionInfo.PlayerCount != runner.SessionInfo.MaxPlayers) return;
 
-            isSearchingMatchMakingSession = true;
+            _isSearchingMatchMakingSession = true;
             ClientGameStarted();
             if (runner.IsServer)
             {
@@ -277,7 +277,7 @@ namespace Kart.Project_Files.Scripts.Fusion
 
         private bool RestartSearchOnEmergencyShutdown()
         {
-            if (!isSearchingMatchMakingSession) return false;
+            if (!_isSearchingMatchMakingSession) return false;
 
             Debug.Log("Session closed during matchmaking → restart search");
             LeaveSession();
@@ -292,7 +292,7 @@ namespace Kart.Project_Files.Scripts.Fusion
             ToggleSearchingUIVisibility(false);
             StopRoutine(ref _serverStartRoutine);
             StopRoutine(ref _clientStartRoutine);
-            isSearchingMatchMakingSession = false;
+            _isSearchingMatchMakingSession = false;
 
             if (_runner != null) _runner.Shutdown();
             else SetConnectionStatus(ConnectionStatus.Disconnected);
@@ -424,7 +424,7 @@ namespace Kart.Project_Files.Scripts.Fusion
 
         private void PrepareForSearching()
         {
-            isSearchingMatchMakingSession = true;
+            _isSearchingMatchMakingSession = true;
             SetConnectionStatus(ConnectionStatus.Connecting);
             ToggleSearchingUIVisibility(true);
         }

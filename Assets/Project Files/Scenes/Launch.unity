@@ -3203,17 +3203,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8de84b3cc204d2e8f3a734bdc474eba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gameManagerPrefab: {fileID: 8664994249155721416, guid: c5c061ef102920b4fbf86c04cc4f20eb,
+  gameManagerPrefab: {fileID: 8664994249155721416, guid: c5c061ef102920b4fbf86c04cc4f20eb,
     type: 3}
-  _roomPlayerPrefab: {fileID: 4020302065990943648, guid: f4478b8856222b146b905cac43ed699c,
+  roomPlayerPrefab: {fileID: 4020302065990943648, guid: f4478b8856222b146b905cac43ed699c,
     type: 3}
-  _disconnectUI: {fileID: 1449109647}
-  _volumeProfile: {fileID: 1420965947}
-  _levelManager: {fileID: 429740312}
-  _gameLauncherNetworkHandler: {fileID: 4989868834018589648, guid: d5b63947568e5b24099b139f5824df68,
+  disconnectUI: {fileID: 1449109647}
+  volumeProfile: {fileID: 1420965947}
+  levelManager: {fileID: 429740312}
+  gameLauncherNetworkHandler: {fileID: 4989868834018589648, guid: d5b63947568e5b24099b139f5824df68,
     type: 3}
-  _searchingUI: {fileID: 1451919257}
-  _pool: {fileID: 0}
+  searchingUI: {fileID: 1451919257}
 --- !u!114 &429740312
 MonoBehaviour:
   m_ObjectHideFlags: 0

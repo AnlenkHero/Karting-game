@@ -122,9 +122,6 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
                 }
                 var kartIndex = RoomPlayer.Players.IndexOf(data.player);
                 GameManager.Instance.Runner.Despawn(RoomPlayer.Players[kartIndex].Kart.Object);
-                //GameLauncher.Instance._pool.ClearPools();
-                //var kartIndex = GameManager.Players.IndexOf(kart);
-                //GameManager.Instance.RpcHidePlayer(kartIndex);
                 MarkFinishedPlayer(kart, data);
                 CheckHalfPlayersFinished();
             }
