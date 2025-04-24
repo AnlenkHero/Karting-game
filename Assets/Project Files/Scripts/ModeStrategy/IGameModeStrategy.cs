@@ -9,9 +9,7 @@ namespace Kart.Project_Files.Scripts.ModeStrategy
         bool CheckForWinCondition(out KartController winner);
         bool IsGameOver();
         void UpdateModeLogic();
-        [Rpc]
-        void RpcOnStandingUpdate();
-        [Rpc]
-        void RpcOnRaceFinished();
+        void OnStandingUpdate();
+        void OnRaceFinished();
     }
 }

@@ -12,17 +12,16 @@ namespace Kart.Project_Files.Scripts.Managers.Game
     public class GameManager : NetworkBehaviour
     {
         [Networked] public GameModeStrategyFactory StrategyFactory { get; set; }
-
+        [Networked] public float ElapsedTime { get; private set; }
+        [Networked] public RaceTrackListManager TrackListManager { get; set; }
+        public static readonly List<KartController> Players = new();
+        public static Track CurrentTrack;
         public PointsTable PointsTable = new();
         public static GameManager Instance { get; private set; }
 
         public GameType currentGameType;
-        public static Track CurrentTrack;
-        public static readonly List<KartController> Players = new();
-        [Networked] public float ElapsedTime { get; private set; }
         public IGameModeStrategy Strategy { get; private set; }
         public GameState CurrentGameState { get; private set; }
-        [Networked] public RaceTrackListManager TrackListManager { get; set; }
 
 
         public override void Spawned()
@@ -33,7 +32,7 @@ namespace Kart.Project_Files.Scripts.Managers.Game
                 Destroy(gameObject);
                 return;
             }
-            
+
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
@@ -47,18 +46,6 @@ namespace Kart.Project_Files.Scripts.Managers.Game
             }
         }
 
-        [Rpc]
-        public void RpcHidePlayer(int index)
-        {
-            StartCoroutine(WaitForPlayerHide(3));
-            Players[index].gameObject.SetActive(false);
-        }
-
-        private IEnumerator WaitForPlayerHide(float seconds)
-        {
-            yield return new WaitForSeconds(seconds);
-        }
-        
         public void Update()
         {
             if (HasStateAuthority && CurrentGameState == GameState.PreGame && ElapsedTime >= 5f)
@@ -71,7 +58,7 @@ namespace Kart.Project_Files.Scripts.Managers.Game
 
             Strategy.UpdateModeLogic();
 
-            Strategy.RpcOnStandingUpdate();
+            Strategy.OnStandingUpdate();
 
             if (!Strategy.IsGameOver()) return;
 
@@ -87,7 +74,7 @@ namespace Kart.Project_Files.Scripts.Managers.Game
             if (HasStateAuthority)
                 RPC_ResetTimer();
         }
-        
+
         [Rpc]
         private void RPC_StartGame()
         {
@@ -146,7 +133,7 @@ namespace Kart.Project_Files.Scripts.Managers.Game
         private void EndGameWithStandings()
         {
             Debug.Log("Race Ended with standings.");
-            Strategy.RpcOnRaceFinished();
+            Strategy.OnRaceFinished();
             CurrentGameState = GameState.Finished;
 
             if (TrackListManager.CurrentRaceCount >= RaceTrackListManager.MaxRaces)
@@ -168,14 +155,14 @@ namespace Kart.Project_Files.Scripts.Managers.Game
         private IEnumerator WaiForSceneChangeAndStartNextRace()
         {
             TrackListManager.AdvanceToNextRaceTrack();
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(10f);
             GameLauncherNetworkHandler.Instance.Rpc_SetVolumeProfile(TrackListManager.CurrentTrackIndex);
             LevelManager.LoadTrack(TrackListManager.CurrentTrackDefinition.buildIndex);
         }
 
         private IEnumerator WaiForSceneChangeAndLoadSessionResults()
         {
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(10f);
             //LevelManager.LoadScene("SessionResults");
             foreach (var rp in RoomPlayer.Players)
             {

@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Fusion;
 using Kart.Project_Files.Scripts.Controls;
 using Kart.Project_Files.Scripts.Fusion;
 using Kart.Project_Files.Scripts.Managers.Game;
@@ -15,44 +14,110 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
 {
     public class LapsGameModeStrategy : ICheckpointGameModeStrategy
     {
-        private readonly GameType gameType;
-        private readonly LapsUiView lapsUiView;
-        private readonly GameEndUiView gameEndUiView;
+        private const float HalfPlayersFinishedTimer = 60f;
+        private readonly GameType _gameType;
+        private readonly LapsUiView _lapsUiView;
+        private readonly GameEndUiView _gameEndUiView;
+        private List<PlayerLapData> _playerLapData = new();
+        private int _requiredLaps;
+        private int _finishedCount;
+        private bool _halfFinishTriggered;
+        private float _halfFinishDeadline;
+        private int _halfPlayersCount;
+        public static event Action OnLocalPlayerFinished;
 
-        private int requiredLaps;
-        private List<PlayerLapData> playerLapData = new();
-        private int finishedCount;
-        private bool halfFinishTriggered;
-        private float halfFinishDeadline;
-        private int halfPlayersCount;
-        private readonly float halfPlayersFinishedTimer = 60f;
-        public static event Action OnLocalPlayerFinished; 
+        #region Initializers
+
         public LapsGameModeStrategy(GameType gameType, LapsUiView lapsUiView, GameEndUiView gameEndUiView)
         {
-            this.gameType = gameType;
-            this.lapsUiView = lapsUiView;
-            this.gameEndUiView = gameEndUiView;
+            _gameType = gameType;
+            _lapsUiView = lapsUiView;
+            _gameEndUiView = gameEndUiView;
         }
 
         public void InitializeMode()
         {
-            requiredLaps = gameType.totalLapsRequired;
+            _requiredLaps = _gameType.totalLapsRequired;
+            _halfPlayersCount = Mathf.CeilToInt(RoomPlayer.Players.Count * 0.5f);
+            InitializePlayerLapData(RoomPlayer.Players);
+        }
 
-            var allPlayers = RoomPlayer.Players;
-
-            halfPlayersCount = Mathf.CeilToInt(allPlayers.Count * 0.5f);
-
+        private void InitializePlayerLapData(List<RoomPlayer> allPlayers)
+        {
             foreach (var roomPlayer in allPlayers)
             {
                 var newPlayer = new PlayerLapData
                 {
                     player = roomPlayer,
-
                     lapStartTime = GameManager.Instance.ElapsedTime,
                     lastCheckpointCrossTime = GameManager.Instance.ElapsedTime
                 };
-                playerLapData.Add(newPlayer);
+                _playerLapData.Add(newPlayer);
             }
+        }
+
+        #endregion
+        
+        #region Core game methods
+
+        public bool IsGameOver()
+        {
+            if (_halfFinishTriggered && GameManager.Instance.ElapsedTime >= _halfFinishDeadline)
+                return true;
+
+            return _finishedCount >= RoomPlayer.Players.Count;
+        }
+
+
+        public void OnRaceFinished()
+        {
+            var standings = GetStandings().ToList();
+            //_lapsUiView.AddOrUpdateStanding(standings);
+            var pointsForRace = UpdatePlayersPointTable(standings);
+
+            _lapsUiView.DisableUI();
+            _gameEndUiView.ShowEndGameUI(pointsForRace);
+
+            GameManager.Instance.StartCoroutine(DelayScoreboardChange());
+        }
+
+        private PointsTable UpdatePlayersPointTable(List<LapStandings> standings)
+        {
+            PointsTable localPointsForRace = new PointsTable();
+
+            for (int i = 0; i < standings.Count; i++)
+            {
+                var standing = standings[i];
+                if (standing.status != "Finished") continue;
+
+                AddPointsToPointTable(localPointsForRace, standing, i);
+                AddPointsToPointTable(GameManager.Instance.PointsTable, standing, i);
+            }
+
+            foreach (var rp in RoomPlayer.Players)
+            {
+                Debug.Log($"{rp.Username}, {GameManager.Instance.PointsTable.GetPoints(rp)}");
+            }
+
+            return localPointsForRace;
+        }
+
+        public void OnStandingUpdate()
+        {
+            var standings = GetStandings().ToList();
+            _lapsUiView.AddOrUpdateStanding(standings);
+        }
+
+        private void AddPointsToPointTable(PointsTable pointsForRace, LapStandings standing, int i)
+        {
+            pointsForRace.AddPoints(
+                RoomPlayer.Players.FirstOrDefault(p => p.Id.ToString() == standing.playerId)!,
+                _gameType.pointsForPlacings[i]);
+        }
+
+        public void UpdateModeLogic()
+        {
+            // No continuous logic needed in this scenario
         }
 
         public bool CheckForWinCondition(out KartController winner)
@@ -63,22 +128,13 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
             return false;
         }
 
-        public bool IsGameOver()
-        {
-            if (halfFinishTriggered && GameManager.Instance.ElapsedTime >= halfFinishDeadline)
-                return true;
+        #endregion
 
-            return finishedCount >= RoomPlayer.Players.Count;
-        }
-
-        public void UpdateModeLogic()
-        {
-            // No continuous logic needed in this scenario
-        }
+        #region Finishline/Checkpoint cross methods
 
         public void OnPlayerCrossCheckpoint(KartController kart, LapCheckpoint checkpoint)
         {
-            var data = playerLapData.FirstOrDefault(x => x.player.Kart == kart);
+            var data = _playerLapData.FirstOrDefault(x => x.player.Kart == kart);
             if (data == null)
             {
                 Debug.Log("PlayerLapData not found for kart: " + kart.name);
@@ -100,7 +156,7 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
 
         public void OnPlayerCrossFinishLine(KartController kart, FinishLine finishLine)
         {
-            var data = playerLapData.FirstOrDefault(x => x.player.Kart == kart);
+            var data = _playerLapData.FirstOrDefault(x => x.player.Kart == kart);
             if (data == null || data.hasFinished)
             {
                 Debug.Log("PlayerLapData not found for kart: " + kart.name);
@@ -114,14 +170,10 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
             {
                 CompleteLap(kart, data);
 
-                if (data.currentLap < requiredLaps || data.hasFinished) return;
-                if (RoomPlayer.Local.Kart == kart)
-                {
-                    Debug.Log("Your kart finished");
-                    OnLocalPlayerFinished?.Invoke();
-                }
-                var kartIndex = RoomPlayer.Players.IndexOf(data.player);
-                GameManager.Instance.Runner.Despawn(RoomPlayer.Players[kartIndex].Kart.Object);
+                if (data.currentLap < _requiredLaps || data.hasFinished) return;
+                
+                EnableSpectatorMode(kart);
+                DespawnFinishedPlayer(data);
                 MarkFinishedPlayer(kart, data);
                 CheckHalfPlayersFinished();
             }
@@ -129,6 +181,56 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
             {
                 Debug.Log($"{kart.name} crossed finish line out of order.");
             }
+        }
+
+        private static void DespawnFinishedPlayer(PlayerLapData data)
+        {
+            var kartIndex = RoomPlayer.Players.IndexOf(data.player);
+            GameManager.Instance.Runner.Despawn(RoomPlayer.Players[kartIndex].Kart.Object);
+        }
+
+        private static void EnableSpectatorMode(KartController kart)
+        {
+            if (RoomPlayer.Local.Kart == kart)
+            {
+                Debug.Log("Your kart finished");
+                OnLocalPlayerFinished?.Invoke();
+            }
+        }
+
+        private void CompleteLap(KartController kart, PlayerLapData data)
+        {
+            data.currentLap++;
+            data.currentCheckpoint = -1;
+
+            data.lastLapTime = GameManager.Instance.ElapsedTime - data.lapStartTime;
+            data.lapStartTime = GameManager.Instance.ElapsedTime;
+
+            data.lastCheckpointCrossTime = GameManager.Instance.ElapsedTime;
+
+            Debug.Log($"{kart.name} completed lap {data.currentLap}/{_requiredLaps} " +
+                      $"in {data.lastLapTime:F2} seconds.");
+        }
+
+        private void CheckHalfPlayersFinished()
+        {
+            if (_halfFinishTriggered || _finishedCount < _halfPlayersCount) return;
+
+            _halfFinishTriggered = true;
+            _halfFinishDeadline = GameManager.Instance.ElapsedTime + HalfPlayersFinishedTimer;
+            Debug.Log(
+                $"Half of the players finished ({_finishedCount}/{RoomPlayer.Players.Count}). " +
+                $"Starting {HalfPlayersFinishedTimer}s countdown...");
+        }
+
+        private void MarkFinishedPlayer(KartController kart, PlayerLapData data)
+        {
+            data.hasFinished = true;
+            data.finishTime = GameManager.Instance.ElapsedTime;
+            _finishedCount++;
+
+            Debug.Log(
+                $"{kart.name} FINISHED! Finish time: {data.finishTime:F2}s (Finished Count = {_finishedCount})");
         }
 
         private void ProcessCheckpointCorrectCross(KartController kart, LapCheckpoint checkpoint, PlayerLapData data)
@@ -144,102 +246,34 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
             return data.currentCheckpoint == (totalCheckpoints - 1);
         }
 
-        private void CheckHalfPlayersFinished()
-        {
-            if (halfFinishTriggered || finishedCount < halfPlayersCount) return;
+        #endregion
 
-            halfFinishTriggered = true;
-            halfFinishDeadline = GameManager.Instance.ElapsedTime + halfPlayersFinishedTimer;
-            Debug.Log(
-                $"Half of the players finished ({finishedCount}/{RoomPlayer.Players.Count}). " +
-                $"Starting {halfPlayersFinishedTimer}s countdown...");
+        #region UI methods
+
+        private IEnumerator DelayScoreboardChange()
+        {
+            yield return new WaitForSeconds(3);
+            _gameEndUiView.ShowEndGameUI(GameManager.Instance.PointsTable);
         }
 
-        private void MarkFinishedPlayer(KartController kart, PlayerLapData data)
-        {
-            data.hasFinished = true;
-            data.finishTime = GameManager.Instance.ElapsedTime;
-            finishedCount++;
+        #endregion
 
-            Debug.Log(
-                $"{kart.name} FINISHED! Finish time: {data.finishTime:F2}s (Finished Count = {finishedCount})");
-        }
-
-        private void CompleteLap(KartController kart, PlayerLapData data)
-        {
-            data.currentLap++;
-            data.currentCheckpoint = -1;
-
-            data.lastLapTime = GameManager.Instance.ElapsedTime - data.lapStartTime;
-            data.lapStartTime = GameManager.Instance.ElapsedTime;
-
-            data.lastCheckpointCrossTime = GameManager.Instance.ElapsedTime;
-
-            Debug.Log($"{kart.name} completed lap {data.currentLap}/{requiredLaps} " +
-                      $"in {data.lastLapTime:F2} seconds.");
-        }
+        #region Standings building  methods
 
         private IEnumerable<LapStandings> GetStandings()
         {
-            playerLapData.Sort(ComparePlayerResults);
-            foreach (PlayerLapData data in playerLapData.ToList())
+            _playerLapData.Sort(ComparePlayerResults);
+            foreach (PlayerLapData data in _playerLapData.ToList())
             {
                 if (data.player.Object == null)
                 {
-                    playerLapData.Remove(data);
+                    _playerLapData.Remove(data);
                 }
             }
 
-            return playerLapData
+            return _playerLapData
                 .Select((kvp, i) => BuildStandingsEntry(kvp, i + 1));
         }
-
-        [Rpc]
-        public void RpcOnStandingUpdate()
-        {
-            var standings = GetStandings().ToList();
-            lapsUiView.AddOrUpdateStanding(standings);
-        }
-
-        [Rpc]
-        public void RpcOnRaceFinished()
-        {
-            var standings = GetStandings().ToList();
-            lapsUiView.AddOrUpdateStanding(standings);
-            PointsTable pointsForRace = new PointsTable();
-
-            for (int i = 0; i < standings.Count; i++)
-            {
-                var standing = standings[i];
-                if (standing.status == "Finished")
-                {
-                    pointsForRace.AddPoints(
-                        RoomPlayer.Players.FirstOrDefault(p => p.Id.ToString() == standing.playerId)!,
-                        gameType.pointsForPlacings[i]);
-
-                    GameManager.Instance.PointsTable.AddPoints(
-                        RoomPlayer.Players.FirstOrDefault(p => p.Id.ToString() == standing.playerId),
-                        gameType.pointsForPlacings[i]);
-                }
-            }
-
-            lapsUiView.DisableUI();
-            gameEndUiView.ShowEndGameUI(GameManager.Instance.PointsTable);
-
-            foreach (var rp in RoomPlayer.Players)
-            {
-                Debug.Log($"{rp.Username}, {GameManager.Instance.PointsTable.GetPoints(rp)}");
-            }
-
-            GameManager.Instance.StartCoroutine(WaitForYou());
-        }
-
-        private IEnumerator WaitForYou()
-        {
-            yield return new WaitForSeconds(3);
-            gameEndUiView.ShowEndGameUI(GameManager.Instance.PointsTable);
-        }
-
 
         /// <summary>
         /// Comparison for sorting players in the standings.
@@ -261,7 +295,6 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
                     return 1; // B is finished, A is not
             }
 
-            //Compare laps
             int lapCompare = dataB.currentLap.CompareTo(dataA.currentLap);
 
             if (lapCompare != 0)
@@ -269,7 +302,6 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
                 return lapCompare;
             }
 
-            //Compare checkpoints
             int checkpointCompare = dataB.currentCheckpoint.CompareTo(dataA.currentCheckpoint);
 
             return checkpointCompare != 0
@@ -290,12 +322,14 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
                 rank = rank,
                 status = data.hasFinished ? "Finished" : "DNF",
                 finishTime = data.hasFinished ? $"{data.finishTime:F2}s" : "-",
-                lapsCompleted = $"{data.currentLap}/{requiredLaps}",
+                lapsCompleted = $"{data.currentLap}/{_requiredLaps}",
                 lastCheckpoint = $"Checkpoint {data.currentCheckpoint}",
                 lastLapTime = data.currentLap > 0 ? $"{data.lastLapTime:F2}s" : "N/A",
             };
 
             return entry;
         }
+
+        #endregion
     }
 }
