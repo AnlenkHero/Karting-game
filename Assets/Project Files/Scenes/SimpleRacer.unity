@@ -22796,7 +22796,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8d4d64f2be74e058ed1842cef23bf44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trackData: {fileID: 11400000, guid: e4dbd1a3a8a10294e9522bf03504178d, type: 2}
+  trackData: {fileID: 11400000, guid: c43408c7e65fc6b4f84af34769516ab0, type: 2}
   lapCheckpointPrefab: {fileID: -4447866064214431351, guid: e0de95ced87d2bf47af5e0d790661a81,
     type: 3}
   finishLinePrefab: {fileID: 8469713844917265700, guid: 540569bb849c6dd458eb3bd6da8ec484,

@@ -1,0 +1,161 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c392e31decaf4e60bc8bfe6db73ad87b, type: 3}
+  m_Name: Demo TrackData
+  m_EditorClassIdentifier: 
+  spawnPoints:
+  - index: 0
+    position: {x: 93.5, y: 0, z: -300}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  - index: 1
+    position: {x: 140, y: 0, z: -300}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  - index: 2
+    position: {x: 93.5, y: 0, z: -350}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  - index: 3
+    position: {x: 140, y: 0, z: -350}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  - index: 4
+    position: {x: 93.5, y: 0, z: -400}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  - index: 5
+    position: {x: 140, y: 0, z: -400}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  - index: 6
+    position: {x: 93.5, y: 0, z: -450}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  - index: 7
+    position: {x: 140, y: 0, z: -450}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  - index: 8
+    position: {x: 93.5, y: 0, z: -500}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  - index: 7
+    position: {x: 140, y: 0, z: -450}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  checkpoints:
+  - index: 27
+    position: {x: 93.4, y: 5.22, z: -242.9}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    scale: {x: 148.9, y: 10.5, z: 18.06}
+  - index: 26
+    position: {x: 93.4, y: 5.22, z: -432}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    scale: {x: 148.9, y: 10.5, z: 18.06}
+  - index: 25
+    position: {x: 93.4, y: 5.22, z: -568}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    scale: {x: 148.9, y: 10.5, z: 18.06}
+  - index: 24
+    position: {x: 93.4, y: 5.22, z: -633}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    scale: {x: 148.9, y: 10.5, z: 18.06}
+  - index: 23
+    position: {x: 171.3, y: 5.22, z: -681.1}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    scale: {x: 99.42, y: 10.5, z: 18.06}
+  - index: 22
+    position: {x: 223.1, y: 5.22, z: -607.8}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    scale: {x: 99.42, y: 10.5, z: 18.06}
+  - index: 21
+    position: {x: 223.3, y: 5.22, z: -445.1}
+    rotation: {x: -0, y: 0.9979239, z: -0, w: -0.06440473}
+    scale: {x: 99.42, y: 10.5, z: 18.06}
+  - index: 20
+    position: {x: 290.2, y: 5.22, z: -383.7}
+    rotation: {x: -0, y: 0.7464787, z: -0, w: -0.6654094}
+    scale: {x: 99.42, y: 10.5, z: 18.06}
+  - index: 19
+    position: {x: 403.6, y: 5.22, z: -377.6}
+    rotation: {x: -0, y: 0.7464787, z: -0, w: -0.6654094}
+    scale: {x: 99.42, y: 10.5, z: 18.06}
+  - index: 18
+    position: {x: 522.2, y: 5.22, z: -297}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    scale: {x: 99.42, y: 10.5, z: 18.06}
+  - index: 17
+    position: {x: 522.2, y: 5.22, z: -92.1}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    scale: {x: 99.42, y: 10.5, z: 18.06}
+  - index: 16
+    position: {x: 522.2, y: 5.22, z: 50.6}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    scale: {x: 99.42, y: 10.5, z: 18.06}
+  - index: 15
+    position: {x: 522.2, y: 5.22, z: 183.7}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    scale: {x: 99.42, y: 10.5, z: 18.06}
+  - index: 14
+    position: {x: 520.2, y: 5.22, z: 282.5}
+    rotation: {x: -0, y: 0.99987996, z: -0, w: 0.015497535}
+    scale: {x: 99.42, y: 10.5, z: 18.06}
+  - index: 13
+    position: {x: 519.3, y: 5.22, z: 440.2}
+    rotation: {x: -0, y: 0.9999977, z: -0, w: 0.0021731537}
+    scale: {x: 99.42, y: 10.5, z: 18.06}
+  - index: 12
+    position: {x: 517.7, y: 5.22, z: 519.1}
+    rotation: {x: -0, y: 0.999832, z: -0, w: -0.0183317}
+    scale: {x: 99.42, y: 10.5, z: 18.06}
+  - index: 11
+    position: {x: 370.9, y: 5.22, z: 671.3}
+    rotation: {x: -0, y: 0.6994092, z: -0, w: 0.71472144}
+    scale: {x: 99.42, y: 10.5, z: 18.06}
+  - index: 10
+    position: {x: 266.6, y: 5.22, z: 667.3}
+    rotation: {x: -0, y: 0.69978654, z: -0, w: 0.7143521}
+    scale: {x: 99.42, y: 10.5, z: 18.06}
+  - index: 9
+    position: {x: 201.6, y: 5.22, z: 668.1}
+    rotation: {x: -0, y: 0.59639347, z: -0, w: 0.80269223}
+    scale: {x: 99.42, y: 10.5, z: 18.06}
+  - index: 8
+    position: {x: 117.7, y: 5.22, z: 595.5}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    scale: {x: 99.42, y: 10.5, z: 18.06}
+  - index: 7
+    position: {x: 117.7, y: 5.22, z: 489.9}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    scale: {x: 99.42, y: 10.5, z: 18.06}
+  - index: 6
+    position: {x: 117.7, y: 5.22, z: 418.5}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    scale: {x: 99.42, y: 10.5, z: 18.06}
+  - index: 5
+    position: {x: 159.5, y: 5.22, z: 340.5}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    scale: {x: 180.2, y: 10.5, z: 18.06}
+  - index: 4
+    position: {x: 159.5, y: 5.22, z: 237.8}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    scale: {x: 180.2, y: 10.5, z: 18.06}
+  - index: 3
+    position: {x: 159.5, y: 5.22, z: 117.7}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    scale: {x: 180.2, y: 10.5, z: 18.06}
+  - index: 2
+    position: {x: 159.5, y: 5.22, z: -0.9}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    scale: {x: 180.2, y: 10.5, z: 18.06}
+  - index: 1
+    position: {x: 159.5, y: 5.22, z: -92.6}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    scale: {x: 180.2, y: 10.5, z: 18.06}
+  - index: 0
+    position: {x: 159.5, y: 5.22, z: -155.77898}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    scale: {x: 180.2, y: 10.5, z: 18.06}
+  finishLinePosition: {x: 122.06918, y: 5.22, z: -202.85}
+  finishLineRotation: {x: 0, y: 0, z: 0, w: 1}
+  finishLineScale: {x: 99.42, y: 10.5, z: 18.06}
