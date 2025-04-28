@@ -1363,117 +1363,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b30069c2b6f8cec42829becc98e64537, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  accelerate:
-    m_Name: Accelerate
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: bddef853-5a68-4fb9-97df-c467bc4e87bc
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: 01a64c39-9be9-4ee1-830b-6a504a825755
-      m_Path: <Keyboard>/w
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Accelerate
-      m_Flags: 0
-    m_Flags: 0
-  reverse:
-    m_Name: Reverse
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 2643d7ca-a20f-456a-8c57-c4bcb0efadd4
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: e276c003-370f-484e-96bf-0aa991866b31
-      m_Path: <Keyboard>/s
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Reverse
-      m_Flags: 0
-    m_Flags: 0
-  drift:
-    m_Name: Drift
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 01a4de69-67a1-44eb-a734-6c32608390a5
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: 60b88c6b-f73f-4a2e-8fe2-96d86c54c495
-      m_Path: <Keyboard>/space
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Drift
-      m_Flags: 0
-    m_Flags: 0
-  steer:
-    m_Name: Steer
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 27d866df-b99a-4a29-ada7-12abaff51a4f
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 1D Axis
-      m_Id: bc321519-be7b-4c41-be6f-46115df623c6
-      m_Path: 1DAxis
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Steer
-      m_Flags: 4
-    - m_Name: negative
-      m_Id: 009443d5-1593-4d9e-8bf5-801030bb55c8
-      m_Path: <Keyboard>/a
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Steer
-      m_Flags: 8
-    - m_Name: positive
-      m_Id: 5444b428-7893-41cc-9012-0302a00bc0ec
-      m_Path: <Keyboard>/d
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Steer
-      m_Flags: 8
-    m_Flags: 0
-  lookBehind:
-    m_Name: Look Behind
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: e3a8c68b-df95-41b8-bfbb-ef2e89c27762
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  useItem:
-    m_Name: Use Item
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: e2e11a5b-305f-49f6-b637-76a18e6ae3f9
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  pause:
-    m_Name: Pause
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 86e53ed9-e6d5-450e-95ed-0463c52fe7e0
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
 --- !u!114 &-6631633984282294309
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1699,6 +1588,9 @@ GameObject:
   m_Component:
   - component: {fileID: 964822200203672057}
   - component: {fileID: 6330468716067753424}
+  - component: {fileID: 5515022427859751892}
+  - component: {fileID: 8592078023641876566}
+  - component: {fileID: 742919327204152605}
   m_Layer: 0
   m_Name: CinemachineCamera
   m_TagString: Untagged
@@ -1714,9 +1606,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5038984515205371548}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.000000007436201, y: -0.000000106983286, z: 0.0000000021440796,
-    w: 1}
-  m_LocalPosition: {x: 0, y: 5, z: -10}
+  m_LocalRotation: {x: 0.04197886, y: 0, z: 0, w: 0.9991185}
+  m_LocalPosition: {x: 0, y: 11, z: -19.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1742,11 +1633,11 @@ MonoBehaviour:
   m_StreamingVersion: 20241001
   m_LegacyPriority: 0
   Target:
-    TrackingTarget: {fileID: 0}
+    TrackingTarget: {fileID: 2795512119072793685}
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
-    FieldOfView: 82.6491
+    FieldOfView: 85
     OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 10000
@@ -1765,6 +1656,78 @@ MonoBehaviour:
       BarrelClipping: 0.25
       Anamorphism: 0
   BlendHint: 0
+--- !u!114 &5515022427859751892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5038984515205371548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 625c14eee3ad46c99df7c7c891ef668a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Damping: {x: 0, y: 0, z: 0}
+  ShoulderOffset: {x: 0, y: 11, z: -19.5}
+  VerticalArmLength: 0
+  CameraSide: 0
+  CameraDistance: 0
+  AvoidObstacles:
+    Enabled: 1
+    CollisionFilter:
+      serializedVersion: 2
+      m_Bits: 1
+    IgnoreTag: Player
+    CameraRadius: 0.2
+    DampingIntoCollision: 0.3
+    DampingFromCollision: 0
+--- !u!114 &8592078023641876566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5038984515205371548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Composition:
+    ScreenPosition: {x: 0, y: 0.25}
+    DeadZone:
+      Enabled: 0
+      Size: {x: 0.2, y: 0.2}
+    HardLimits:
+      Enabled: 0
+      Size: {x: 0.8, y: 0.8}
+      Offset: {x: 0, y: 0}
+  CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 0, z: 0}
+  Damping: {x: 0, y: 0}
+  Lookahead:
+    Enabled: 1
+    Time: 0.05
+    Smoothing: 30
+    IgnoreY: 0
+--- !u!114 &742919327204152605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5038984515205371548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68bb026fafb42b14791938953eaace77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NoiseProfile: {fileID: 11400000, guid: a3dacaec0287d7444b4bd276816e1666, type: 2}
+  PivotOffset: {x: 0, y: 0, z: 0}
+  AmplitudeGain: 1
+  FrequencyGain: 1
+  m_NoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!1 &5044346366804830684
 GameObject:
   m_ObjectHideFlags: 0
