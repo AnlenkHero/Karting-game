@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Kart.Project_Files.Scripts.Controls
 {
@@ -8,7 +9,8 @@ namespace Kart.Project_Files.Scripts.Controls
         [SerializeField] private KartController kart;
         [SerializeField] private WheelCollider[] wheelColliders;
         private readonly Transform[] skidMarks = new Transform[4];
-
+        public event Action<int> SkidStarted;
+        public event Action<int> SkidEnded;
         private void Update()
         {
             for (var i = 0; i < wheelColliders.Length; i++)
@@ -25,7 +27,7 @@ namespace Kart.Project_Files.Scripts.Controls
                 return;
             }
 
-            if (kart.IsWheelDrifting(wheelColliders[i]))
+            if (kart.IsWheelDrifting(wheelColliders[i]) && kart.Velocity.magnitude > 3f)
             {
                 StartSkid(i);
             }
@@ -38,6 +40,7 @@ namespace Kart.Project_Files.Scripts.Controls
         private void StartSkid(int i)
         {
             if (skidMarks[i] != null) return;
+            SkidStarted?.Invoke(i);
             skidMarks[i] = Instantiate(skidMarkPrefab, wheelColliders[i].transform);
             skidMarks[i].localPosition = -Vector3.up * (wheelColliders[i].radius * .9f);
             skidMarks[i].localRotation = Quaternion.Euler(90f, 0f, 0f);
@@ -46,6 +49,7 @@ namespace Kart.Project_Files.Scripts.Controls
         private void EndSkid(int i)
         {
             if (skidMarks[i] == null) return;
+            SkidEnded?.Invoke(i);
             Transform holder = skidMarks[i];
             skidMarks[i] = null;
             holder.SetParent(null);

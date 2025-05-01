@@ -209,6 +209,7 @@ namespace Kart.Project_Files.Scripts.Fusion
                 Debug.Log("CLIENT: All players joined. Starting the game now...");
                 _isSearchingMatchMakingSession = false;
                 GameLauncherNetworkHandler.Instance.Init(volumeProfile);
+                InterfaceManager.Instance.CloseToRoot();
                 InterfaceManager.Instance.SetRootScreen(null);
             }
         }

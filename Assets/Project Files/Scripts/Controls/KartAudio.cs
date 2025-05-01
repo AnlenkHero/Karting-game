@@ -27,20 +27,40 @@ namespace Kart.Project_Files.Scripts.Controls
         [Header("Surface crossFade settings")] [SerializeField]
         private float crossFadeDuration = 0.5f;
 
-        private AudioSource activeSurfaceSource;
-        private AudioSource inactiveSurfaceSource;
-        private Coroutine crossFadeRoutine;
+        private AudioSource _activeSurfaceSource;
+        private AudioSource _inactiveSurfaceSource;
+        private Coroutine _crossFadeRoutine;
+
+        [Header("References")] [SerializeField]
+        private SkidMarkHandler skidMarkHandler;
 
         [SerializeField] private KartController kartController;
+
+        [Header("Drift Volume Settings")] [SerializeField, Range(0f, 1f)]
+        private float driftMinVolume = 0.1f;
+
+        [SerializeField, Range(0.01f, 1f)] private float driftVolumeSmoothTime = 0.2f;
+        [SerializeField] private float driftFadeSpeed = 20f;
+        [SerializeField] private AnimationCurve driftCurve = AnimationCurve.Linear(0, 0, 1, 1);
+        private int _activeSkids;
+        private float _driftVolumeVelocity;
 
         private void Awake()
         {
             InitializeCrossFade();
+            skidMarkHandler.SkidStarted += OnWheelSkidStarted;
+            skidMarkHandler.SkidEnded += OnWheelSkidEnded;
+        }
+
+        private void OnDestroy()
+        {
+            skidMarkHandler.SkidStarted -= OnWheelSkidStarted;
+            skidMarkHandler.SkidEnded -= OnWheelSkidEnded;
         }
 
         public void Update()
         {
-            HandleDriftAudio(kartController.SignedVelocityMagnitude);
+            HandleDriftAudio();
             HandleDriveAudio(kartController.SignedVelocityMagnitude);
 
             idleSound.volume = Mathf.Lerp(idleSoundMaxVolume, 0.0f, kartController.Velocity.magnitude);
@@ -75,13 +95,49 @@ namespace Kart.Project_Files.Scripts.Controls
                 Mathf.Abs(speed / maxSpeed + (Mathf.Sin(Time.time) * 0.1f)));
         }
 
-        private void HandleDriftAudio(float speed)
+        #region Drift Audio
+
+        private void HandleDriftAudio()
         {
-            var b = kartController.IsDrifting() && kartController.IsGrounded()
-                ? speed / kartController.MaxSpeed * driftMaxVolume
-                : 0.0f;
-            drift.volume = Mathf.Lerp(drift.volume, b, Time.deltaTime * 20f);
+            float targetVol = 0f;
+            if (_activeSkids > 0)
+            {
+                Vector3 localVel = kartController.Velocity;
+                float lateral = Mathf.Abs(localVel.x);
+                float slipNorm = Mathf.Clamp01(lateral / kartController.MaxSpeed);
+                float curveVal = driftCurve.Evaluate(slipNorm);
+                targetVol = Mathf.Lerp(driftMinVolume, driftMaxVolume, curveVal);
+            }
+
+            drift.volume = Mathf.SmoothDamp(
+                drift.volume,
+                targetVol,
+                ref _driftVolumeVelocity,
+                driftVolumeSmoothTime
+            );
+
+            if (_activeSkids != 0 || !drift.isPlaying || !(drift.volume < 0.01f)) return;
+
+            drift.Stop();
+            drift.loop = false;
+            _driftVolumeVelocity = 0f;
         }
+
+        private void OnWheelSkidStarted(int wheelIndex)
+        {
+            _activeSkids++;
+            if (_activeSkids != 1) return;
+            drift.volume = 0f;
+            drift.loop = true;
+            drift.Play();
+        }
+
+        private void OnWheelSkidEnded(int wheelIndex)
+        {
+            _activeSkids = Mathf.Max(0, _activeSkids - 1);
+        }
+
+        #endregion
 
         #region Surface CrossFade
 
@@ -93,57 +149,57 @@ namespace Kart.Project_Files.Scripts.Controls
                 return;
             }
 
-            if (activeSurfaceSource.clip == surface.audioClip && activeSurfaceSource.isPlaying)
+            if (_activeSurfaceSource.clip == surface.audioClip && _activeSurfaceSource.isPlaying)
                 return;
 
-            if (crossFadeRoutine != null)
+            if (_crossFadeRoutine != null)
             {
-                StopCoroutine(crossFadeRoutine);
-                crossFadeRoutine = null;
+                StopCoroutine(_crossFadeRoutine);
+                _crossFadeRoutine = null;
             }
 
-            inactiveSurfaceSource.clip = surface.audioClip;
-            inactiveSurfaceSource.loop = surface.isContinuousEffect;
-            inactiveSurfaceSource.volume = 0f;
-            inactiveSurfaceSource.Play();
+            _inactiveSurfaceSource.clip = surface.audioClip;
+            _inactiveSurfaceSource.loop = surface.isContinuousEffect;
+            _inactiveSurfaceSource.volume = 0f;
+            _inactiveSurfaceSource.Play();
 
-            crossFadeRoutine = StartCoroutine(CrossFadeRoutine(surface.isContinuousEffect));
+            _crossFadeRoutine = StartCoroutine(CrossFadeRoutine(surface.isContinuousEffect));
         }
 
         private void FadeOutAndStopActiveSource()
         {
-            if (crossFadeRoutine != null)
+            if (_crossFadeRoutine != null)
             {
-                StopCoroutine(crossFadeRoutine);
-                crossFadeRoutine = null;
+                StopCoroutine(_crossFadeRoutine);
+                _crossFadeRoutine = null;
             }
 
-            crossFadeRoutine = StartCoroutine(FadeOutActiveSourceRoutine());
+            _crossFadeRoutine = StartCoroutine(FadeOutActiveSourceRoutine());
         }
 
         private IEnumerator FadeOutActiveSourceRoutine()
         {
-            float startVolume = activeSurfaceSource.volume;
+            float startVolume = _activeSurfaceSource.volume;
             float t = 0f;
 
             while (t < crossFadeDuration)
             {
                 t += Time.deltaTime;
                 float factor = Mathf.Clamp01(t / crossFadeDuration);
-                activeSurfaceSource.volume = Mathf.Lerp(startVolume, 0f, factor);
+                _activeSurfaceSource.volume = Mathf.Lerp(startVolume, 0f, factor);
                 yield return null;
             }
 
-            activeSurfaceSource.volume = 0f;
-            activeSurfaceSource.Stop();
-            activeSurfaceSource.clip = null;
-            crossFadeRoutine = null;
+            _activeSurfaceSource.volume = 0f;
+            _activeSurfaceSource.Stop();
+            _activeSurfaceSource.clip = null;
+            _crossFadeRoutine = null;
         }
 
         private IEnumerator CrossFadeRoutine(bool isContinuous)
         {
-            float startVolumeActive = activeSurfaceSource.volume;
-            float startVolumeInactive = inactiveSurfaceSource.volume;
+            float startVolumeActive = _activeSurfaceSource.volume;
+            float startVolumeInactive = _inactiveSurfaceSource.volume;
             float endVolumeInactive = 1f;
 
             float t = 0f;
@@ -152,27 +208,27 @@ namespace Kart.Project_Files.Scripts.Controls
                 t += Time.deltaTime;
                 float factor = Mathf.Clamp01(t / crossFadeDuration);
 
-                activeSurfaceSource.volume = Mathf.Lerp(startVolumeActive, 0f, factor);
-                inactiveSurfaceSource.volume = Mathf.Lerp(startVolumeInactive, endVolumeInactive, factor);
+                _activeSurfaceSource.volume = Mathf.Lerp(startVolumeActive, 0f, factor);
+                _inactiveSurfaceSource.volume = Mathf.Lerp(startVolumeInactive, endVolumeInactive, factor);
 
                 yield return null;
             }
 
-            activeSurfaceSource.volume = 0f;
-            activeSurfaceSource.Stop();
-            activeSurfaceSource.clip = null;
+            _activeSurfaceSource.volume = 0f;
+            _activeSurfaceSource.Stop();
+            _activeSurfaceSource.clip = null;
 
-            inactiveSurfaceSource.volume = endVolumeInactive;
+            _inactiveSurfaceSource.volume = endVolumeInactive;
 
-            (activeSurfaceSource, inactiveSurfaceSource) = (inactiveSurfaceSource, activeSurfaceSource);
+            (_activeSurfaceSource, _inactiveSurfaceSource) = (_inactiveSurfaceSource, _activeSurfaceSource);
 
-            crossFadeRoutine = null;
+            _crossFadeRoutine = null;
         }
 
         private void InitializeCrossFade()
         {
-            activeSurfaceSource = surfaceA;
-            inactiveSurfaceSource = surfaceB;
+            _activeSurfaceSource = surfaceA;
+            _inactiveSurfaceSource = surfaceB;
             surfaceA.Stop();
             surfaceB.Stop();
             surfaceA.volume = 0f;
