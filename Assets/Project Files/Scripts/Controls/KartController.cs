@@ -96,6 +96,7 @@ namespace Kart.Project_Files.Scripts.Controls
         [Header("Public Properties")] 
         public static KartController LocalKartController;
         public KartCameraController cameraController;
+        public KartUI kartUI;
         public float VerticalInput => _input.Move.y;
         public bool canDrive;
         public Vector3 Velocity => _kartVelocity;
