@@ -22,7 +22,7 @@ namespace Kart.Project_Files.Scripts.Controls
         {
             base.Spawned();
             if (!HasInputAuthority) return;
-            playerUIGameObject.gameObject.SetActive(false);
+            ShowPlayerUI(false);
 
             RPC_SetKartFlag(RoomPlayer.Local.CountryCode.Value, RoomPlayer.Local.CountryPrivacy);
         }
@@ -50,5 +50,11 @@ namespace Kart.Project_Files.Scripts.Controls
         }
 
         #endregion
+        
+        public void ShowPlayerUI(bool show)
+        {
+            if (playerUIGameObject == null) return;
+            playerUIGameObject.gameObject.SetActive(show);
+        }
     }
 }

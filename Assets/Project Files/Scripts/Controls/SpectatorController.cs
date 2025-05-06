@@ -12,7 +12,7 @@ namespace Kart.Project_Files.Scripts.Controls
     {
         [SerializeField] private TextMeshProUGUI spectatorText;
         private KartCameraController _currentCinemachineCamera;
-        private KartCameraController _nextCinemachineCamera;
+        private KartUI _currentKartUI;
         private bool _canSpectate;
         private int currentCameraIndex = 0;
 
@@ -38,6 +38,8 @@ namespace Kart.Project_Files.Scripts.Controls
             if (_currentCinemachineCamera == null && GameManager.Players.Count != 0)
             {
                 _currentCinemachineCamera = GameManager.Players[currentCameraIndex].cameraController;
+                _currentKartUI = GameManager.Players[currentCameraIndex].kartUI;
+                _currentKartUI.ShowPlayerUI(false);
                 _currentCinemachineCamera.SetupCamera();
                 spectatorText.text = $"Spectating: {GameManager.Players[currentCameraIndex].KartName}";
             }
@@ -45,19 +47,19 @@ namespace Kart.Project_Files.Scripts.Controls
 
         private void ChooseNextCamera()
         {
-            if (GameManager.Players.Count != 0)
-            {
-                currentCameraIndex++;
-                if (currentCameraIndex >= GameManager.Players.Count)
-                    currentCameraIndex = 0;
-
-
-                _nextCinemachineCamera = GameManager.Players[currentCameraIndex].cameraController;
-                _currentCinemachineCamera.DespawnCamera();
-                _currentCinemachineCamera = _nextCinemachineCamera;
-                _currentCinemachineCamera.SetupCamera();
-                spectatorText.text = $"Spectating: {GameManager.Players[currentCameraIndex].KartName}";
-            }
+            if (GameManager.Players.Count == 0) return;
+            
+            _currentKartUI.ShowPlayerUI(true);
+            _currentCinemachineCamera.DespawnCamera();
+            
+            currentCameraIndex = (currentCameraIndex + 1) % GameManager.Players.Count;
+            
+            _currentCinemachineCamera = GameManager.Players[currentCameraIndex].cameraController;
+            _currentKartUI            = GameManager.Players[currentCameraIndex].kartUI;
+            _currentKartUI.ShowPlayerUI(false);
+            
+            _currentCinemachineCamera.SetupCamera();
+            spectatorText.text = $"Spectating: {GameManager.Players[currentCameraIndex].KartName}";
         }
 
         public void Update()
