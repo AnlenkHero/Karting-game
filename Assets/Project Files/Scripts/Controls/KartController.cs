@@ -35,6 +35,7 @@ namespace Kart.Project_Files.Scripts.Controls
 
         [Header("Axle Information")] 
         [SerializeField] private AxleInfo[] axleInfos;
+        [SerializeField] private Transform steeringWheelMesh;
         private WheelVisual[] _wheelVisuals;
         
         [Header("Motor Attributes")] 
@@ -530,6 +531,8 @@ namespace Kart.Project_Files.Scripts.Controls
             float deltaSpin = WheelSpin * Time.deltaTime;
             float steerY   = FrontWheelSteeringAngle;
 
+            //steeringWheelMesh.localRotation = Quaternion.Euler(0f, steerY, 0f);
+            
             foreach (var wheelVisual in _wheelVisuals)
             {
                 wheelVisual.SpinAngle = (wheelVisual.SpinAngle + deltaSpin) % 360f;

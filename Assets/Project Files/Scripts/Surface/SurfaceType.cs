@@ -12,12 +12,11 @@ namespace Kart.Project_Files.Scripts.Surface
         public float brakeMultiplier = 1.0f;
         public float slowdownMultiplier = 1.0f;
         public float steeringSensitivityMultiplier = 1.0f;
-
-        public AudioClip audioClip;
-        
         public float smoothTime = 1f;
         
-        public bool isContinuousEffect;
+        public LayerMask layerMask;
+        public AudioClip audioClip;
         public SurfaceBehavior customBehavior;
+        public bool isContinuousEffect;
     }
 }

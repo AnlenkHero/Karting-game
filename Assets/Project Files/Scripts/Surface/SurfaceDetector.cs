@@ -16,12 +16,12 @@ namespace Kart.Project_Files.Scripts.Surface
         [SerializeField] private SurfaceType defaultSurface;
 
         private List<SurfaceArea> overlappingSurfaceAreas = new();
-        private SurfaceType currentSurface;
+        private SurfaceType _currentSurface;
 
-        private Coroutine transitionRoutine;
-        private bool isContinuousEffect;
+        private Coroutine _transitionRoutine;
+        private bool _isContinuousEffect;
 
-        public SurfaceType CurrentSurface => currentSurface != null ? currentSurface : defaultSurface;
+        public SurfaceType CurrentSurface => _currentSurface != null ? _currentSurface : defaultSurface;
 
         private void Awake()
         {
@@ -29,19 +29,19 @@ namespace Kart.Project_Files.Scripts.Surface
             {
                 Debug.LogError("Default surface is not assigned in the Inspector!", this);
             }
-            currentSurface = defaultSurface;
+            _currentSurface = defaultSurface;
         }
 
         private void Start()
         {
-            ApplySurfaceModifiersInstant(currentSurface);
+            ApplySurfaceModifiersInstant(_currentSurface);
         }
 
         private void FixedUpdate()
         {
-            if (isContinuousEffect)
+            if (_isContinuousEffect)
             {
-                currentSurface?.customBehavior?.ApplyBehavior(kartController, currentSurface);
+                _currentSurface?.customBehavior?.ApplyBehavior(kartController, _currentSurface);
             }
         }
 
@@ -86,24 +86,24 @@ namespace Kart.Project_Files.Scripts.Surface
                 }
             }
             
-            if (newSurface == currentSurface) return;
+            if (newSurface == _currentSurface) return;
             
-            if (transitionRoutine != null)
+            if (_transitionRoutine != null)
             {
-                StopCoroutine(transitionRoutine);
-                transitionRoutine = null;
+                StopCoroutine(_transitionRoutine);
+                _transitionRoutine = null;
             }
             
-            transitionRoutine = StartCoroutine(SmoothTransitionRoutine(currentSurface, newSurface));
+            _transitionRoutine = StartCoroutine(SmoothTransitionRoutine(_currentSurface, newSurface));
             
-            isContinuousEffect = newSurface.isContinuousEffect && newSurface.customBehavior != null;
-            currentSurface = newSurface;
+            _isContinuousEffect = newSurface.isContinuousEffect && newSurface.customBehavior != null;
+            _currentSurface = newSurface;
 
             ApplyOneShotSurfaceBehaviour();
 
             if (kartAudio != null)
             {
-                kartAudio.PlaySurfaceAudioCrossFade(currentSurface);
+                kartAudio.PlaySurfaceAudioCrossFade(_currentSurface);
             }
         }
 
@@ -145,7 +145,7 @@ namespace Kart.Project_Files.Scripts.Surface
             }
 
             ApplySurfaceModifiersInstant(newSurface);
-            transitionRoutine = null;
+            _transitionRoutine = null;
         }
 
         private void ApplySurfaceModifiersInstant(SurfaceType surface)
@@ -165,8 +165,8 @@ namespace Kart.Project_Files.Scripts.Surface
 
         private void ApplyOneShotSurfaceBehaviour()
         {
-            if (isContinuousEffect) return;
-            currentSurface?.customBehavior?.ApplyBehavior(kartController, currentSurface);
+            if (_isContinuousEffect) return;
+            _currentSurface?.customBehavior?.ApplyBehavior(kartController, _currentSurface);
         }
     }
 }

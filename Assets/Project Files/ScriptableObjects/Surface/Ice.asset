@@ -19,7 +19,10 @@ MonoBehaviour:
   brakeMultiplier: 50
   slowdownMultiplier: 2
   steeringSensitivityMultiplier: 1
-  audioClip: {fileID: 8300000, guid: 1be66789eac7d574397c013b4390d2ca, type: 3}
   smoothTime: 0.01
-  isContinuousEffect: 0
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  audioClip: {fileID: 8300000, guid: 1be66789eac7d574397c013b4390d2ca, type: 3}
   customBehavior: {fileID: 11400000, guid: bb4f6e91117369c4f8ca4f27dbb44776, type: 2}
+  isContinuousEffect: 0

@@ -33,25 +33,25 @@ MonoBehaviour:
   m_Settings:
     m_SettingsList:
       m_List:
-      - rid: 1632748530702483552
+      - rid: 1632748568201134165
       - rid: 8066954613828616193
-      - rid: 1632748530702483553
+      - rid: 1632748568201134166
       - rid: 8066954613828616195
-      - rid: 1632748530702483554
+      - rid: 1632748568201134167
       - rid: 8066954613828616197
       - rid: 8066954613828616198
-      - rid: 1632748530702483555
+      - rid: 1632748568201134168
       - rid: 8066954613828616200
       - rid: 8066954613828616201
       - rid: 8066954613828616202
       - rid: 4487303315604373726
       - rid: 8066954613828616204
       - rid: 4487303315604373727
-      - rid: 1632748530702483556
-      - rid: 1632748530702483557
-      - rid: 1632748530702483558
+      - rid: 1632748568201134169
+      - rid: 1632748568201134170
+      - rid: 1632748568201134171
       - rid: 8066954613828616209
-      - rid: 1632748530702483559
+      - rid: 1632748568201134172
       - rid: 4487303315604373732
       - rid: 8066954613828616212
     m_RuntimeSettings:
@@ -99,7 +99,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 1632748530702483552
+    - rid: 1632748568201134165
       type: {class: UniversalRenderPipelineEditorShaders, ns: UnityEngine.Rendering.Universal,
         asm: Unity.RenderPipelines.Universal.Runtime}
       data:
@@ -121,7 +121,7 @@ MonoBehaviour:
           type: 3}
         m_DefaultSpeedTree9Shader: {fileID: -6465566751694194690, guid: cbd3e1cc4ae141c42a30e33b4d666a61,
           type: 3}
-    - rid: 1632748530702483553
+    - rid: 1632748568201134166
       type: {class: Renderer2DResources, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.Runtime}
       data:
         m_Version: 0
@@ -145,7 +145,7 @@ MonoBehaviour:
           type: 2}
         m_DefaultMaskMaterial: {fileID: 2100000, guid: 15d0c3709176029428a0da2f8cecf0b5,
           type: 2}
-    - rid: 1632748530702483554
+    - rid: 1632748568201134167
       type: {class: UniversalRenderPipelineEditorMaterials, ns: UnityEngine.Rendering.Universal,
         asm: Unity.RenderPipelines.Universal.Runtime}
       data:
@@ -159,7 +159,7 @@ MonoBehaviour:
           type: 2}
         m_DefaultDecalMaterial: {fileID: 2100000, guid: 31d0dcc6f2dd4e4408d18036a2c93862,
           type: 2}
-    - rid: 1632748530702483555
+    - rid: 1632748568201134168
       type: {class: URPShaderStrippingSetting, ns: UnityEngine.Rendering.Universal,
         asm: Unity.RenderPipelines.Universal.Runtime}
       data:
@@ -167,14 +167,14 @@ MonoBehaviour:
         m_StripUnusedPostProcessingVariants: 1
         m_StripUnusedVariants: 1
         m_StripScreenCoordOverrideVariants: 1
-    - rid: 1632748530702483556
+    - rid: 1632748568201134169
       type: {class: IncludeAdditionalRPAssets, ns: UnityEngine.Rendering, asm: Unity.RenderPipelines.Core.Runtime}
       data:
         m_version: 0
         m_IncludeReferencedInScenes: 0
         m_IncludeAssetsByLabel: 0
         m_LabelToInclude: 
-    - rid: 1632748530702483557
+    - rid: 1632748568201134170
       type: {class: ProbeVolumeBakingResources, ns: UnityEngine.Rendering, asm: Unity.RenderPipelines.Core.Runtime}
       data:
         m_Version: 1
@@ -196,13 +196,13 @@ MonoBehaviour:
           type: 3}
         renderingLayerRT: {fileID: -5126288278712620388, guid: 94a070d33e408384bafc1dea4a565df9,
           type: 3}
-    - rid: 1632748530702483558
+    - rid: 1632748568201134171
       type: {class: STP/RuntimeResources, ns: UnityEngine.Rendering, asm: Unity.RenderPipelines.Core.Runtime}
       data:
         m_setupCS: {fileID: 7200000, guid: 33be2e9a5506b2843bdb2bdff9cad5e1, type: 3}
         m_preTaaCS: {fileID: 7200000, guid: a679dba8ec4d9ce45884a270b0e22dda, type: 3}
         m_taaCS: {fileID: 7200000, guid: 3923900e2b41b5e47bc25bfdcbcdc9e6, type: 3}
-    - rid: 1632748530702483559
+    - rid: 1632748568201134172
       type: {class: ProbeVolumeDebugResources, ns: UnityEngine.Rendering, asm: Unity.RenderPipelines.Core.Runtime}
       data:
         m_Version: 1

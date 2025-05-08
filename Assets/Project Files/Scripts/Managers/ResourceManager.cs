@@ -14,7 +14,7 @@ namespace Kart.Project_Files.Scripts.Managers
         public TrackDefinition[] tracks;
         //public Powerup[] powerups;
         //public Powerup noPowerup;
-
+        public LayerMask offroadLayer;
         public static ResourceManager Instance => Singleton<ResourceManager>.Instance;
 
         private void Awake()
