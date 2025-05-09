@@ -72,6 +72,8 @@ namespace Kart.Project_Files.Scripts.Controls
         [SerializeField] private float lateralGScale = 10f;
         [SerializeField] private float gravityMultiplierForAirborne = 5f;
         [SerializeField] private float airControlMultiplier = 0.5f;
+        [Tooltip("How strongly you push other karts on collision")]
+        [SerializeField] private float collisionImpulseFactor = 50f;
         private Vector3 _originalCenterOfMass;
 
         [Header("Banking")] 
@@ -130,7 +132,11 @@ namespace Kart.Project_Files.Scripts.Controls
             Move(_input.Move);
             UpdateNetworkedVariablesWithInput();
         }
-
+        
+        private void OnCollisionEnter(Collision collision)
+        {
+            AdditionalKartCollisionPush(collision);
+        }
         public override void Despawned(NetworkRunner runner, bool hasState)
         {
             base.Despawned(runner, hasState);
@@ -405,6 +411,22 @@ namespace Kart.Project_Files.Scripts.Controls
 
         #region Physics
 
+                private void AdditionalKartCollisionPush(Collision collision)
+        {
+            if (!Object.HasStateAuthority) 
+                return;
+            
+            var otherKart = collision.collider.GetComponent<KartController>();
+            if (otherKart == null) 
+                return;
+            
+            var contact = collision.GetContact(0);
+            float relativeSpeed = collision.relativeVelocity.magnitude;
+            Vector3 pushDir = -contact.normal;
+            float impulseMag = relativeSpeed * collisionImpulseFactor;
+            
+            otherKart.rb.AddForceAtPosition(pushDir * impulseMag, contact.point, ForceMode.Impulse);
+        }
         private void AdjustCenterOfMass(float verticalInput)
         {
             Vector3 centerOfMassAdjustment = Velocity.magnitude > 10f
