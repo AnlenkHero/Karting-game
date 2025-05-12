@@ -15509,6 +15509,7 @@ Transform:
   - {fileID: 6175475039675665100}
   - {fileID: 2389306572161990523}
   - {fileID: 218568753714487976}
+  - {fileID: 3315828840687025691}
   m_Father: {fileID: 2795512119072793685}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3556018085680676509
@@ -15742,6 +15743,7 @@ GameObject:
   - component: {fileID: 3368549938626467386}
   - component: {fileID: -6631633984282294309}
   - component: {fileID: 4180998804318520742}
+  - component: {fileID: 7701533514896176899}
   m_Layer: 0
   m_Name: Kart
   m_TagString: Player
@@ -16018,6 +16020,25 @@ MonoBehaviour:
   - {fileID: 6682814465872480923}
   - {fileID: 1899761100440873836}
   surfaceDetector: {fileID: 7796417255384366297}
+--- !u!114 &7701533514896176899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4227640847454813226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 410f223e3cce43e4b7ee1ade38bc7ccd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 6928867683519373489}
+  sparkSystems:
+  - {fileID: 582958185594111784}
+  - {fileID: 5233842859270914274}
+  minImpactSpeed: 2
+  burstCount: 8
+  sparkSpeed: 3
 --- !u!1 &4276915522015950635
 GameObject:
   m_ObjectHideFlags: 0
@@ -35222,6 +35243,92 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2613815299934354101, guid: 70eb8611f03392d46b6b654973402e31,
     type: 3}
   m_PrefabInstance: {fileID: 3183859445940392268}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &3396942677354057859
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3186405376654421512}
+    m_Modifications:
+    - target: {fileID: 81185315429592728, guid: 85cdb7a4288cb8641a05d2de5f1a6320,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 81185315429592728, guid: 85cdb7a4288cb8641a05d2de5f1a6320,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 5.82
+      objectReference: {fileID: 0}
+    - target: {fileID: 81185315429592728, guid: 85cdb7a4288cb8641a05d2de5f1a6320,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 81185315429592728, guid: 85cdb7a4288cb8641a05d2de5f1a6320,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 81185315429592728, guid: 85cdb7a4288cb8641a05d2de5f1a6320,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 81185315429592728, guid: 85cdb7a4288cb8641a05d2de5f1a6320,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 81185315429592728, guid: 85cdb7a4288cb8641a05d2de5f1a6320,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 81185315429592728, guid: 85cdb7a4288cb8641a05d2de5f1a6320,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 81185315429592728, guid: 85cdb7a4288cb8641a05d2de5f1a6320,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 81185315429592728, guid: 85cdb7a4288cb8641a05d2de5f1a6320,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3393148548059558235, guid: 85cdb7a4288cb8641a05d2de5f1a6320,
+        type: 3}
+      propertyPath: m_Name
+      value: Sparks Updated
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 85cdb7a4288cb8641a05d2de5f1a6320, type: 3}
+--- !u!198 &582958185594111784 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 2824680829214775211, guid: 85cdb7a4288cb8641a05d2de5f1a6320,
+    type: 3}
+  m_PrefabInstance: {fileID: 3396942677354057859}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3315828840687025691 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 81185315429592728, guid: 85cdb7a4288cb8641a05d2de5f1a6320,
+    type: 3}
+  m_PrefabInstance: {fileID: 3396942677354057859}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &5233842859270914274 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 7459655363412054113, guid: 85cdb7a4288cb8641a05d2de5f1a6320,
+    type: 3}
+  m_PrefabInstance: {fileID: 3396942677354057859}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4822056452612981158
 PrefabInstance:
