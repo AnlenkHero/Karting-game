@@ -1,60 +1,76 @@
 ﻿using System;
+using Fusion;
 using UnityEngine;
 
 namespace Kart.Project_Files.Scripts.Controls
 {
-    public class SkidMarkHandler : MonoBehaviour
+    public class SkidMarkHandler : NetworkBehaviour
     {
-        [SerializeField] private Transform skidMarkPrefab;
+        [Networked] public bool ShouldSkid { get; set; }
+        public event Action SkidStarted;
+        public event Action SkidEnded;
         [SerializeField] private KartController kart;
         [SerializeField] private WheelCollider[] wheelColliders;
-        private readonly Transform[] skidMarks = new Transform[4];
-        public event Action<int> SkidStarted;
-        public event Action<int> SkidEnded;
-        private void Update()
+        [SerializeField] private TrailRenderer[] skidMarks;
+        private const float MinimalDriftingSpeed = 3f;
+
+        public void Update()
         {
-            for (var i = 0; i < wheelColliders.Length; i++)
+            for (int i = 0; i < wheelColliders.Length; i++)
             {
-                UpdateSkidMarks(i);
+                var tr = skidMarks[i];
+                switch (ShouldSkid)
+                {
+                    case true when !tr.emitting:
+                        StartSkid(i);
+                        break;
+                    case false when tr.emitting:
+                        EndSkid(i);
+                        break;
+                }
             }
         }
 
-        private void UpdateSkidMarks(int i)
+        public override void FixedUpdateNetwork()
         {
-            if (!kart.IsGrounded())
-            {
-                EndSkid(i);
+            if (!HasInputAuthority)
                 return;
-            }
-
-            if (kart.IsWheelDrifting(wheelColliders[i]) && kart.Velocity.magnitude > 3f)
-            {
-                StartSkid(i);
-            }
-            else
-            {
-                EndSkid(i);
-            }
+            for (int i = 0; i < wheelColliders.Length; i++)
+                CheckAndReportSkid(i);
         }
 
-        private void StartSkid(int i)
+        void CheckAndReportSkid(int i)
         {
-            if (skidMarks[i] != null) return;
-            SkidStarted?.Invoke(i);
-            skidMarks[i] = Instantiate(skidMarkPrefab, wheelColliders[i].transform);
-            skidMarks[i].localPosition = -Vector3.up * (wheelColliders[i].radius * .9f);
-            skidMarks[i].localRotation = Quaternion.Euler(90f, 0f, 0f);
+            bool shouldSkid = kart.IsGrounded()
+                              && kart.NetworkedVelocity.magnitude > MinimalDriftingSpeed
+                              && kart.IsWheelDrifting(wheelColliders[i]);
+            Rpc_SetBool(shouldSkid);
         }
 
-        private void EndSkid(int i)
+        [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+        private void Rpc_SetBool(bool value)
         {
-            if (skidMarks[i] == null) return;
-            SkidEnded?.Invoke(i);
-            Transform holder = skidMarks[i];
-            skidMarks[i] = null;
-            holder.SetParent(null);
-            holder.rotation = Quaternion.Euler(90f, 0f, 0f);
-            Destroy(holder.gameObject, 5f);
+            ShouldSkid = value;
+        }
+
+        void SetSkidEmitting(int i, bool on)
+        {
+            var tr = skidMarks[i];
+            if (tr == null) return;
+            tr.emitting = on;
+        }
+
+        void StartSkid(int wheelIndex)
+        {
+            SkidStarted?.Invoke();
+            SetSkidEmitting(wheelIndex, true);
+        }
+
+
+        void EndSkid(int wheelIndex)
+        {
+            SkidEnded?.Invoke();
+            SetSkidEmitting(wheelIndex, false);
         }
     }
 }

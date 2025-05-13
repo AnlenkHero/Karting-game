@@ -123,7 +123,7 @@ namespace Kart.Project_Files.Scripts.Controls
             _driftVolumeVelocity = 0f;
         }
 
-        private void OnWheelSkidStarted(int wheelIndex)
+        private void OnWheelSkidStarted()
         {
             _activeSkids++;
             if (_activeSkids != 1) return;
@@ -132,7 +132,7 @@ namespace Kart.Project_Files.Scripts.Controls
             drift.Play();
         }
 
-        private void OnWheelSkidEnded(int wheelIndex)
+        private void OnWheelSkidEnded()
         {
             _activeSkids = Mathf.Max(0, _activeSkids - 1);
         }
