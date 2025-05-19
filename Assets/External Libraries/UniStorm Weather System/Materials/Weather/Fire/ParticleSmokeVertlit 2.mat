@@ -13,6 +13,7 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _ALPHABLEND_ON
+  - _EMISSION
   - _FADING_ON
   m_InvalidKeywords:
   - _FLIPBOOKBLENDING_OFF
@@ -66,7 +67,7 @@ Material:
     - _DistortionStrengthScaled: 0.1
     - _DstBlend: 10
     - _DstBlendAlpha: 1
-    - _EmissionEnabled: 0
+    - _EmissionEnabled: 1
     - _FlipbookBlending: 0
     - _FlipbookMode: 0
     - _InvFade: 0.8275
@@ -87,7 +88,7 @@ Material:
     - _Color: {r: 1.0717734, g: 1.0717734, b: 1.0717734, a: 1}
     - _ColorAddSubDiff: {r: 0, g: 0, b: 0, a: 0}
     - _EmisColor: {r: 0.2, g: 0.2, b: 0.2, a: 0}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _EmissionColor: {r: 2.9894376, g: 1.5677074, b: 0.7191571, a: 1}
     - _SoftParticleFadeParams: {r: 0, g: 2, b: 0, a: 0}
     - _TintColor: {r: 0.35820895, g: 0.35820895, b: 0.35820895, a: 0.75686276}
   m_BuildTextureStacks: []
