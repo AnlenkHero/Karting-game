@@ -1,6 +1,8 @@
 ﻿using Kart.Project_Files.Scripts.Controls;
 using Kart.Project_Files.Scripts.Managers.Game;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
@@ -37,18 +39,19 @@ namespace Kart.Project_Files.Scripts.Managers.Interface
             var gameState = GameManager.Instance?.CurrentGameState;
             var currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
             bool isRoot = interfaceManager.ActiveScreen == interfaceManager.RootScreen;
-            
+
             if (kart != null)
                 kart.canDrive = false;
-            
-            if (gameState is >= GameState.PreGame and < GameState.Finished && isRoot && currentSceneIndex > LevelManager.MAIN_MENU_SCENE)
+
+            if (gameState is >= GameState.PreGame and < GameState.Finished && isRoot &&
+                currentSceneIndex > LevelManager.MAIN_MENU_SCENE)
             {
                 interfaceManager.ShowScreen(interfaceManager.EscapeMenuScreen);
                 return;
             }
 
             if (isRoot) return;
-            
+
             interfaceManager.CloseToRoot();
 
             if (kart != null && gameState >= GameState.Running)
@@ -59,7 +62,9 @@ namespace Kart.Project_Files.Scripts.Managers.Interface
         {
             if (context.phase != InputActionPhase.Performed) return;
             if (interfaceManager.ActiveScreen == interfaceManager.RootScreen) return;
-            
+            if (EventSystem.current.currentSelectedGameObject.GetComponentInParent<TMP_Dropdown>() &&
+                !EventSystem.current.currentSelectedGameObject.GetComponent<TMP_Dropdown>()) return;
+
             interfaceManager.CloseActiveScreen();
 
             var kart = KartController.LocalKartController;
