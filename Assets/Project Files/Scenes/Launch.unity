@@ -3410,7 +3410,6 @@ GameObject:
   - component: {fileID: 399472086}
   - component: {fileID: 399472087}
   - component: {fileID: 399472089}
-  - component: {fileID: 399472088}
   m_Layer: 5
   m_Name: Item
   m_TagString: Untagged
@@ -3501,21 +3500,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectable: {fileID: 399472086}
---- !u!114 &399472088
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 399472084}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cef5b00e2ab74047847b1e16850e7bf8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  textTarget: {fileID: 673975290}
-  normalColor: {r: 0, g: 0, b: 0, a: 1}
-  selectedColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &399472089
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3528,10 +3512,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a14bde0568234169943c63bfa297b515, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  textTarget: {fileID: 673975290}
   normalColor: {r: 0, g: 0, b: 0, a: 1}
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
-  textTarget: {fileID: 673975290}
   shouldFadeColorIfSelected: 0
+  shouldChangeColorIfSelected: 1
+  selectedHoverColor: {r: 1, g: 1, b: 1, a: 1}
+  selectedNormalColor: {r: 0, g: 0, b: 0, a: 1}
+  shouldChangeColorIfPressed: 0
+  pressedColor: {r: 0, g: 0, b: 0, a: 0}
+  releasedColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &399955940
 GameObject:
   m_ObjectHideFlags: 0
@@ -9858,10 +9848,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a14bde0568234169943c63bfa297b515, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  textTarget: {fileID: 1622812687}
   normalColor: {r: 0, g: 0, b: 0, a: 1}
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
-  textTarget: {fileID: 1622812687}
   shouldFadeColorIfSelected: 0
+  shouldChangeColorIfSelected: 0
+  selectedHoverColor: {r: 0, g: 0, b: 0, a: 0}
+  selectedNormalColor: {r: 0, g: 0, b: 0, a: 0}
+  shouldChangeColorIfPressed: 0
+  pressedColor: {r: 0, g: 0, b: 0, a: 0}
+  releasedColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &978791957
 GameObject:
   m_ObjectHideFlags: 0
@@ -11809,6 +11805,7 @@ GameObject:
   - component: {fileID: 1254186804}
   - component: {fileID: 1254186805}
   - component: {fileID: 1254186806}
+  - component: {fileID: 1254186807}
   m_Layer: 5
   m_Name: Post Processing Toggle
   m_TagString: Untagged
@@ -11857,7 +11854,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 978700451}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 2
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -11867,9 +11864,10 @@ MonoBehaviour:
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
+    m_HighlightedSprite: {fileID: 21300000, guid: a2fa9534bedca3f45a4bb9bfa7cba28f,
+      type: 3}
+    m_PressedSprite: {fileID: 21300000, guid: 74c7775bf1f589f43aadbe70335e9c31, type: 3}
+    m_SelectedSprite: {fileID: 21300000, guid: 4f22e16d6d555044e95ef154f1c4cd2e, type: 3}
     m_DisabledSprite: {fileID: 0}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
@@ -11912,6 +11910,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectable: {fileID: 1254186804}
+--- !u!114 &1254186807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1254186802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a14bde0568234169943c63bfa297b515, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textTarget: {fileID: 653901024}
+  normalColor: {r: 0, g: 0, b: 0, a: 1}
+  hoverColor: {r: 1, g: 1, b: 1, a: 1}
+  shouldFadeColorIfSelected: 0
+  shouldChangeColorIfSelected: 1
+  selectedHoverColor: {r: 0, g: 0, b: 0, a: 1}
+  selectedNormalColor: {r: 1, g: 1, b: 1, a: 1}
+  shouldChangeColorIfPressed: 1
+  pressedColor: {r: 1, g: 1, b: 1, a: 1}
+  releasedColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &1257098446
 GameObject:
   m_ObjectHideFlags: 0
@@ -13179,7 +13199,6 @@ GameObject:
   - component: {fileID: 1405272853}
   - component: {fileID: 1405272854}
   - component: {fileID: 1405272856}
-  - component: {fileID: 1405272855}
   m_Layer: 5
   m_Name: Item
   m_TagString: Untagged
@@ -13270,21 +13289,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectable: {fileID: 1405272853}
---- !u!114 &1405272855
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1405272851}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cef5b00e2ab74047847b1e16850e7bf8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  textTarget: {fileID: 1358174794}
-  normalColor: {r: 0, g: 0, b: 0, a: 1}
-  selectedColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &1405272856
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13297,10 +13301,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a14bde0568234169943c63bfa297b515, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  textTarget: {fileID: 1358174794}
   normalColor: {r: 0, g: 0, b: 0, a: 1}
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
-  textTarget: {fileID: 1358174794}
   shouldFadeColorIfSelected: 0
+  shouldChangeColorIfSelected: 1
+  selectedHoverColor: {r: 1, g: 1, b: 1, a: 1}
+  selectedNormalColor: {r: 0, g: 0, b: 0, a: 1}
+  shouldChangeColorIfPressed: 0
+  pressedColor: {r: 0, g: 0, b: 0, a: 0}
+  releasedColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &1407659960
 GameObject:
   m_ObjectHideFlags: 0
@@ -14938,10 +14948,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a14bde0568234169943c63bfa297b515, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  textTarget: {fileID: 1616574160}
   normalColor: {r: 0, g: 0, b: 0, a: 1}
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
-  textTarget: {fileID: 1616574160}
   shouldFadeColorIfSelected: 0
+  shouldChangeColorIfSelected: 1
+  selectedHoverColor: {r: 1, g: 1, b: 1, a: 1}
+  selectedNormalColor: {r: 0, g: 0, b: 0, a: 1}
+  shouldChangeColorIfPressed: 0
+  pressedColor: {r: 0, g: 0, b: 0, a: 0}
+  releasedColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &1557656324
 MonoBehaviour:
   m_ObjectHideFlags: 0

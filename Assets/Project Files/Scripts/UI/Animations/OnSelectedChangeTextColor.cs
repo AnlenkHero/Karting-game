@@ -10,6 +10,11 @@ namespace Kart.Project_Files.Scripts.UI.Animations
         [SerializeField] private Color normalColor;
         [SerializeField] private Color selectedColor;
 
+        private void OnDisable()
+        {
+            textTarget.color = normalColor;
+        }
+
         public void OnSelect(BaseEventData eventData)
         {
             textTarget.color = selectedColor;

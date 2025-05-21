@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -14,6 +15,12 @@ namespace Kart.Project_Files.Scripts.UI.Animations.Dropdown
         [SerializeField ] private Color normalColor;
         [SerializeField] private Color hoverColor;
 
+
+        private void OnDisable()
+        {
+            text.color = normalColor;
+            textBackground.sprite = normalSprite;
+        }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
