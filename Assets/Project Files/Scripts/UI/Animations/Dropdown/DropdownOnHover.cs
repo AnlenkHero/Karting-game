@@ -12,7 +12,7 @@ namespace Kart.Project_Files.Scripts.UI.Animations.Dropdown
         [SerializeField] private Sprite normalSprite;
         [SerializeField] private Sprite disabledSprite;
         [SerializeField] private TextMeshProUGUI text;
-        [SerializeField ] private Color normalColor;
+        [SerializeField] private Color normalColor;
         [SerializeField] private Color hoverColor;
 
 
