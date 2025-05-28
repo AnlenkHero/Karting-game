@@ -33,6 +33,7 @@ namespace Kart.Project_Files.Scripts.Managers.Interface
 
         public void OnEscape(InputAction.CallbackContext context)
         {
+            //TODO : disable input fields when escape is pressed
             if (context.phase != InputActionPhase.Performed) return;
 
             var kart = KartController.LocalKartController;
@@ -60,6 +61,7 @@ namespace Kart.Project_Files.Scripts.Managers.Interface
 
         public void OnBack(InputAction.CallbackContext context)
         {
+            //TODO : disable input fields when back is pressed
             if (context.phase != InputActionPhase.Performed) return;
             if (interfaceManager.ActiveScreen == interfaceManager.RootScreen) return;
             if (EventSystem.current.currentSelectedGameObject.GetComponentInParent<TMP_Dropdown>() &&
