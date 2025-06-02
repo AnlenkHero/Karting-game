@@ -9,7 +9,7 @@ namespace Kart.Project_Files.Scripts.UI.Systems
 {
     public class RadialDragRotate : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
-        [SerializeField] private RadialLayout radialLayout;
+
         [SerializeField] private RectTransform rectTransform;
         [SerializeField] private Transform wheelTransform;
         [SerializeField] private float maxRotation = 1080f;
