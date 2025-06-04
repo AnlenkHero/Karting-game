@@ -236,7 +236,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5853bc00e6bfda84ea9030e0486a1c44, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 20cbc55bb971f6d4da6c480e10823c64, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -1338,8 +1338,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -715134994, guid: aa2ec3ad6f644be498e7d319f671e973, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: 62d893375ee673a47ac83062caff3aac, type: 3}
+  m_Type: 1
   m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1464,6 +1464,7 @@ GameObject:
   - component: {fileID: 1139954603}
   - component: {fileID: 1139954602}
   - component: {fileID: 1139954601}
+  - component: {fileID: 1139954604}
   m_Layer: 5
   m_Name: Center button
   m_TagString: Untagged
@@ -1572,6 +1573,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1139954599}
   m_CullTransparentMesh: 1
+--- !u!114 &1139954604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1139954599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a57effd83174a55b6b8ac5902dd6389, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 1139954601}
 --- !u!1 &1161289319
 GameObject:
   m_ObjectHideFlags: 0
@@ -2534,8 +2548,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1569862158, guid: 63bc6fe78ef5f4441ae88fba32a8f400, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: cbf6ac269880cd54583c74d4087a44c9, type: 3}
+  m_Type: 1
   m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2633,6 +2647,7 @@ MonoBehaviour:
   - {fileID: 47070358}
   - {fileID: 1459956948}
   multimediaText: {fileID: 1629754144}
+  radialDragRotate: {fileID: 1786713084}
 --- !u!114 &1786713082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2689,6 +2704,8 @@ MonoBehaviour:
   overshootDamping: 0.1
   pointerOvershootDamping: 1
   gamepadRotationSpeed: 180
+  autoAnimSpeed: 90
+  isAutoAnimating: 1
 --- !u!114 &1786713085
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3143,6 +3160,8 @@ MonoBehaviour:
   overshootDamping: 0.1
   pointerOvershootDamping: 1
   gamepadRotationSpeed: 180
+  autoAnimSpeed: 90
+  isAutoAnimating: 1
 --- !u!1 &2124505462
 GameObject:
   m_ObjectHideFlags: 0

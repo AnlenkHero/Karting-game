@@ -30,6 +30,7 @@ namespace Kart.Project_Files.Scripts.UI.Systems
 
         [Header("(Optional) Show the name of the currently selected button here.")]
         [SerializeField] private TextMeshProUGUI multimediaText;
+        [SerializeField] private RadialDragRotate radialDragRotate;
         
         private Button[] _slotButtons = new Button[3];
         private int _buttonCount;
@@ -85,7 +86,14 @@ namespace Kart.Project_Files.Scripts.UI.Systems
 
             if (multimediaText != null)
             {
-                multimediaText.text = allButtonData[dataIndexSelected].buttonName;
+                if (radialDragRotate.isAutoAnimating)
+                {
+                    multimediaText.text = "USE STEERING WHEEL TO SELECT OPTIONS";
+                }
+                else
+                {
+                    multimediaText.text = allButtonData[dataIndexSelected].buttonName;   
+                }
             }
             
             if (HandleInvisibleButtons(visibleCount, dataIndexSelected, selectedListPos, visibleIndices)) return;
