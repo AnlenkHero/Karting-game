@@ -43,8 +43,7 @@ namespace Kart.Project_Files.Scripts.Managers.Game
             }
             else
             {
-                Debug.LogWarning("No more available tracks. Reinitializing track list.");
-                // Optionally, reinitialize availableTracks here if you want to allow repeats in a longer session.
+                Debug.LogWarning("No more available tracks.");
             }
         }
     }
