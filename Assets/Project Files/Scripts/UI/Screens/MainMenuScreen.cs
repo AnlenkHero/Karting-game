@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using Kart.Project_Files.Scripts.Fusion;
 using Kart.Project_Files.Scripts.Managers.Interface;
 using Kart.Project_Files.Scripts.UI.Systems;
@@ -14,7 +15,11 @@ namespace Kart.Project_Files.Scripts.UI.Screens
         [SerializeField] private Button settingsButton;
         [SerializeField] private Button quitButton;
         [SerializeField] private UIScreen mainMenuScreen;
+        [SerializeField] private ScreenshotToRawImage screenshotToRawImage;
+        [SerializeField] private ZoomToMonitor zoomToMonitor;
+
         private bool _isMatchmakingInProgress;
+        private bool _isSettingsAnimationInProgress;
 
         private void Awake()
         {
@@ -31,9 +36,7 @@ namespace Kart.Project_Files.Scripts.UI.Screens
             {
                 if (_isMatchmakingInProgress) return;
                 _isMatchmakingInProgress = true;
-
                 await GameLauncher.Instance.JoinOrCreateMatchmakingLobby();
-
                 matchmakingButton.isVisible = false;
                 cancelMatchmakingButton.isVisible = true;
             }
@@ -46,17 +49,25 @@ namespace Kart.Project_Files.Scripts.UI.Screens
         private void CancelMatchmaking()
         {
             if (!_isMatchmakingInProgress) return;
-
             GameLauncher.Instance.LeaveSession();
             _isMatchmakingInProgress = false;
-
             cancelMatchmakingButton.isVisible = false;
             matchmakingButton.isVisible = true;
         }
 
         private void OpenSettingsMenu()
         {
+            if (_isSettingsAnimationInProgress) return;
+            _isSettingsAnimationInProgress = true;
+            StartCoroutine(OpenSettingsMenuCoroutine());
+        }
+
+        private IEnumerator OpenSettingsMenuCoroutine()
+        {
+            yield return screenshotToRawImage.CaptureCoroutine();
+            yield return zoomToMonitor.ZoomIn();
             InterfaceManager.Instance.ShowScreen(InterfaceManager.Instance.SettingsMenu);
+            _isSettingsAnimationInProgress = false;
         }
 
         private void QuitGame()

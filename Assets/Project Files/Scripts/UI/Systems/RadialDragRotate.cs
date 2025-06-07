@@ -2,6 +2,7 @@
 using Kart.Project_Files.Scripts.Managers.Interface;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Kart.Project_Files.Scripts.UI.Systems
@@ -20,12 +21,13 @@ namespace Kart.Project_Files.Scripts.UI.Systems
         
         [SerializeField] private float autoAnimSpeed = 90f;
 
+        public bool isDisabled;
+        public bool isAutoAnimating = true;
         private InterfaceInputHandler _inputHandler;
         private float _angle;
         private float _previousAngle;
         private bool _isBouncingBack;
         private bool _isPointerDragging;
-        public bool isAutoAnimating = true;
 
         private void Awake()
         {
@@ -34,6 +36,7 @@ namespace Kart.Project_Files.Scripts.UI.Systems
 
         private void Update()
         {
+            if(isDisabled) return;
             if (IntroAutoAnimateSteeringWheel()) return;
             HandleOtherDevicesInput();
         }
@@ -85,6 +88,7 @@ namespace Kart.Project_Files.Scripts.UI.Systems
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            if(isDisabled) return;
             if (isAutoAnimating)
                 isAutoAnimating = false;
 
@@ -98,6 +102,7 @@ namespace Kart.Project_Files.Scripts.UI.Systems
 
         public void OnDrag(PointerEventData eventData)
         {
+            if(isDisabled) return;
             if (isAutoAnimating)
                 return; 
 
@@ -117,6 +122,7 @@ namespace Kart.Project_Files.Scripts.UI.Systems
 
         public void OnEndDrag(PointerEventData eventData)
         {
+            if(isDisabled) return;
             if (isAutoAnimating)
                 return; 
 

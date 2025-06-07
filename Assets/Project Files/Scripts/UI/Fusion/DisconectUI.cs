@@ -1,5 +1,8 @@
-﻿using TMPro;
+﻿using System;
+using Kart.Project_Files.Scripts.Managers.Interface;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Kart.Project_Files.Scripts.UI.Fusion
@@ -13,7 +16,12 @@ namespace Kart.Project_Files.Scripts.UI.Fusion
 
         private void Awake()
         {
-            closeButton.onClick.AddListener(() => parent.gameObject.SetActive(false));
+            closeButton.onClick.AddListener(HideMessage);
+        }
+
+        public void Update()
+        {
+            EventSystem.current.SetSelectedGameObject(closeButton.gameObject);
         }
 
         public void ShowMessage(string status, string message)
@@ -26,6 +34,13 @@ namespace Kart.Project_Files.Scripts.UI.Fusion
 
             Debug.Log($"Showing message({status},{message})");
             parent.gameObject.SetActive(true);
+        }
+        
+        public void HideMessage()
+        {
+            Debug.Log("Hiding message");
+            parent.gameObject.SetActive(false);
+            InterfaceManager.Instance.CloseToRoot();
         }
     }
 }

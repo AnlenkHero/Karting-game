@@ -1402,11 +1402,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1786713080}
   - {fileID: 2124505463}
+  - {fileID: 1786713080}
   - {fileID: 1629754143}
   - {fileID: 610050051}
   - {fileID: 1161289320}
+  - {fileID: 1563683661}
   m_Father: {fileID: 694348375}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1582,10 +1583,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1139954599}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a57effd83174a55b6b8ac5902dd6389, type: 3}
+  m_Script: {fileID: 11500000, guid: 0a7a5d631a414234b14072da35d12074, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  button: {fileID: 1139954601}
+  selectable: {fileID: 1139954601}
 --- !u!1 &1161289319
 GameObject:
   m_ObjectHideFlags: 0
@@ -2308,6 +2309,111 @@ MonoBehaviour:
   targetAngle: 90
   button: {fileID: 1459956945}
   isVisible: 1
+--- !u!1 &1563683660
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1563683661}
+  - component: {fileID: 1563683664}
+  - component: {fileID: 1563683663}
+  - component: {fileID: 1563683662}
+  - component: {fileID: 1563683665}
+  m_Layer: 5
+  m_Name: RawImage
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1563683661
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1563683660}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 988882928}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1563683662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1563683660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42110003f68d45b9b7d78e4452e90a46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetRawImage: {fileID: 1563683663}
+--- !u!114 &1563683663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1563683660}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Texture: {fileID: 0}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+--- !u!222 &1563683664
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1563683660}
+  m_CullTransparentMesh: 1
+--- !u!114 &1563683665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1563683660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 631307cc333e47b4a887d03710ff79a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rawImage: {fileID: 1563683663}
+  rawImageXY: {x: 0.515, y: 0.663}
+  rawImageSize: {x: 0.345, y: 0.29}
+  mainButton: {fileID: 1139954601}
+  radialDragRotate: {fileID: 1786713084}
+  animationTime: 0.5
 --- !u!1 &1629754142
 GameObject:
   m_ObjectHideFlags: 0
@@ -2705,6 +2811,7 @@ MonoBehaviour:
   pointerOvershootDamping: 1
   gamepadRotationSpeed: 180
   autoAnimSpeed: 90
+  isDisabled: 0
   isAutoAnimating: 1
 --- !u!114 &1786713085
 MonoBehaviour:
@@ -2723,6 +2830,8 @@ MonoBehaviour:
   settingsButton: {fileID: 1459956945}
   quitButton: {fileID: 47070355}
   mainMenuScreen: {fileID: 1161289321}
+  screenshotToRawImage: {fileID: 1563683662}
+  zoomToMonitor: {fileID: 1563683665}
 --- !u!1 &1797304786
 GameObject:
   m_ObjectHideFlags: 0
@@ -3161,6 +3270,7 @@ MonoBehaviour:
   pointerOvershootDamping: 1
   gamepadRotationSpeed: 180
   autoAnimSpeed: 90
+  isDisabled: 0
   isAutoAnimating: 1
 --- !u!1 &2124505462
 GameObject:

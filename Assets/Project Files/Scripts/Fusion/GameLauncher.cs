@@ -332,7 +332,6 @@ namespace Kart.Project_Files.Scripts.Fusion
             SetConnectionStatus(ConnectionStatus.Disconnected);
             (string status, string message) = ShutdownReasonToHuman(shutdownReason);
             disconnectUI.ShowMessage(status, message);
-
             DisposeNetworkedData();
         }
 
