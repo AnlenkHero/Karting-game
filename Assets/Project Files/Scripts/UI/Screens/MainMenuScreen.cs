@@ -17,6 +17,7 @@ namespace Kart.Project_Files.Scripts.UI.Screens
         [SerializeField] private UIScreen mainMenuScreen;
         [SerializeField] private ScreenshotToRawImage screenshotToRawImage;
         [SerializeField] private ZoomToMonitor zoomToMonitor;
+        [SerializeField] private Sprite settingsMonitorSprite;
 
         private bool _isMatchmakingInProgress;
         private bool _isSettingsAnimationInProgress;
@@ -64,7 +65,7 @@ namespace Kart.Project_Files.Scripts.UI.Screens
 
         private IEnumerator OpenSettingsMenuCoroutine()
         {
-            yield return screenshotToRawImage.CaptureCoroutine();
+            yield return screenshotToRawImage.CaptureCoroutine(settingsMonitorSprite);
             yield return zoomToMonitor.ZoomIn();
             InterfaceManager.Instance.ShowScreen(InterfaceManager.Instance.SettingsMenu);
             _isSettingsAnimationInProgress = false;
