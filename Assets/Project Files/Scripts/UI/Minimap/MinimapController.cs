@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Kart.Project_Files.Scripts.UI.Minimap;
 using UnityEngine;
 
 public enum MinimapMode
