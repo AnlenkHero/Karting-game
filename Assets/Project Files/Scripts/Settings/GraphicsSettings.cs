@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -36,13 +35,21 @@ namespace Kart.Project_Files.Scripts.Settings
             LoadSettings();
         }
 
+        private void OnEnable()
+        {
+            int actualMode = (int)Screen.fullScreenMode;
+            screenModeDropdown.SetValueWithoutNotify(actualMode);
+            screenModeDropdown.RefreshShownValue();
+        }
+
         private void InitGraphicsDropdown()
         {
             graphicsDropdown.ClearOptions();
             graphicsDropdown.AddOptions(QualitySettings.names.ToList());
 
-            int currentQuality = PlayerPrefs.GetInt(GraphicsQualityKey, QualitySettings.GetQualityLevel());
-            graphicsDropdown.value = currentQuality;
+            int savedQuality = PlayerPrefs.GetInt(GraphicsQualityKey, QualitySettings.GetQualityLevel());
+            graphicsDropdown.SetValueWithoutNotify(savedQuality);
+            graphicsDropdown.RefreshShownValue();
         }
 
         private void InitResolutionDropdown()
@@ -53,71 +60,64 @@ namespace Kart.Project_Files.Scripts.Settings
                 .ThenByDescending(r => r.refreshRateRatio.value)
                 .ToArray();
 
-            int savedResolutionIndex = PlayerPrefs.GetInt(ResolutionIndexKey, -1);
-            if (savedResolutionIndex == -1)
-            {
-                savedResolutionIndex = 0;
-                PlayerPrefs.SetInt(ResolutionIndexKey, savedResolutionIndex);
-                PlayerPrefs.Save();
-            }
+            int savedIndex = PlayerPrefs.GetInt(ResolutionIndexKey, -1);
+            if (savedIndex < 0 || savedIndex >= resolutions.Length)
+                savedIndex = 0;
 
-            int maxWidth = resolutions.Max(r => r.width).ToString().Length;
-            int maxHeight = resolutions.Max(r => r.height).ToString().Length;
+            int maxW = resolutions.Max(r => r.width).ToString().Length;
+            int maxH = resolutions.Max(r => r.height).ToString().Length;
 
-            List<string> options = resolutions
-                .Select(r => 
-                    $"{r.width.ToString().PadRight(maxWidth)} x {r.height.ToString().PadRight(maxHeight)}  @ {(int)r.refreshRateRatio.value}Hz")
+            var options = resolutions
+                .Select(r =>
+                    $"{r.width.ToString().PadRight(maxW)} x {r.height.ToString().PadRight(maxH)}  @ {(int)r.refreshRateRatio.value}Hz")
                 .ToList();
 
             resolutionDropdown.AddOptions(options);
-            resolutionDropdown.value = savedResolutionIndex;
+            resolutionDropdown.SetValueWithoutNotify(savedIndex);
+            resolutionDropdown.RefreshShownValue();
         }
-
-
 
         private void InitScreenModeDropdown()
         {
             screenModeDropdown.ClearOptions();
-            List<string> options = Enum.GetNames(typeof(FullScreenMode)).ToList();
+            var names = Enum.GetNames(typeof(FullScreenMode)).ToList();
+            screenModeDropdown.AddOptions(names);
 
-            screenModeDropdown.AddOptions(options);
             int savedMode = PlayerPrefs.GetInt(ScreenModeKey, (int)Screen.fullScreenMode);
-            screenModeDropdown.value = savedMode;
+            screenModeDropdown.SetValueWithoutNotify(savedMode);
+            screenModeDropdown.RefreshShownValue();
         }
 
-        private void SetGraphicsQuality(int value)
+        private void SetGraphicsQuality(int idx)
         {
-            QualitySettings.SetQualityLevel(value);
-            PlayerPrefs.SetInt(GraphicsQualityKey, value);
+            QualitySettings.SetQualityLevel(idx);
+            PlayerPrefs.SetInt(GraphicsQualityKey, idx);
             PlayerPrefs.Save();
         }
 
-        private void SetResolution(int index)
+        private void SetResolution(int idx)
         {
-            if (index < 0 || index >= resolutions.Length) return;
-
-            Resolution selectedResolution = resolutions[index];
-            Screen.SetResolution(selectedResolution.width, selectedResolution.height, Screen.fullScreenMode, selectedResolution.refreshRateRatio);
-            PlayerPrefs.SetInt(ResolutionIndexKey, index);
+            if (idx < 0 || idx >= resolutions.Length) return;
+            var res = resolutions[idx];
+            Screen.SetResolution(res.width, res.height, Screen.fullScreenMode, res.refreshRateRatio);
+            PlayerPrefs.SetInt(ResolutionIndexKey, idx);
             PlayerPrefs.Save();
         }
 
-        private void SetScreenMode(int index)
+        private void SetScreenMode(int idx)
         {
-            if (!Enum.IsDefined(typeof(FullScreenMode), index)) return;
-
-            FullScreenMode mode = (FullScreenMode)index;
-            Resolution selectedResolution = resolutions[resolutionDropdown.value];
-
-            Screen.SetResolution(selectedResolution.width, selectedResolution.height, mode, selectedResolution.refreshRateRatio);
-            PlayerPrefs.SetInt(ScreenModeKey, index);
+            if (!Enum.IsDefined(typeof(FullScreenMode), idx)) return;
+            var mode = (FullScreenMode)idx;
+            var res = resolutions[resolutionDropdown.value];
+            Screen.SetResolution(res.width, res.height, mode, res.refreshRateRatio);
+            PlayerPrefs.SetInt(ScreenModeKey, idx);
             PlayerPrefs.Save();
         }
 
-        private void TogglePostProcessing(bool value)
+        private void TogglePostProcessing(bool enabled)
         {
-            volumeProfile.gameObject.SetActive(value);
-            PlayerPrefs.SetInt(PostProcessingKey, value ? 1 : 0);
+            volumeProfile.gameObject.SetActive(enabled);
+            PlayerPrefs.SetInt(PostProcessingKey, enabled ? 1 : 0);
             PlayerPrefs.Save();
         }
 
@@ -125,34 +125,41 @@ namespace Kart.Project_Files.Scripts.Settings
         {
             if (PlayerPrefs.HasKey(GraphicsQualityKey))
             {
-                int savedQuality = PlayerPrefs.GetInt(GraphicsQualityKey);
-                QualitySettings.SetQualityLevel(savedQuality);
-                graphicsDropdown.value = savedQuality;
+                int q = PlayerPrefs.GetInt(GraphicsQualityKey);
+                QualitySettings.SetQualityLevel(q);
+                graphicsDropdown.SetValueWithoutNotify(q);
+                graphicsDropdown.RefreshShownValue();
             }
 
             if (PlayerPrefs.HasKey(PostProcessingKey))
             {
-                bool savedPostProcessing = PlayerPrefs.GetInt(PostProcessingKey) == 1;
-                postprocessingToggle.isOn = savedPostProcessing;
-                volumeProfile.gameObject.SetActive(savedPostProcessing);
+                bool on = PlayerPrefs.GetInt(PostProcessingKey) == 1;
+                postprocessingToggle.SetIsOnWithoutNotify(on);
+                volumeProfile.gameObject.SetActive(on);
             }
 
             if (PlayerPrefs.HasKey(ResolutionIndexKey))
             {
-                int savedResolutionIndex = PlayerPrefs.GetInt(ResolutionIndexKey);
-                if (savedResolutionIndex >= 0 && savedResolutionIndex < resolutions.Length)
+                int idx = PlayerPrefs.GetInt(ResolutionIndexKey);
+                if (idx >= 0 && idx < resolutions.Length)
                 {
-                    Resolution selectedResolution = resolutions[savedResolutionIndex];
-                    Screen.SetResolution(selectedResolution.width, selectedResolution.height, Screen.fullScreenMode, selectedResolution.refreshRateRatio);
-                    resolutionDropdown.value = savedResolutionIndex;
+                    var res = resolutions[idx];
+                    Screen.SetResolution(res.width, res.height, Screen.fullScreenMode, res.refreshRateRatio);
+                    resolutionDropdown.SetValueWithoutNotify(idx);
+                    resolutionDropdown.RefreshShownValue();
                 }
             }
 
-            if (!PlayerPrefs.HasKey(ScreenModeKey)) return;
-            int savedMode = PlayerPrefs.GetInt(ScreenModeKey);
-            if (!Enum.IsDefined(typeof(FullScreenMode), savedMode)) return;
-            Screen.fullScreenMode = (FullScreenMode)savedMode;
-            screenModeDropdown.value = savedMode;
+            if (PlayerPrefs.HasKey(ScreenModeKey))
+            {
+                int m = PlayerPrefs.GetInt(ScreenModeKey);
+                if (Enum.IsDefined(typeof(FullScreenMode), m))
+                {
+                    Screen.fullScreenMode = (FullScreenMode)m;
+                    screenModeDropdown.SetValueWithoutNotify(m);
+                    screenModeDropdown.RefreshShownValue();
+                }
+            }
         }
     }
 }
