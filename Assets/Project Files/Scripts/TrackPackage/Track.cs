@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Fusion;
+using Kart.Project_Files.Scripts.Definitions;
 using Kart.Project_Files.Scripts.Fusion;
 using Kart.Project_Files.Scripts.Managers.Game;
 using UnityEngine;
@@ -12,15 +13,16 @@ namespace Kart.Project_Files.Scripts.TrackPackage
         [Header("Track Setup")] public TrackData trackData;
         public LapCheckpoint lapCheckpointPrefab;
         public FinishLine finishLinePrefab;
-
+        [Header("Track Definition")]
+        public TrackDefinition trackDefinition;
         [Header("Runtime References")] public LapCheckpoint[] checkpoints;
         public FinishLine finishLine;
 
         
-        private IEnumerator Start()
+        public override void  Spawned()
         {
+            trackDefinition = ResourceManager.Instance.tracks[GameManager.Instance.TrackListManager.CurrentTrackIndex];
             GameManager.CurrentTrack = this;
-            yield return new WaitUntil(() => GameManager.Instance != null && GameManager.Instance.Object != null);
             GameManager.Instance.RPC_PrepareForRace();
         }
 

@@ -77,7 +77,6 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
 
             _lapsUiView.DisableUI();
             _gameEndUiView.ShowEndGameUI(pointsForRace);
-
             GameManager.Instance.StartCoroutine(DelayScoreboardChange());
         }
 
@@ -253,7 +252,7 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
         private IEnumerator DelayScoreboardChange()
         {
             yield return new WaitForSeconds(3);
-            _gameEndUiView.ShowEndGameUI(GameManager.Instance.PointsTable);
+            _gameEndUiView.HideStandingsAnimation(() => _gameEndUiView.ShowEndGameUI(GameManager.Instance.PointsTable, "GLOBAL PLAYER STANDINGS"));
         }
 
         #endregion
@@ -313,6 +312,11 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
 
         private LapStandings BuildStandingsEntry(PlayerLapData data, int rank)
         {
+            int total = _requiredLaps;
+            int displayLap = data.hasFinished
+                ? total
+                : Mathf.Min(data.currentLap + 1, total);
+            
             var player = data.player;
 
             var entry = new LapStandings
@@ -322,7 +326,7 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
                 rank = rank,
                 status = data.hasFinished ? "Finished" : "DNF",
                 finishTime = data.hasFinished ? $"{data.finishTime:F2}s" : "-",
-                lapsCompleted = $"{data.currentLap}/{_requiredLaps}",
+                lapsCompleted   = $"{displayLap}/{total}",
                 lastCheckpoint = $"Checkpoint {data.currentCheckpoint}",
                 lastLapTime = data.currentLap > 0 ? $"{data.lastLapTime:F2}s" : "N/A",
             };

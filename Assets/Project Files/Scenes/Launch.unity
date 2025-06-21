@@ -8751,7 +8751,6 @@ MonoBehaviour:
   gameTypes:
   - {fileID: 11400000, guid: 275fb4a917f0c5e448192fd63c2f41df, type: 2}
   tracks:
-  - {fileID: 11400000, guid: 250b7a2ae8905a840a5dba2c202d08ea, type: 2}
   - {fileID: 11400000, guid: 5f4c7fb5d31910f49ac1fcd595675ccc, type: 2}
   offroadLayer:
     serializedVersion: 2

@@ -133,13 +133,14 @@ GameObject:
   - component: {fileID: 47070355}
   - component: {fileID: 47070354}
   - component: {fileID: 47070358}
+  - component: {fileID: 47070359}
   m_Layer: 5
   m_Name: Quit Game Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &47070353
 RectTransform:
   m_ObjectHideFlags: 0
@@ -223,14 +224,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 47070352}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -270,6 +271,19 @@ MonoBehaviour:
   targetAngle: 180
   button: {fileID: 47070355}
   isVisible: 1
+--- !u!114 &47070359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 47070352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a7a5d631a414234b14072da35d12074, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectable: {fileID: 47070355}
 --- !u!1 &79617674
 GameObject:
   m_ObjectHideFlags: 0
@@ -1013,12 +1027,12 @@ GameObject:
   m_Component:
   - component: {fileID: 610050051}
   m_Layer: 5
-  m_Name: Container for buttons
+  m_Name: Container for buttons to replecate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &610050051
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1040,7 +1054,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &694348371
 GameObject:
@@ -1235,13 +1249,14 @@ GameObject:
   - component: {fileID: 730316420}
   - component: {fileID: 730316419}
   - component: {fileID: 730316423}
+  - component: {fileID: 730316424}
   m_Layer: 5
   m_Name: Cancel Matchmaking Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &730316418
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1325,14 +1340,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 730316417}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1372,6 +1387,19 @@ MonoBehaviour:
   targetAngle: 45
   button: {fileID: 730316420}
   isVisible: 0
+--- !u!114 &730316424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 730316417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a7a5d631a414234b14072da35d12074, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectable: {fileID: 730316420}
 --- !u!1 &988882927
 GameObject:
   m_ObjectHideFlags: 0
@@ -1404,8 +1432,8 @@ RectTransform:
   m_Children:
   - {fileID: 2124505463}
   - {fileID: 1786713080}
-  - {fileID: 1629754143}
   - {fileID: 610050051}
+  - {fileID: 1629754143}
   - {fileID: 1161289320}
   - {fileID: 1563683661}
   m_Father: {fileID: 694348375}
@@ -2172,13 +2200,14 @@ GameObject:
   - component: {fileID: 1459956945}
   - component: {fileID: 1459956944}
   - component: {fileID: 1459956948}
+  - component: {fileID: 1459956949}
   m_Layer: 5
   m_Name: Settings Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1459956943
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2262,14 +2291,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1459956942}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -2309,6 +2338,19 @@ MonoBehaviour:
   targetAngle: 90
   button: {fileID: 1459956945}
   isVisible: 1
+--- !u!114 &1459956949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1459956942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a7a5d631a414234b14072da35d12074, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectable: {fileID: 1459956945}
 --- !u!1 &1526863342
 GameObject:
   m_ObjectHideFlags: 0
@@ -2641,13 +2683,15 @@ GameObject:
   - component: {fileID: 1716122817}
   - component: {fileID: 1716122816}
   - component: {fileID: 1716122819}
+  - component: {fileID: 1716122820}
+  - component: {fileID: 1716122821}
   m_Layer: 5
   m_Name: Matchmaking Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1716122815
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2718,14 +2762,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1716122814}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -2765,6 +2809,32 @@ MonoBehaviour:
   targetAngle: 45
   button: {fileID: 1716122816}
   isVisible: 1
+--- !u!114 &1716122820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1716122814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a7a5d631a414234b14072da35d12074, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectable: {fileID: 1716122816}
+--- !u!114 &1716122821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1716122814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a57effd83174a55b6b8ac5902dd6389, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 1716122816}
 --- !u!1 &1786713079
 GameObject:
   m_ObjectHideFlags: 0

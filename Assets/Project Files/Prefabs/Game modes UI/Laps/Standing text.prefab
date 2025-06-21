@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1875559571390608567}
   - component: {fileID: 1690089204491118752}
   - component: {fileID: -7819937634251434735}
+  - component: {fileID: 1599209806197805381}
   m_Layer: 5
   m_Name: Standing text
   m_TagString: Untagged
@@ -69,8 +70,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: New Text
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 30144003d7ebf1b45862bd2e4d41b5e6, type: 2}
+  m_sharedMaterial: {fileID: 239153472111379828, guid: 30144003d7ebf1b45862bd2e4d41b5e6,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -78,7 +80,7 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
-  m_enableVertexGradient: 0
+  m_enableVertexGradient: 1
   m_colorMode: 3
   m_fontColorGradient:
     topLeft: {r: 1, g: 1, b: 1, a: 1}
@@ -94,7 +96,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
+  m_fontSize: 18
   m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -150,7 +152,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08af2286efd842e4a842fb9db6c35b23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: {fileID: 1875559571390608567}
+  standingText: {fileID: 1875559571390608567}
+  gradientApplier: {fileID: 1599209806197805381}
 --- !u!114 &-7819937634251434735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,3 +173,18 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 1690089204491118752}
   ForceRemoteRenderTimeframe: 0
+--- !u!114 &1599209806197805381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097717845338415746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee3aef13d3d94c4f9d93113b4cf59ec7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goldGradient: {fileID: 11400000, guid: a76e65b63c6db3e499c7129b59ce4b3f, type: 2}
+  silverGradient: {fileID: 11400000, guid: fa0e162baf890ee40a10dead8a61c9f8, type: 2}
+  bronzeGradient: {fileID: 11400000, guid: 2c5fec88a9daf60429feeb9cb1baae95, type: 2}

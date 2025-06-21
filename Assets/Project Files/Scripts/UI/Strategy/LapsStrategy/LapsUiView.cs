@@ -1,7 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using Fusion;
+using Kart.Project_Files.Scripts.Extensions;
+using Kart.Project_Files.Scripts.Fusion;
 using Kart.Project_Files.Scripts.ModeStrategy.LapStrategy;
+using Kart.Project_Files.Scripts.UI.Systems;
+using TMPro;
 using UnityEngine;
 
 namespace Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy
@@ -10,9 +17,15 @@ namespace Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy
     {
         [SerializeField] private LapsStandingView standingViewPrefab;
         [SerializeField] private Transform parent;
-        
-        private List<LapsStandingView> standings = new ();
-        private readonly List<LapStandings> standingsEntry = new ();
+        [SerializeField] private TextMeshProUGUI currentLapText;
+        [SerializeField] private TextMeshProUGUI currentRankText;
+        [SerializeField] private TextMeshProUGUI currentLastLapTimeText;
+        [SerializeField] private TextMeshProUGUI bestLapTimeText;
+        [SerializeField] private GameObject container;
+        [SerializeField] private RankGradientApplier gradientApplier;
+
+        private List<LapsStandingView> standings = new();
+        private readonly List<LapStandings> standingsEntry = new();
 
         private int expectedStandingsCount;
         private int updatesReceived;
@@ -20,10 +33,10 @@ namespace Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy
         private bool isDelay;
         private Coroutine delayCoroutine;
         private Coroutine uiUpdateCoroutine;
-        
+
         private const int MaxStandings = 10;
 
-        private void Start()
+        public override void Spawned()
         {
             for (int i = 0; i < MaxStandings; i++)
             {
@@ -46,7 +59,8 @@ namespace Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy
             for (int i = 0; i < standing.Count; i++)
             {
                 var entry = standing[i];
-                RpcUpdateStanding(i, entry.rank, entry.playerName, entry.lastLapTime, entry.status);
+                RpcUpdateStanding(i, entry.playerId, entry.lapsCompleted, entry.rank, entry.playerName,
+                    entry.lastLapTime, entry.status);
             }
         }
 
@@ -67,7 +81,7 @@ namespace Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy
         {
             expectedStandingsCount = count;
             standingsEntry.Clear();
-            
+
             for (int i = 0; i < count; i++)
             {
                 standingsEntry.Add(new LapStandings());
@@ -79,13 +93,16 @@ namespace Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        private void RpcUpdateStanding(int index, int rank, string playerName, string lastLapTime, string status)
+        private void RpcUpdateStanding(int index, string playerId, string lapsCompleted, int rank, string playerName,
+            string lastLapTime, string status)
         {
             if (index >= 0 && index < standingsEntry.Count)
             {
                 standingsEntry[index] = new LapStandings
                 {
                     rank = rank,
+                    playerId = playerId,
+                    lapsCompleted = lapsCompleted,
                     playerName = playerName,
                     lastLapTime = lastLapTime,
                     status = status
@@ -144,12 +161,15 @@ namespace Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy
 
         private void UpdateStandingsUI()
         {
+            ShowBestLapTime();
             for (int i = 0; i < standings.Count; i++)
             {
                 if (i < standingsEntry.Count)
                 {
                     standings[i].gameObject.SetActive(true);
                     UpdateStandingText(standings[i],
+                        standingsEntry[i].playerId,
+                        standingsEntry[i].lapsCompleted,
                         standingsEntry[i].rank,
                         standingsEntry[i].playerName,
                         standingsEntry[i].lastLapTime,
@@ -162,22 +182,71 @@ namespace Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy
             }
         }
 
-        private void UpdateStandingText(LapsStandingView view, int rank, string playerName, string lastLapTime, string status)
+        private void ShowBestLapTime()
         {
-            view.SetText(ComposeStandingMessage(rank, playerName, lastLapTime, status));
+            float best = float.MaxValue;
+            string playerName = "";
+
+            foreach (var s in standingsEntry)
+            {
+                var tRaw = s.lastLapTime;
+                if (!float.TryParse(tRaw.TrimEnd('s').Replace(',', '.'), NumberStyles.Float,
+                        CultureInfo.InvariantCulture, out var t)
+                    || t <= 0 || t >= best)
+                    continue;
+
+                best = t;
+                playerName = s.playerName;
+            }
+
+            if (best < float.MaxValue)
+            {
+                bestLapTimeText.text =
+                    $"BEST LAP: \n{playerName} {best.ToString(CultureInfo.InvariantCulture).ToRaceFormat()}";
+            }
+            else if(Mathf.Approximately(best, float.MaxValue))
+            {
+                bestLapTimeText.text = "BEST LAP:\nN/A";
+            }
+        }
+
+
+        private void UpdateStandingText(
+            LapsStandingView view,
+            string playerId,
+            string lapsCompleted,
+            int rank,
+            string playerName,
+            string lastLapTime,
+            string status)
+        {
+            var formatted = lastLapTime.ToRaceFormat();
+
+            if (RoomPlayer.Local.Id.ToString() == playerId)
+            {
+                currentLapText.text = $"LAP {lapsCompleted}";
+                gradientApplier.Apply(currentRankText, rank);
+                currentRankText.text = rank.ToOrdinal();
+                currentLastLapTimeText.text = formatted;
+            }
+
+            view.SetText(
+                ComposeStandingMessage(rank, playerName, formatted, status),
+                rank
+            );
         }
 
         private string ComposeStandingMessage(int rank, string playerName, string lastLapTime, string status)
         {
-            string message = $"{rank}. {playerName} - {lastLapTime}";
-            if (!string.IsNullOrEmpty(status) && status == "Finished")
+            string message = $"{rank}. {playerName}";
+            if (!string.IsNullOrEmpty(status) && status == "FINISHED")
                 message += $" - {status}";
             return message;
         }
 
         public void DisableUI()
         {
-            parent.gameObject.SetActive(false);
+            container.SetActive(false);
         }
     }
 }

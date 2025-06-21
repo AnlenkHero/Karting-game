@@ -159,7 +159,7 @@ namespace Kart.Project_Files.Scripts.Fusion
                 SessionName = sessionName,
                 ObjectProvider = Pool,
                 SceneManager = levelManager,
-                PlayerCount = 1,
+                PlayerCount = 2,
                 EnableClientSessionCreation = enableCreation,
                 MatchmakingMode = MatchmakingMode.FillRoom
             };

@@ -67,8 +67,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: Anlenk
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 30144003d7ebf1b45862bd2e4d41b5e6, type: 2}
+  m_sharedMaterial: {fileID: 239153472111379828, guid: 30144003d7ebf1b45862bd2e4d41b5e6,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -203,8 +204,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: 1.
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 30144003d7ebf1b45862bd2e4d41b5e6, type: 2}
+  m_sharedMaterial: {fileID: 239153472111379828, guid: 30144003d7ebf1b45862bd2e4d41b5e6,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -328,6 +330,7 @@ MonoBehaviour:
   position: {fileID: 7058917652461677515}
   points: {fileID: 6862955420056231294}
   icon: {fileID: 285960770438819881}
+  fadeDuration: 0.5
 --- !u!1 &6739473173901726628
 GameObject:
   m_ObjectHideFlags: 0
@@ -470,8 +473,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: 100+25
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 30144003d7ebf1b45862bd2e4d41b5e6, type: 2}
+  m_sharedMaterial: {fileID: 239153472111379828, guid: 30144003d7ebf1b45862bd2e4d41b5e6,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

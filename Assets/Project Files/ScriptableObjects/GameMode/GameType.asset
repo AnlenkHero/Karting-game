@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 083a861d76a74443b3d02847b99c7e43, type: 3}
   m_Name: GameType
   m_EditorClassIdentifier: 
-  gameModeName: Nigga
-  description: nigga
+  gameModeName: Lap race
+  description: Finish all the laps to win the race
   icon: {fileID: 21300000, guid: c8676d7d627dbee41b04ffb7e75ffb0a, type: 3}
   totalLapsRequired: 1
   targetPoints: 0
