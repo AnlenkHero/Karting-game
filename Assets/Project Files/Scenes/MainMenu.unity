@@ -2957,7 +2957,9 @@ MonoBehaviour:
   overshootDamping: 0.1
   pointerOvershootDamping: 1
   gamepadRotationSpeed: 180
-  autoAnimSpeed: 90
+  autoAnimSpeed: 30
+  autoAnimMaxAngle: 30
+  autoAnimDelay: 1
   isDisabled: 0
   isAutoAnimating: 1
 --- !u!114 &1786713085
@@ -3419,6 +3421,8 @@ MonoBehaviour:
   pointerOvershootDamping: 1
   gamepadRotationSpeed: 180
   autoAnimSpeed: 90
+  autoAnimMaxAngle: 30
+  autoAnimDelay: 1
   isDisabled: 0
   isAutoAnimating: 1
 --- !u!1 &2124505462

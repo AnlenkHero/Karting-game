@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using DG.Tweening;
 using Kart.Project_Files.Scripts.Managers.Interface;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,17 +10,22 @@ namespace Kart.Project_Files.Scripts.UI.Systems
 {
     public class RadialDragRotate : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
-        [Header("References")]
-        [SerializeField] private RectTransform rectTransform;
+        [Header("References")] [SerializeField]
+        private RectTransform rectTransform;
+
         [SerializeField] private Transform wheelTransform;
         [SerializeField] private float maxRotation = 1080f;
-        
-        [Header("Overshoot Damping")]
-        [SerializeField] private float overshootDamping = 0.1f;
+
+        [Header("Overshoot Damping")] [SerializeField]
+        private float overshootDamping = 0.1f;
+
         [SerializeField] private float pointerOvershootDamping = 1.0f;
         [SerializeField] private float gamepadRotationSpeed = 180f;
-        
-        [SerializeField] private float autoAnimSpeed = 90f;
+
+        [Header("Auto Animation")] [SerializeField]
+        private float autoAnimSpeed = 90f;
+        [SerializeField] private float autoAnimMaxAngle = 30f;
+        [SerializeField] private float autoAnimDelay = 1f;
 
         public bool isDisabled;
         public bool isAutoAnimating = true;
@@ -28,15 +34,20 @@ namespace Kart.Project_Files.Scripts.UI.Systems
         private float _previousAngle;
         private bool _isBouncingBack;
         private bool _isPointerDragging;
+        private Sequence _autoAnimSequence;
 
         private void Awake()
         {
             _inputHandler = InterfaceManager.Instance.inputHandler;
+            if (isAutoAnimating)
+            {
+                StartAutoAnimation();
+            }
         }
 
         private void Update()
         {
-            if(isDisabled) return;
+            if (isDisabled) return;
             if (IntroAutoAnimateSteeringWheel()) return;
             HandleOtherDevicesInput();
         }
@@ -48,18 +59,36 @@ namespace Kart.Project_Files.Scripts.UI.Systems
             if (Mathf.Abs(horizontalInput) > 0.01f)
             {
                 isAutoAnimating = false;
+                StopAutoAnimation();
             }
             else if (_isPointerDragging)
             {
                 isAutoAnimating = false;
+                StopAutoAnimation();
             }
 
-            if (!isAutoAnimating) return false;
-            _angle = Mathf.PingPong(Time.time * autoAnimSpeed, 180f) - 90f;
-            wheelTransform.rotation = Quaternion.Euler(0, 0, _angle);
-            LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
-            return true;
+            return isAutoAnimating;
+        }
 
+        private void StartAutoAnimation()
+        {
+            _autoAnimSequence?.Kill();
+
+            _autoAnimSequence = DOTween.Sequence()
+                .Append(
+                    wheelTransform
+                        .DOPunchRotation(new Vector3(0, 0, 10f), 0.5f, 10, 0.5f)
+                        .OnUpdate(() => LayoutRebuilder.MarkLayoutForRebuild(rectTransform))
+                )
+                .AppendInterval(autoAnimDelay)
+                .SetLoops(-1, LoopType.Restart);
+        }
+
+
+        private void StopAutoAnimation()
+        {
+            _autoAnimSequence?.Kill();
+            _autoAnimSequence = null;
         }
 
         private void HandleOtherDevicesInput()
@@ -88,9 +117,12 @@ namespace Kart.Project_Files.Scripts.UI.Systems
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if(isDisabled) return;
+            if (isDisabled) return;
             if (isAutoAnimating)
+            {
                 isAutoAnimating = false;
+                StopAutoAnimation();
+            }
 
             _isPointerDragging = true;
             if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -102,9 +134,9 @@ namespace Kart.Project_Files.Scripts.UI.Systems
 
         public void OnDrag(PointerEventData eventData)
         {
-            if(isDisabled) return;
+            if (isDisabled) return;
             if (isAutoAnimating)
-                return; 
+                return;
 
             if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
                     rectTransform, eventData.position, eventData.pressEventCamera, out var localPoint))
@@ -113,7 +145,7 @@ namespace Kart.Project_Files.Scripts.UI.Systems
             float currentAngle = Mathf.Atan2(localPoint.y, localPoint.x) * Mathf.Rad2Deg;
             float deltaAngle = currentAngle - _previousAngle;
 
-            if (deltaAngle > 180)      deltaAngle -= 360f;
+            if (deltaAngle > 180) deltaAngle -= 360f;
             else if (deltaAngle < -180) deltaAngle += 360f;
 
             RotateWheelByDelta(deltaAngle, pointerOvershootDamping);
@@ -122,9 +154,9 @@ namespace Kart.Project_Files.Scripts.UI.Systems
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            if(isDisabled) return;
+            if (isDisabled) return;
             if (isAutoAnimating)
-                return; 
+                return;
 
             _isPointerDragging = false;
             float targetAngle = Mathf.Clamp(_angle, -maxRotation, maxRotation);
@@ -134,6 +166,7 @@ namespace Kart.Project_Files.Scripts.UI.Systems
                 {
                     StopCoroutine(nameof(BounceBackCoroutine));
                 }
+
                 StartCoroutine(BounceBackCoroutine(targetAngle));
             }
         }
