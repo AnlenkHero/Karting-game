@@ -19967,13 +19967,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 10
+    m_Left: 50
     m_Right: 0
     m_Top: 10
     m_Bottom: 0
-  m_ChildAlignment: 0
+  m_ChildAlignment: 1
   columnCount: 2
-  cellSize: {x: 950, y: 140}
+  cellSize: {x: 450, y: 140}
   spacing: {x: 0, y: 0}
   staggered: 1
   staggeredOffset: 75
@@ -23967,6 +23967,7 @@ GameObject:
   - component: {fileID: 1375799358}
   - component: {fileID: 1375799360}
   - component: {fileID: 1375799359}
+  - component: {fileID: 1375799361}
   m_Layer: 5
   m_Name: GameEndUI
   m_TagString: Untagged
@@ -24012,6 +24013,7 @@ MonoBehaviour:
     type: 3}
   standingsParent: {fileID: 1172854062}
   endRaceVignette: {fileID: 1375799358}
+  rankGradientApplier: {fileID: 1375799361}
   animationDuration: 0.5
 --- !u!114 &1375799358
 MonoBehaviour:
@@ -24065,6 +24067,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1375799355}
   m_CullTransparentMesh: 1
+--- !u!114 &1375799361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1375799355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee3aef13d3d94c4f9d93113b4cf59ec7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goldGradient: {fileID: 11400000, guid: a76e65b63c6db3e499c7129b59ce4b3f, type: 2}
+  silverGradient: {fileID: 11400000, guid: fa0e162baf890ee40a10dead8a61c9f8, type: 2}
+  bronzeGradient: {fileID: 11400000, guid: 2c5fec88a9daf60429feeb9cb1baae95, type: 2}
 --- !u!4 &1377069760 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 438062, guid: e87a3acfe1e8b0642a783fab11506a12,

@@ -1,4 +1,6 @@
-﻿using DG.Tweening;
+﻿using System.Globalization;
+using DG.Tweening;
+using Kart.Project_Files.Scripts.UI.Systems;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,12 +14,15 @@ namespace Kart.Project_Files.Scripts.UI.Strategy
         [SerializeField] private TextMeshProUGUI points;
         [SerializeField] private Image icon;
         [SerializeField] private float fadeDuration = 0.5f;
-        public void SetData(string playerName, int position, float points, Sprite icon )
+        public void SetData(RankGradientApplier rankGradientApplier, string playerNameText, int positionValue, float pointsValue, Sprite iconTexture)
         {
-            this.playerName.text = playerName;
-            this.position.text = position.ToString();
-            this.points.text = points.ToString();
-            this.icon.sprite = icon;
+            playerName.text = playerNameText;
+            position.text = positionValue.ToString();
+            points.text = pointsValue.ToString(CultureInfo.InvariantCulture);
+            icon.sprite = iconTexture;
+            rankGradientApplier.Apply(playerName, positionValue);
+            rankGradientApplier.Apply(position, positionValue);
+            rankGradientApplier.Apply(points, positionValue);
         }
 
         public void PlayFadeInAnimation()

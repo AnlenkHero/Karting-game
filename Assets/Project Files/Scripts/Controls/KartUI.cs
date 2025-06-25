@@ -29,8 +29,7 @@ namespace Kart.Project_Files.Scripts.Controls
 
         private void Update()
         {
-            playerText.SetText(
-                $"{kartController.KartName} SPEED: {kartController.NetworkedVelocity.magnitude:F1}");
+            playerText.SetText($"{kartController.KartName}");
         }
 
         #endregion

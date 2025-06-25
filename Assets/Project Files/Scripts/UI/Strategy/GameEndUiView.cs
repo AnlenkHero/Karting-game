@@ -6,6 +6,7 @@ using Kart.Project_Files.Scripts.Fusion;
 using Kart.Project_Files.Scripts.Helpers;
 using Kart.Project_Files.Scripts.Managers.Game;
 using Kart.Project_Files.Scripts.UI.Effects;
+using Kart.Project_Files.Scripts.UI.Systems;
 using TMPro;
 using UnityEngine;
 
@@ -18,6 +19,7 @@ namespace Kart.Project_Files.Scripts.UI.Strategy
         [SerializeField] private GameEndUiStanding standingPrefab;
         [SerializeField] private Transform standingsParent;
         [SerializeField] private EndRaceVignette endRaceVignette;
+        [SerializeField] private RankGradientApplier rankGradientApplier;
         [SerializeField] private float animationDuration = 0.5f;
         private List<GameEndUiStanding> _standings = new();
 
@@ -50,7 +52,7 @@ namespace Kart.Project_Files.Scripts.UI.Strategy
                 int position = playerPoints + 1;
                 yield return new WaitForSeconds(0.2f);
                 var standing = Instantiate(standingPrefab, standingsParent);
-                standing.SetData(sortedList[playerPoints].Key.Username.ToString(), position,
+                standing.SetData(rankGradientApplier,sortedList[playerPoints].Key.Username.ToString(), position,
                     sortedList[playerPoints].Value, null);
                 standing.PlayFadeInAnimation();
                 _standings.Add(standing);
