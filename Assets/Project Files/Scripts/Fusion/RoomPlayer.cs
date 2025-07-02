@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Fusion;
 using Kart.Project_Files.Scripts.Controls;
+using Kart.Project_Files.Scripts.Managers;
 using Kart.Project_Files.Scripts.OtherNetworking;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Kart.Project_Files.Scripts.Fusion
 {
@@ -44,11 +46,16 @@ namespace Kart.Project_Files.Scripts.Fusion
 
             _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
 
+            if (Object.HasStateAuthority)
+            {
+                SetUniqueKartID();
+            }
+
             if (Object.HasInputAuthority)
             {
                 Local = this;
                 PlayerChanged?.Invoke(this);
-                RPC_SetPlayerStats(ClientInfo.Username, ClientInfo.KartId);
+                RPC_SetPlayerStats(ClientInfo.Username);
                 RPC_SetCountryCode(ClientInfo.CountryCode);
                 RPC_SetCountryPrivacy(ClientInfo.CountryPrivacy);
             }
@@ -73,6 +80,20 @@ namespace Kart.Project_Files.Scripts.Fusion
             }
         }
 
+        private void SetUniqueKartID()
+        {
+            var usedIds = Players.Select(p => p.KartId).ToList();
+            int total = ResourceManager.Instance.kartDefinitions.Length;
+            var allIds = Enumerable.Range(0, total);
+            var freeIds = allIds.Except(usedIds).ToList();
+            
+            int chosen = freeIds.Any()
+                ? freeIds[Random.Range(0, freeIds.Count)]
+                : Random.Range(0, total);
+
+            KartId = chosen;
+        }
+
         [Rpc]
         private void RPC_SetCountryCode(string countryCode)
         {
@@ -95,10 +116,9 @@ namespace Kart.Project_Files.Scripts.Fusion
         }
 
         [Rpc]
-        public void RPC_SetPlayerStats(NetworkString<_32> username, int kartId)
+        public void RPC_SetPlayerStats(NetworkString<_32> username)
         {
             Username = username;
-            KartId = kartId;
         }
 
         [Rpc(sources: RpcSources.InputAuthority, targets: RpcTargets.StateAuthority)]

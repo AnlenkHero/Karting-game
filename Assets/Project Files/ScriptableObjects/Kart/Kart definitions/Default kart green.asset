@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a5b48d3dadf44c9893d69dea5cbd192a, type: 3}
-  m_Name: Default kart
+  m_Name: Default kart green
   m_EditorClassIdentifier: 
-  prefab: {fileID: 5012061265976231298, guid: cb2647bb145265c4d806118d55db42ab, type: 3}
-  kartModel: {fileID: 919132149155446097, guid: 2513298e7868ae24e9190e29a085d4b3,
+  prefab: {fileID: 5012061265976231298, guid: baddba8e3d5c53c4e910c1f4fda6fcfb, type: 3}
+  kartModel: {fileID: 919132149155446097, guid: 9b1df16943405e948bbe4a07ded4226d,
     type: 3}
   speedStat: 1
   accelStat: 1

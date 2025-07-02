@@ -159,7 +159,7 @@ namespace Kart.Project_Files.Scripts.Fusion
                 SessionName = sessionName,
                 ObjectProvider = Pool,
                 SceneManager = levelManager,
-                PlayerCount = 1,
+                PlayerCount = 2,
                 EnableClientSessionCreation = enableCreation,
                 MatchmakingMode = MatchmakingMode.FillRoom
             };
@@ -297,6 +297,13 @@ namespace Kart.Project_Files.Scripts.Fusion
 
             if (_runner != null) _runner.Shutdown();
             else SetConnectionStatus(ConnectionStatus.Disconnected);
+        }
+
+        public void ProgressToResultScene()
+        {
+            Debug.Log("Progressing to result scene...");
+            InterfaceManager.Instance.CloseToRoot();
+            SceneManager.LoadScene(sceneBuildIndex: 6);
         }
 
         public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)

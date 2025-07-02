@@ -28,6 +28,7 @@ namespace Kart.Project_Files.Scripts.Controls
     {
         [Header("Networked Variables")]
         [Networked] public Vector3 NetworkedVelocity { get; set; }
+        [Networked] public float NetworkedSignedVelocityMagnitude { get; set; }
         [Networked] public string KartName { get; set; }
         [Networked] public float WheelSpin { get; set; }
         [Networked] public float FrontWheelSteeringAngle { get; set; }
@@ -167,6 +168,7 @@ namespace Kart.Project_Files.Scripts.Controls
         private void UpdateNetworkedVariablesWithInput()
         {
             NetworkedVelocity = _kartVelocity;
+            NetworkedSignedVelocityMagnitude = SignedVelocityMagnitude;
             FrontWheelSteeringAngle = _currentSteeringAngle;
         }
 

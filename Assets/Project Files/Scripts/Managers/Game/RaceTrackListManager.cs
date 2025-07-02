@@ -9,7 +9,7 @@ namespace Kart.Project_Files.Scripts.Managers.Game
     {
         [Networked] public int CurrentRaceCount { get; private set; }
         [Networked] public int CurrentTrackIndex { get; private set; }
-        public const int MaxRaces = 5;
+        public const int MaxRaces = 1;
         public TrackDefinition CurrentTrackDefinition;
         private List<TrackDefinition> availableTracks;
 

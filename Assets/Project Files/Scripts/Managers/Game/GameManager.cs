@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Fusion;
+using Kart.Project_Files.Scripts.Animations.ResultScene;
 using Kart.Project_Files.Scripts.Controls;
 using Kart.Project_Files.Scripts.Fusion;
 using Kart.Project_Files.Scripts.ModeStrategy;
@@ -141,8 +142,7 @@ namespace Kart.Project_Files.Scripts.Managers.Game
                 RoomPlayer sessionWinner = PointsTable.GetWinner();
                 Debug.Log("Session Completed! Global Winner: " +
                           (sessionWinner != null ? sessionWinner.name : "No winner"));
-
-                if (HasStateAuthority)
+                
                     StartCoroutine(WaiForSceneChangeAndLoadSessionResults());
             }
             else
@@ -164,6 +164,7 @@ namespace Kart.Project_Files.Scripts.Managers.Game
         {
             yield return new WaitForSeconds(10f);
             //LevelManager.LoadScene("SessionResults");
+            GameLauncher.Instance.ProgressToResultScene();
             foreach (var rp in RoomPlayer.Players)
             {
                 Debug.Log($"{rp.Username}, {Instance.PointsTable.GetPoints(rp)}");

@@ -8748,6 +8748,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   kartDefinitions:
   - {fileID: 11400000, guid: 9a2c85a6e070e6243912fd8386dd3d83, type: 2}
+  - {fileID: 11400000, guid: 5c48074d9a9c7764f83aac4f4af19381, type: 2}
   gameTypes:
   - {fileID: 11400000, guid: 275fb4a917f0c5e448192fd63c2f41df, type: 2}
   tracks:
@@ -14559,6 +14560,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1387914092}
   m_CullTransparentMesh: 1
+--- !u!1 &1389799608
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1389799609}
+  m_Layer: 0
+  m_Name: RegionHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1389799609
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1389799608}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1405272851
 GameObject:
   m_ObjectHideFlags: 0
@@ -22013,3 +22045,4 @@ SceneRoots:
   - {fileID: 1511245127}
   - {fileID: 429740316}
   - {fileID: 990392531}
+  - {fileID: 1389799609}

@@ -61,9 +61,9 @@ namespace Kart.Project_Files.Scripts.Controls
         public void Update()
         {
             HandleDriftAudio();
-            HandleDriveAudio(kartController.SignedVelocityMagnitude);
+            HandleDriveAudio(kartController.NetworkedSignedVelocityMagnitude);
 
-            idleSound.volume = Mathf.Lerp(idleSoundMaxVolume, 0.0f, kartController.Velocity.magnitude);
+            idleSound.volume = Mathf.Lerp(idleSoundMaxVolume, 0.0f, kartController.NetworkedVelocity.magnitude);
         }
 
         private void HandleDriveAudio(float speed)
@@ -102,7 +102,7 @@ namespace Kart.Project_Files.Scripts.Controls
             float targetVol = 0f;
             if (_activeSkids > 0)
             {
-                Vector3 localVel = kartController.Velocity;
+                Vector3 localVel = kartController.NetworkedVelocity;
                 float lateral = Mathf.Abs(localVel.x);
                 float slipNorm = Mathf.Clamp01(lateral / kartController.MaxSpeed);
                 float curveVal = driftCurve.Evaluate(slipNorm);

@@ -8,11 +8,6 @@ namespace Kart.Project_Files.Scripts.Fusion
             set => PlayerPrefs.SetString("C_Username", value);
         }
 
-        public static int KartId {
-            get => PlayerPrefs.GetInt("C_KartId", 0);
-            set => PlayerPrefs.SetInt("C_KartId", value);
-        }
-
         public static string LobbyName {
             get => PlayerPrefs.GetString("C_LastLobbyName", "");
             set => PlayerPrefs.SetString("C_LastLobbyName", value);

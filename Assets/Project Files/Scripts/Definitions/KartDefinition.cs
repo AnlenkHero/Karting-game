@@ -9,6 +9,7 @@ namespace Kart.Project_Files.Scripts.Definitions
         public const int MAX_STAT = 5;
 
         public KartController prefab;
+        public GameObject kartModel;
         [SerializeField, Range(1, MAX_STAT)] private int speedStat;
         [SerializeField, Range(1, MAX_STAT)] private int accelStat;
         [SerializeField, Range(1, MAX_STAT)] private int turnStat;
