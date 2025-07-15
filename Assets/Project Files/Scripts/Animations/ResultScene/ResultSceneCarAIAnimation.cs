@@ -17,7 +17,35 @@ namespace Kart.Project_Files.Scripts.Animations.ResultScene
         [SerializeField] private TextMeshPro secondPlaceText;
         [SerializeField] private TextMeshPro thirdPlaceText;
 
+        private void Awake()
+        {
+            var players = GameManager.Instance.PointsTable.GetSortedPlayerPointsList();
+            
+            firstPlaceText?.SetText(players[0].Key.Username.Value);
+            if (players.Count > 1)  secondPlaceText?.SetText(players[1].Key.Username.Value);
+            if (players.Count > 2)   thirdPlaceText?.SetText(players[2].Key.Username.Value);
+            
+            Instantiate(ResourceManager.Instance
+                    .kartDefinitions[players[0].Key.KartId].kartModel,
+                firstPlaceCarAIController.kartParent);
+            firstPlaceCarAIController.gameObject.SetActive(true);
 
+            if (players.Count > 1)
+            {
+                Instantiate(ResourceManager.Instance
+                        .kartDefinitions[players[1].Key.KartId].kartModel,
+                    secondPlaceCarAIController.kartParent);
+                secondPlaceCarAIController.gameObject.SetActive(true);
+            }
+
+            if (players.Count > 2)
+            {
+                Instantiate(ResourceManager.Instance
+                        .kartDefinitions[players[2].Key.KartId].kartModel,
+                    thirdPlaceCarAIController.kartParent);
+                thirdPlaceCarAIController.gameObject.SetActive(true);
+            }
+        }
         private void Start()
         {
             StartCoroutine(PlayPodiumSequence());
