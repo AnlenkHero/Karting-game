@@ -85,7 +85,7 @@ namespace Kart.Project_Files.Scripts.UI.Systems
         }
 
 
-        private void StopAutoAnimation()
+        public void StopAutoAnimation()
         {
             _autoAnimSequence?.Kill();
             _autoAnimSequence = null;

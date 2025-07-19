@@ -20,7 +20,7 @@ namespace Kart.Project_Files.Scripts.Settings
         private const string ResolutionIndexKey = "ResolutionIndex";
         private const string ScreenModeKey = "ScreenMode";
 
-        private Resolution[] resolutions;
+        private Resolution[] _resolutions;
 
         private void Awake()
         {
@@ -55,19 +55,19 @@ namespace Kart.Project_Files.Scripts.Settings
         private void InitResolutionDropdown()
         {
             resolutionDropdown.ClearOptions();
-            resolutions = Screen.resolutions
+            _resolutions = Screen.resolutions
                 .OrderByDescending(r => r.width * r.height)
                 .ThenByDescending(r => r.refreshRateRatio.value)
                 .ToArray();
 
             int savedIndex = PlayerPrefs.GetInt(ResolutionIndexKey, -1);
-            if (savedIndex < 0 || savedIndex >= resolutions.Length)
+            if (savedIndex < 0 || savedIndex >= _resolutions.Length)
                 savedIndex = 0;
 
-            int maxW = resolutions.Max(r => r.width).ToString().Length;
-            int maxH = resolutions.Max(r => r.height).ToString().Length;
+            int maxW = _resolutions.Max(r => r.width).ToString().Length;
+            int maxH = _resolutions.Max(r => r.height).ToString().Length;
 
-            var options = resolutions
+            var options = _resolutions
                 .Select(r =>
                     $"{r.width.ToString().PadRight(maxW)} x {r.height.ToString().PadRight(maxH)}  @ {(int)r.refreshRateRatio.value}Hz")
                 .ToList();
@@ -97,8 +97,8 @@ namespace Kart.Project_Files.Scripts.Settings
 
         private void SetResolution(int idx)
         {
-            if (idx < 0 || idx >= resolutions.Length) return;
-            var res = resolutions[idx];
+            if (idx < 0 || idx >= _resolutions.Length) return;
+            var res = _resolutions[idx];
             Screen.SetResolution(res.width, res.height, Screen.fullScreenMode, res.refreshRateRatio);
             PlayerPrefs.SetInt(ResolutionIndexKey, idx);
             PlayerPrefs.Save();
@@ -108,7 +108,7 @@ namespace Kart.Project_Files.Scripts.Settings
         {
             if (!Enum.IsDefined(typeof(FullScreenMode), idx)) return;
             var mode = (FullScreenMode)idx;
-            var res = resolutions[resolutionDropdown.value];
+            var res = _resolutions[resolutionDropdown.value];
             Screen.SetResolution(res.width, res.height, mode, res.refreshRateRatio);
             PlayerPrefs.SetInt(ScreenModeKey, idx);
             PlayerPrefs.Save();
@@ -123,43 +123,50 @@ namespace Kart.Project_Files.Scripts.Settings
 
         private void LoadSettings()
         {
-            if (PlayerPrefs.HasKey(GraphicsQualityKey))
-            {
-                int q = PlayerPrefs.GetInt(GraphicsQualityKey);
-                QualitySettings.SetQualityLevel(q);
-                graphicsDropdown.SetValueWithoutNotify(q);
-                graphicsDropdown.RefreshShownValue();
-            }
+            LoadQualitySettings();
+            LoadPostProcessingSettings();
+            LoadResolutionSettings();
+            LoadScreenModeSettings();
+        }
 
-            if (PlayerPrefs.HasKey(PostProcessingKey))
-            {
-                bool on = PlayerPrefs.GetInt(PostProcessingKey) == 1;
-                postprocessingToggle.SetIsOnWithoutNotify(on);
-                volumeProfile.gameObject.SetActive(on);
-            }
+        private void LoadScreenModeSettings()
+        {
+            if (!PlayerPrefs.HasKey(ScreenModeKey)) return;
+            int mode = PlayerPrefs.GetInt(ScreenModeKey);
+            
+            if (!Enum.IsDefined(typeof(FullScreenMode), mode)) return;
+            Screen.fullScreenMode = (FullScreenMode)mode;
+            screenModeDropdown.SetValueWithoutNotify(mode);
+            screenModeDropdown.RefreshShownValue();
+        }
 
-            if (PlayerPrefs.HasKey(ResolutionIndexKey))
-            {
-                int idx = PlayerPrefs.GetInt(ResolutionIndexKey);
-                if (idx >= 0 && idx < resolutions.Length)
-                {
-                    var res = resolutions[idx];
-                    Screen.SetResolution(res.width, res.height, Screen.fullScreenMode, res.refreshRateRatio);
-                    resolutionDropdown.SetValueWithoutNotify(idx);
-                    resolutionDropdown.RefreshShownValue();
-                }
-            }
+        private void LoadResolutionSettings()
+        {
+            if (!PlayerPrefs.HasKey(ResolutionIndexKey)) return;
+            int idx = PlayerPrefs.GetInt(ResolutionIndexKey);
+            
+            if (idx < 0 || idx >= _resolutions.Length) return;
+            var res = _resolutions[idx];
+            Screen.SetResolution(res.width, res.height, Screen.fullScreenMode, res.refreshRateRatio);
+            resolutionDropdown.SetValueWithoutNotify(idx);
+            resolutionDropdown.RefreshShownValue();
+        }
 
-            if (PlayerPrefs.HasKey(ScreenModeKey))
-            {
-                int m = PlayerPrefs.GetInt(ScreenModeKey);
-                if (Enum.IsDefined(typeof(FullScreenMode), m))
-                {
-                    Screen.fullScreenMode = (FullScreenMode)m;
-                    screenModeDropdown.SetValueWithoutNotify(m);
-                    screenModeDropdown.RefreshShownValue();
-                }
-            }
+        private void LoadPostProcessingSettings()
+        {
+            if (!PlayerPrefs.HasKey(PostProcessingKey)) return;
+            bool on = PlayerPrefs.GetInt(PostProcessingKey) == 1;
+            postprocessingToggle.SetIsOnWithoutNotify(on);
+            volumeProfile.gameObject.SetActive(on);
+        }
+
+        private void LoadQualitySettings()
+        {
+            if (!PlayerPrefs.HasKey(GraphicsQualityKey)) return;
+            int q = PlayerPrefs.GetInt(GraphicsQualityKey);
+            QualitySettings.SetQualityLevel(q);
+            graphicsDropdown.SetValueWithoutNotify(q);
+            graphicsDropdown.RefreshShownValue();
         }
     }
 }

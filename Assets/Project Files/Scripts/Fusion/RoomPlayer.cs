@@ -136,7 +136,6 @@ namespace Kart.Project_Files.Scripts.Fusion
 
         private void OnDisable()
         {
-            // OnDestroy does not get called for pooled objects
             PlayerLeft?.Invoke(this);
             Players.Remove(this);
         }
@@ -152,14 +151,13 @@ namespace Kart.Project_Files.Scripts.Fusion
         public static void RemovePlayer(NetworkRunner runner, PlayerRef p)
         {
             var roomPlayer = Players.FirstOrDefault(x => x.Object.InputAuthority == p);
-            if (roomPlayer != null)
-            {
-                if (roomPlayer.Kart != null)
-                    runner.Despawn(roomPlayer.Kart.Object);
+            if (roomPlayer == null) return;
+            
+            if (roomPlayer.Kart != null)
+                runner.Despawn(roomPlayer.Kart.Object);
 
-                Players.Remove(roomPlayer);
-                runner.Despawn(roomPlayer.Object);
-            }
+            Players.Remove(roomPlayer);
+            runner.Despawn(roomPlayer.Object);
         }
     }
 }

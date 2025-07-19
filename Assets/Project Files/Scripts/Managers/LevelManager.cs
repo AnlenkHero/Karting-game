@@ -12,8 +12,8 @@ namespace Kart.Project_Files.Scripts.Managers
 {
     public class LevelManager : NetworkSceneManagerDefault
     {
-        public const int LAUNCH_SCENE = 0;
         public const int MAIN_MENU_SCENE = 1;
+        public const int RESULTS_SCENE = 6;
 
         [SerializeField] private UIScreen _dummyScreen;
         [SerializeField] private UIScreen _lobbyScreen;
@@ -21,12 +21,7 @@ namespace Kart.Project_Files.Scripts.Managers
 
         public static LevelManager Instance => Singleton<LevelManager>.Instance;
 
-        public static void LoadMenu()
-        {
-            Instance.Runner.LoadScene(SceneRef.FromIndex(MAIN_MENU_SCENE));
-        }
-
-        public static void LoadTrack(int sceneIndex)
+        public static void LoadSceneByIndex(int sceneIndex)
         {
             Instance.Runner.LoadScene(SceneRef.FromIndex(sceneIndex));
         }
@@ -40,17 +35,15 @@ namespace Kart.Project_Files.Scripts.Managers
             yield return null;
             
             PostLoadScene();
+
+            if (GameManager.Instance.currentTrack == null || sceneRef.AsIndex <= MAIN_MENU_SCENE ||
+                GameManager.Instance.CurrentGameState >= GameState.Running) yield break;
+            if (!Runner.IsServer) yield break;
             
-            if (GameManager.CurrentTrack != null && sceneRef.AsIndex > MAIN_MENU_SCENE && GameManager.Instance.CurrentGameState < GameState.Running)
+            foreach (var player in RoomPlayer.Players)
             {
-                if (Runner.IsServer)
-                {
-                    foreach (var player in RoomPlayer.Players)
-                    {
-                        player.GameState = RoomPlayer.EGameState.GameCutscene;
-                        GameManager.CurrentTrack.SpawnPlayer(Runner, player);
-                    }
-                }
+                player.GameState = RoomPlayer.EGameState.GameCutscene;
+                GameManager.Instance.currentTrack.SpawnPlayer(Runner, player);
             }
         }
 

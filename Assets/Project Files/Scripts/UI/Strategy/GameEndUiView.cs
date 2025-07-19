@@ -21,6 +21,7 @@ namespace Kart.Project_Files.Scripts.UI.Strategy
         [SerializeField] private EndRaceVignette endRaceVignette;
         [SerializeField] private RankGradientApplier rankGradientApplier;
         [SerializeField] private float animationDuration = 0.5f;
+        [SerializeField] private float fadeInOutDuration = 0.5f;
         private List<GameEndUiStanding> _standings = new();
 
         public void ShowEndGameUI(PointsTable standings, string headerText = null)
@@ -31,7 +32,7 @@ namespace Kart.Project_Files.Scripts.UI.Strategy
         private void ShowEndGameUIAnimation(PointsTable standings, string headerText = null)
         {
             container.SetActive(true);
-            header.text = $"{GameManager.CurrentTrack.trackDefinition.trackName} RACE RESULTS";
+            header.text = $"{GameManager.Instance.currentTrack.trackDefinition.trackName} RACE RESULTS";
             if (headerText != null)
             {
                 header.text = headerText;
@@ -50,7 +51,7 @@ namespace Kart.Project_Files.Scripts.UI.Strategy
             for (int playerPoints = 0; playerPoints < sortedList.Count; playerPoints++)
             {
                 int position = playerPoints + 1;
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSeconds(fadeInOutDuration);
                 var standing = Instantiate(standingPrefab, standingsParent);
                 standing.SetData(rankGradientApplier,sortedList[playerPoints].Key.Username.ToString(), position,
                     sortedList[playerPoints].Value, null);
@@ -69,7 +70,7 @@ namespace Kart.Project_Files.Scripts.UI.Strategy
             foreach (var standing in _standings)
             {
                 standing.PlayFadeOutAnimation();
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSeconds(fadeInOutDuration);
             }
 
             header.DOFade(0f, animationDuration).SetEase(Ease.InCubic).OnComplete(() =>

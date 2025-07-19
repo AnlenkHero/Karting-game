@@ -22,7 +22,7 @@ namespace Kart.Project_Files.Scripts.TrackPackage
         public override void  Spawned()
         {
             trackDefinition = ResourceManager.Instance.tracks[GameManager.Instance.TrackListManager.CurrentTrackIndex];
-            GameManager.CurrentTrack = this;
+            GameManager.Instance.currentTrack = this;
             GameManager.Instance.RPC_PrepareForRace();
         }
 

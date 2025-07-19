@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Kart.Project_Files.Scripts.Animations.ResultScene;
 using UnityEngine;
 
-namespace Kart.Project_Files.Scripts.AI
+namespace Kart.Project_Files.Scripts.Animations.ResultScene
 {
     [RequireComponent(typeof(Rigidbody))]
     public class CarAIController : MonoBehaviour

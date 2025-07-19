@@ -2,6 +2,7 @@
 using Fusion;
 using Kart.Project_Files.Scripts.Definitions;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Kart.Project_Files.Scripts.Managers.Game
 {
@@ -9,15 +10,14 @@ namespace Kart.Project_Files.Scripts.Managers.Game
     {
         [Networked] public int CurrentRaceCount { get; private set; }
         [Networked] public int CurrentTrackIndex { get; private set; }
-        public const int MaxRaces = 1;
-        public TrackDefinition CurrentTrackDefinition;
-        private List<TrackDefinition> availableTracks;
+        public TrackDefinition currentTrackDefinition;
+        private List<TrackDefinition> _availableTracks;
 
 
         public override void Spawned()
         {
             base.Spawned();
-            availableTracks = new List<TrackDefinition>(ResourceManager.Instance.tracks);
+            _availableTracks = new List<TrackDefinition>(ResourceManager.Instance.tracks);
         }
 
 
@@ -25,7 +25,7 @@ namespace Kart.Project_Files.Scripts.Managers.Game
         {
             if (track != null)
             {
-                availableTracks.Remove(track);
+                _availableTracks.Remove(track);
             }
         }
 
@@ -33,13 +33,13 @@ namespace Kart.Project_Files.Scripts.Managers.Game
         {
             CurrentRaceCount++;
 
-            if (availableTracks is { Count: > 0 })
+            if (_availableTracks.Count > 0)
             {
-                int randomIndex = Random.Range(0, availableTracks.Count);
+                int randomIndex = Random.Range(0, _availableTracks.Count);
                 CurrentTrackIndex = randomIndex;
+                currentTrackDefinition = _availableTracks[randomIndex];
+                _availableTracks.RemoveAt(randomIndex);
                 Debug.Log("current index " + randomIndex);
-                CurrentTrackDefinition = availableTracks[randomIndex];
-                availableTracks.RemoveAt(randomIndex);
             }
             else
             {

@@ -5,6 +5,7 @@ using Kart.Project_Files.Scripts.Animations.ResultScene;
 using Kart.Project_Files.Scripts.Controls;
 using Kart.Project_Files.Scripts.Fusion;
 using Kart.Project_Files.Scripts.ModeStrategy;
+using Kart.Project_Files.Scripts.Settings;
 using Kart.Project_Files.Scripts.TrackPackage;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ namespace Kart.Project_Files.Scripts.Managers.Game
         [Networked] public float ElapsedTime { get; private set; }
         [Networked] public RaceTrackListManager TrackListManager { get; set; }
         public static readonly List<KartController> Players = new();
-        public static Track CurrentTrack;
+        public Track currentTrack;
         public PointsTable PointsTable = new();
         public static GameManager Instance { get; private set; }
 
@@ -49,7 +50,7 @@ namespace Kart.Project_Files.Scripts.Managers.Game
 
         public void Update()
         {
-            if (HasStateAuthority && CurrentGameState == GameState.PreGame && ElapsedTime >= 5f)
+            if (HasStateAuthority && CurrentGameState == GameState.PreGame && ElapsedTime >= GameConfig.RaceStartDelay)
             {
                 RPC_StartGame();
             }
@@ -79,9 +80,9 @@ namespace Kart.Project_Files.Scripts.Managers.Game
         [Rpc]
         private void RPC_StartGame()
         {
-            if (CurrentTrack != null)
+            if (currentTrack != null)
             {
-                CurrentTrack.Initialize();
+                currentTrack.Initialize();
             }
             else
             {
@@ -137,7 +138,7 @@ namespace Kart.Project_Files.Scripts.Managers.Game
             Strategy.OnRaceFinished();
             CurrentGameState = GameState.Finished;
 
-            if (TrackListManager.CurrentRaceCount >= RaceTrackListManager.MaxRaces)
+            if (TrackListManager.CurrentRaceCount >= GameConfig.MaxRaces)
             {
                 RoomPlayer sessionWinner = PointsTable.GetWinner();
                 Debug.Log("Session Completed! Global Winner: " +
@@ -155,15 +156,14 @@ namespace Kart.Project_Files.Scripts.Managers.Game
         private IEnumerator WaiForSceneChangeAndStartNextRace()
         {
             TrackListManager.AdvanceToNextRaceTrack();
-            yield return new WaitForSeconds(10f);
+            yield return new WaitForSeconds(GameConfig.DelayBetweenScenes);
             GameLauncherNetworkHandler.Instance.Rpc_SetVolumeProfile(TrackListManager.CurrentTrackIndex);
-            LevelManager.LoadTrack(TrackListManager.CurrentTrackDefinition.buildIndex);
+            LevelManager.LoadSceneByIndex(TrackListManager.currentTrackDefinition.buildIndex);
         }
 
         private IEnumerator WaiForSceneChangeAndLoadSessionResults()
         {
-            yield return new WaitForSeconds(10f);
-            //LevelManager.LoadScene("SessionResults");
+            yield return new WaitForSeconds(GameConfig.DelayBetweenScenes);
             GameLauncher.Instance.ProgressToResultScene();
             foreach (var rp in RoomPlayer.Players)
             {

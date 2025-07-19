@@ -23,7 +23,8 @@ namespace Kart.Project_Files.Scripts.Controls
         [SerializeField] [Range(0.1f, 2.0f)] private float reverseSoundMaxPitch = 0.6f;
         [SerializeField] [Range(0.1f, 1.0f)] private float idleSoundMaxVolume = 0.6f;
         [SerializeField] [Range(0.1f, 1.0f)] private float driftMaxVolume = 0.5f;
-
+        [SerializeField] private float audioFadeLerpSpeed = 5f;
+        
         [Header("Surface crossFade settings")] [SerializeField]
         private float crossFadeDuration = 0.5f;
 
@@ -82,8 +83,8 @@ namespace Kart.Project_Files.Scripts.Controls
                     kartController.MaxSpeed, out forwardVolume);
             }
 
-            runningSound.volume = Mathf.Lerp(runningSound.volume, forwardVolume, Time.deltaTime * 5f);
-            reverseSound.volume = Mathf.Lerp(reverseSound.volume, reverseVolume, Time.deltaTime * 5f);
+            runningSound.volume = Mathf.Lerp(runningSound.volume, forwardVolume, Time.deltaTime * audioFadeLerpSpeed);
+            reverseSound.volume = Mathf.Lerp(reverseSound.volume, reverseVolume, Time.deltaTime * audioFadeLerpSpeed);
         }
 
 
@@ -109,12 +110,7 @@ namespace Kart.Project_Files.Scripts.Controls
                 targetVol = Mathf.Lerp(driftMinVolume, driftMaxVolume, curveVal);
             }
 
-            drift.volume = Mathf.SmoothDamp(
-                drift.volume,
-                targetVol,
-                ref _driftVolumeVelocity,
-                driftVolumeSmoothTime
-            );
+            drift.volume = Mathf.SmoothDamp(drift.volume, targetVol, ref _driftVolumeVelocity, driftVolumeSmoothTime);
 
             if (_activeSkids != 0 || !drift.isPlaying || !(drift.volume < 0.01f)) return;
 

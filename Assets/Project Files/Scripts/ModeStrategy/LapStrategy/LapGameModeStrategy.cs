@@ -24,6 +24,7 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
         private bool _halfFinishTriggered;
         private float _halfFinishDeadline;
         private int _halfPlayersCount;
+        private readonly float _scoreboardChangeDelay = 5f;
         public static event Action OnLocalPlayerFinished;
 
         #region Initializers
@@ -72,7 +73,6 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
         public void OnRaceFinished()
         {
             var standings = GetStandings().ToList();
-            //_lapsUiView.AddOrUpdateStanding(standings);
             var pointsForRace = UpdatePlayersPointTable(standings);
 
             _lapsUiView.DisableUI();
@@ -163,7 +163,7 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
             }
 
 
-            int totalCheckpoints = GameManager.CurrentTrack.checkpoints.Length;
+            int totalCheckpoints = GameManager.Instance.currentTrack.checkpoints.Length;
 
             if (IsValidFinishLineCross(data, totalCheckpoints))
             {
@@ -190,11 +190,9 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
 
         private static void EnableSpectatorMode(KartController kart)
         {
-            if (RoomPlayer.Local.Kart == kart)
-            {
-                Debug.Log("Your kart finished");
-                OnLocalPlayerFinished?.Invoke();
-            }
+            if (RoomPlayer.Local.Kart != kart) return;
+            Debug.Log("Your kart finished");
+            OnLocalPlayerFinished?.Invoke();
         }
 
         private void CompleteLap(KartController kart, PlayerLapData data)
@@ -242,7 +240,7 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
 
         private bool IsValidFinishLineCross(PlayerLapData data, int totalCheckpoints)
         {
-            return data.currentCheckpoint == (totalCheckpoints - 1);
+            return data.currentCheckpoint == totalCheckpoints - 1;
         }
 
         #endregion
@@ -251,7 +249,7 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
 
         private IEnumerator DelayScoreboardChange()
         {
-            yield return new WaitForSeconds(3);
+            yield return new WaitForSeconds(_scoreboardChangeDelay);
             _gameEndUiView.HideStandingsAnimation(() => _gameEndUiView.ShowEndGameUI(GameManager.Instance.PointsTable, "GLOBAL PLAYER STANDINGS"));
         }
 

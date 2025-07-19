@@ -2,6 +2,8 @@
 using Kart.Project_Files.Scripts.AI;
 using Kart.Project_Files.Scripts.Managers;
 using Kart.Project_Files.Scripts.Managers.Game;
+using Kart.Project_Files.Scripts.Managers.Interface;
+using Kart.Project_Files.Scripts.UI.Screens;
 using TMPro;
 using UnityEngine;
 
@@ -16,7 +18,8 @@ namespace Kart.Project_Files.Scripts.Animations.ResultScene
         [SerializeField] private TextMeshPro firstPlaceText;
         [SerializeField] private TextMeshPro secondPlaceText;
         [SerializeField] private TextMeshPro thirdPlaceText;
-
+        [SerializeField] private UIScreen gameOverUi;
+        private bool _animationPlayer;
         private void Awake()
         {
             var players = GameManager.Instance.PointsTable.GetSortedPlayerPointsList();
@@ -74,6 +77,7 @@ namespace Kart.Project_Files.Scripts.Animations.ResultScene
                 thirdPlaceCarAIController.jumpOnPodium.PlayJumpAnimation();
                 yield return new WaitUntil(() => thirdPlaceCarAIController.jumpOnPodium.Played);
             }
+            InterfaceManager.Instance.ShowScreen(gameOverUi);
         }
     }
 }

@@ -7,23 +7,6 @@ using UnityEngine;
 
 namespace Kart.Project_Files.Scripts.Controls
 {
-    [System.Serializable]
-    public class AxleInfo
-    {
-        public WheelCollider leftWheel;
-        public WheelCollider rightWheel;
-        public bool motor;
-        public bool steering;
-        public WheelFrictionCurve originalForwardFriction;
-        public WheelFrictionCurve originalSidewaysFriction;
-    }
-    public class WheelVisual
-    {
-        public Transform Mesh;
-        public bool   IsSteerable;
-        public float  SpinAngle;
-    }
-
     public class KartController : NetworkBehaviour
     {
         [Header("Networked Variables")]
@@ -37,6 +20,7 @@ namespace Kart.Project_Files.Scripts.Controls
         [Header("Axle Information")] 
         [SerializeField] private AxleInfo[] axleInfos;
         [SerializeField] private Transform steeringWheelMesh;
+        [SerializeField] private float wheelSpinFactor = 10f;
         private WheelVisual[] _wheelVisuals;
         
         [Header("Motor Attributes")] 
@@ -44,6 +28,8 @@ namespace Kart.Project_Files.Scripts.Controls
         [SerializeField] private float maxSpeed = 100f;
         [SerializeField] private float speedRatio = 5f;
         [SerializeField] private float engineBrakingForce = 50f;
+        [SerializeField] private float minTorqueFactor = 0.35f;
+        [SerializeField] private float maxTorqueFactor = 1.05f;
         private Vector3 _kartVelocity;
 
         [Header("Steering Attributes")] 
@@ -163,7 +149,7 @@ namespace Kart.Project_Files.Scripts.Controls
 
         private void UpdateNetworkedVariablesWithoutInput()
         {
-            WheelSpin = rb.linearVelocity.z * 10f;
+            WheelSpin = rb.linearVelocity.z * wheelSpinFactor;
         }
         private void UpdateNetworkedVariablesWithInput()
         {
@@ -183,7 +169,7 @@ namespace Kart.Project_Files.Scripts.Controls
             float verticalInput = AdjustInput(inputVector.y);
             float horizontalInput = AdjustInput(inputVector.x);
 
-            float randomTorqueFactor = Random.Range(0.3f, 1.05f);
+            float randomTorqueFactor = Random.Range(minTorqueFactor, maxTorqueFactor);
             float motor = maxMotorTorque * verticalInput * speedRatio * randomTorqueFactor;
 
             UpdateAxles(motor, horizontalInput);
@@ -554,8 +540,6 @@ namespace Kart.Project_Files.Scripts.Controls
         {
             float deltaSpin = WheelSpin * Time.deltaTime;
             float steerY   = FrontWheelSteeringAngle;
-
-            //steeringWheelMesh.localRotation = Quaternion.Euler(0f, steerY, 0f);
             
             foreach (var wheelVisual in _wheelVisuals)
             {

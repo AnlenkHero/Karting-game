@@ -31,10 +31,9 @@ namespace Kart.Project_Files.Scripts.UI.Systems
         [Header("(Optional) Show the name of the currently selected button here.")]
         [SerializeField] private TextMeshProUGUI multimediaText;
         [SerializeField] private RadialDragRotate radialDragRotate;
-        
         private Button[] _slotButtons = new Button[3];
         private int _buttonCount;
-
+        
         private void Awake()
         {
             Initialize();
@@ -70,7 +69,12 @@ namespace Kart.Project_Files.Scripts.UI.Systems
         {
             UpdateSlotsBasedOnWheelRotation();
         }
-        
+
+        private void InitialButtonPress()
+        {
+            radialDragRotate.isAutoAnimating = false;
+            radialDragRotate.StopAutoAnimation();
+        }
         private void UpdateSlotsBasedOnWheelRotation()
         {
             List<int> visibleIndices = new List<int>(_buttonCount);
@@ -86,14 +90,7 @@ namespace Kart.Project_Files.Scripts.UI.Systems
 
             if (multimediaText != null)
             {
-                if (radialDragRotate.isAutoAnimating)
-                {
-                    multimediaText.text = "USE STEERING WHEEL TO SELECT OPTIONS";
-                }
-                else
-                {
-                    multimediaText.text = allButtonData[dataIndexSelected].buttonName;   
-                }
+                multimediaText.text = radialDragRotate.isAutoAnimating ? "USE STEERING WHEEL TO SELECT OPTIONS" : allButtonData[dataIndexSelected].buttonName;
             }
             
             if (HandleInvisibleButtons(visibleCount, dataIndexSelected, selectedListPos, visibleIndices)) return;
@@ -117,6 +114,9 @@ namespace Kart.Project_Files.Scripts.UI.Systems
             CopyTemplateButtonIntoSlot(allButtonData[dataIndexLeft].button,   leftSlotButton);
             CopyTemplateButtonIntoSlot(allButtonData[dataIndexCenter].button, centerSlotButton);
             CopyTemplateButtonIntoSlot(allButtonData[dataIndexRight].button,  rightSlotButton);
+            
+            if(radialDragRotate.isAutoAnimating)
+                centerSlotButton.onClick.AddListener(InitialButtonPress);
         }
 
         private bool HandleInvisibleButtons(int vCount, int dataIndexSelected, int selectedListPos, List<int> visibleIndices)

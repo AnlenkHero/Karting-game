@@ -11,6 +11,7 @@ using Kart.Project_Files.Scripts.Helpers;
 using Kart.Project_Files.Scripts.Managers;
 using Kart.Project_Files.Scripts.Managers.Game;
 using Kart.Project_Files.Scripts.Managers.Interface;
+using Kart.Project_Files.Scripts.Settings;
 using Kart.Project_Files.Scripts.UI.Fusion;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -47,6 +48,7 @@ namespace Kart.Project_Files.Scripts.Fusion
         public FusionObjectPoolRoot Pool { get; private set; }
         public static ConnectionStatus ConnectionStatus = ConnectionStatus.Disconnected;
         public static GameLauncher Instance => Singleton<GameLauncher>.Instance;
+        
 
         private void Start()
         {
@@ -159,7 +161,7 @@ namespace Kart.Project_Files.Scripts.Fusion
                 SessionName = sessionName,
                 ObjectProvider = Pool,
                 SceneManager = levelManager,
-                PlayerCount = 1,
+                PlayerCount = GameConfig.MaxPlayers,
                 EnableClientSessionCreation = enableCreation,
                 MatchmakingMode = MatchmakingMode.FillRoom
             };
@@ -188,7 +190,7 @@ namespace Kart.Project_Files.Scripts.Fusion
                 GameManager.Instance.TrackListManager.AdvanceToNextRaceTrack();
                 GameLauncherNetworkHandler.Instance.Rpc_SetVolumeProfile(GameManager.Instance.TrackListManager
                     .CurrentTrackIndex);
-                LevelManager.LoadTrack(GameManager.Instance.TrackListManager.CurrentTrackDefinition.buildIndex);
+                LevelManager.LoadSceneByIndex(GameManager.Instance.TrackListManager.currentTrackDefinition.buildIndex);
             }
         }
 
@@ -224,7 +226,7 @@ namespace Kart.Project_Files.Scripts.Fusion
             Debug.Log("Connected to server");
             SetConnectionStatus(ConnectionStatus.Connected);
         }
-
+        
 
         public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request,
             byte[] token)
@@ -303,7 +305,7 @@ namespace Kart.Project_Files.Scripts.Fusion
         {
             Debug.Log("Progressing to result scene...");
             InterfaceManager.Instance.CloseToRoot();
-            SceneManager.LoadScene(sceneBuildIndex: 6);
+            LevelManager.LoadSceneByIndex(LevelManager.RESULTS_SCENE);
         }
 
         public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
@@ -428,7 +430,7 @@ namespace Kart.Project_Files.Scripts.Fusion
         #endregion
 
         #region Helper Methods
-
+        
         private void PrepareForSearching()
         {
             _isSearchingMatchMakingSession = true;
