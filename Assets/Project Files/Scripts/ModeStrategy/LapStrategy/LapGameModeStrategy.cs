@@ -74,7 +74,8 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
         {
             var standings = GetStandings().ToList();
             var pointsForRace = UpdatePlayersPointTable(standings);
-
+            GameManager.Instance.PointsTable.UpdateMaxPointsForAllRaces(_gameType.pointsForPlacings[0]);
+            
             _lapsUiView.DisableUI();
             _gameEndUiView.ShowEndGameUI(pointsForRace);
             GameManager.Instance.StartCoroutine(DelayScoreboardChange());

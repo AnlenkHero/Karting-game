@@ -24012,9 +24012,10 @@ MonoBehaviour:
   standingPrefab: {fileID: 811920245088193586, guid: c9da0e00a840e91408df19b20b26910d,
     type: 3}
   standingsParent: {fileID: 1172854062}
-  endRaceVignette: {fileID: 1375799358}
+  imageFader: {fileID: 1375799358}
   rankGradientApplier: {fileID: 1375799361}
   animationDuration: 0.5
+  fadeInOutDuration: 0.5
 --- !u!114 &1375799358
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24027,8 +24028,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d622e5cd10d8294a92679bac2e77d5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vignetteImage: {fileID: 1375799359}
-  fadeDuration: 0.5
+  fadeImages:
+  - {fileID: 1375799359}
+  fadeDurationDefault: 1
 --- !u!114 &1375799359
 MonoBehaviour:
   m_ObjectHideFlags: 0

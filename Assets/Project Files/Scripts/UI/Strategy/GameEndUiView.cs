@@ -18,7 +18,7 @@ namespace Kart.Project_Files.Scripts.UI.Strategy
         [SerializeField] private GameObject container;
         [SerializeField] private GameEndUiStanding standingPrefab;
         [SerializeField] private Transform standingsParent;
-        [SerializeField] private EndRaceVignette endRaceVignette;
+        [SerializeField] private ImageFader imageFader;
         [SerializeField] private RankGradientApplier rankGradientApplier;
         [SerializeField] private float animationDuration = 0.5f;
         [SerializeField] private float fadeInOutDuration = 0.5f;
@@ -26,7 +26,7 @@ namespace Kart.Project_Files.Scripts.UI.Strategy
 
         public void ShowEndGameUI(PointsTable standings, string headerText = null)
         {
-            endRaceVignette.PlayVignetteFadeIn(() => ShowEndGameUIAnimation(standings, headerText));
+            imageFader.PlayFade(1,1.5f, () => ShowEndGameUIAnimation(standings, headerText));
         }
 
         private void ShowEndGameUIAnimation(PointsTable standings, string headerText = null)

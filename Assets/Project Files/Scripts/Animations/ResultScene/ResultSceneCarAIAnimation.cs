@@ -1,8 +1,9 @@
 ﻿using System.Collections;
-using Kart.Project_Files.Scripts.AI;
 using Kart.Project_Files.Scripts.Managers;
 using Kart.Project_Files.Scripts.Managers.Game;
 using Kart.Project_Files.Scripts.Managers.Interface;
+using Kart.Project_Files.Scripts.UI.Effects;
+using Kart.Project_Files.Scripts.UI.ResultScene;
 using Kart.Project_Files.Scripts.UI.Screens;
 using TMPro;
 using UnityEngine;
@@ -19,6 +20,10 @@ namespace Kart.Project_Files.Scripts.Animations.ResultScene
         [SerializeField] private TextMeshPro secondPlaceText;
         [SerializeField] private TextMeshPro thirdPlaceText;
         [SerializeField] private UIScreen gameOverUi;
+        [SerializeField] private GameEndPortalAnimation gameEndPortalAnimation;
+        [SerializeField] private RankStatsUI rankStatsUI;
+        [SerializeField] private ImageFader imageFaderForRankStats;
+        [SerializeField] private ImageFader imageFaderForPortal;
         private bool _animationPlayer;
         private void Awake()
         {
@@ -78,6 +83,18 @@ namespace Kart.Project_Files.Scripts.Animations.ResultScene
                 yield return new WaitUntil(() => thirdPlaceCarAIController.jumpOnPodium.Played);
             }
             InterfaceManager.Instance.ShowScreen(gameOverUi);
+            rankStatsUI.SetData();
+            bool rankStatsShown = false;
+            imageFaderForRankStats.PlayFadeInQueue(1, 0.5f, false,() => {rankStatsShown = true;});
+            yield return new WaitUntil(() => rankStatsShown);
+            rankStatsUI.SetPoints();
+            yield return new WaitForSeconds(5f);
+            imageFaderForRankStats.PlayFadeInQueue(0, 0.5f,true,() => {rankStatsShown = false;});
+            yield return new WaitUntil(() => !rankStatsShown);
+            imageFaderForPortal.PlayFade(1,1.5f,() =>
+            {
+                gameEndPortalAnimation.button.interactable = true;
+            });
         }
     }
 }

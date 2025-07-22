@@ -7,6 +7,13 @@ namespace Kart.Project_Files.Scripts.Fusion
     {
         private  readonly Dictionary<RoomPlayer, float> _playerPoints = new ();
         public  IReadOnlyDictionary<RoomPlayer, float> PlayerPoints => _playerPoints;
+
+        public float MaxPointsForAllRaces;
+        
+        public void UpdateMaxPointsForAllRaces(float points)
+        {
+            MaxPointsForAllRaces += points;
+        }
         
         public  void AddPoints(RoomPlayer player, float points)
         {
@@ -18,7 +25,19 @@ namespace Kart.Project_Files.Scripts.Fusion
                 _playerPoints[player] += points;
             }
         }
-        
+
+        public int GetPlayerPosition(RoomPlayer player)
+        {
+            if (player == null)
+                return 0;
+
+            var sortedPlayers = GetSortedPlayerPointsList()
+                .Select((entry, index) => new { Player = entry.Key, Position = index + 1 })
+                .ToList();
+
+            var playerEntry = sortedPlayers.FirstOrDefault(entry => entry.Player == player);
+            return playerEntry?.Position ?? 0;
+        }
         public  float GetPoints(RoomPlayer player)
         {
             if (player == null)
@@ -53,7 +72,7 @@ namespace Kart.Project_Files.Scripts.Fusion
                 .ToList();
         }
         
-        public  RoomPlayer GetWinner()
+        public RoomPlayer GetWinner()
         {
             RoomPlayer winner = null;
             float highestPoints = float.MinValue;
