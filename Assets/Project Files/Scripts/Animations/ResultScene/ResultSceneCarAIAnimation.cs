@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Kart.Project_Files.Scripts.Managers;
 using Kart.Project_Files.Scripts.Managers.Game;
 using Kart.Project_Files.Scripts.Managers.Interface;
@@ -61,40 +63,42 @@ namespace Kart.Project_Files.Scripts.Animations.ResultScene
 
         private IEnumerator PlayPodiumSequence()
         {
-            yield return new WaitUntil(() => thirdPlaceCarAIController.finishedAnimation);
+            var cars = new List<(CarAIController controller, JumpOnPodium jump)>()
+                {
+                    (firstPlaceCarAIController, firstPlaceCarAIController.jumpOnPodium),
+                    (secondPlaceCarAIController, secondPlaceCarAIController.jumpOnPodium),
+                    (thirdPlaceCarAIController, thirdPlaceCarAIController.jumpOnPodium)
+                }
+                .Where(x => x.controller.gameObject.activeSelf)
+                .ToList();
+            
+            yield return new WaitUntil(() => cars.Last().controller.finishedAnimation);
+            
             podiumFall.PlayAnimation();
             yield return new WaitUntil(() => podiumFall.animationFinished);
             
-            yield return new WaitUntil(() => firstPlaceCarAIController.finishedAnimation);
-            firstPlaceCarAIController.jumpOnPodium.PlayJumpAnimation();
-            yield return new WaitUntil(() => firstPlaceCarAIController.jumpOnPodium.Played);
-            
-            if (secondPlaceCarAIController.gameObject.activeSelf)
+            foreach (var (ctrl, jump) in cars)
             {
-                yield return new WaitUntil(() => secondPlaceCarAIController.finishedAnimation);
-                secondPlaceCarAIController.jumpOnPodium.PlayJumpAnimation();
-                yield return new WaitUntil(() => secondPlaceCarAIController.jumpOnPodium.Played);
+                yield return new WaitUntil(() => ctrl.finishedAnimation);
+                jump.PlayJumpAnimation();
+                yield return new WaitUntil(() => jump.Played);
             }
+            yield return new WaitForSeconds(1f);
             
-            if (thirdPlaceCarAIController.gameObject.activeSelf)
-            {
-                yield return new WaitUntil(() => thirdPlaceCarAIController.finishedAnimation);
-                thirdPlaceCarAIController.jumpOnPodium.PlayJumpAnimation();
-                yield return new WaitUntil(() => thirdPlaceCarAIController.jumpOnPodium.Played);
-            }
             InterfaceManager.Instance.ShowScreen(gameOverUi);
+            
             rankStatsUI.SetData();
-            bool rankStatsShown = false;
-            imageFaderForRankStats.PlayFadeInQueue(1, 0.5f, false,() => {rankStatsShown = true;});
-            yield return new WaitUntil(() => rankStatsShown);
+            bool statsIn = false;
+            imageFaderForRankStats.PlayFadeInQueue(1, 0.5f, false, () => statsIn = true);
+            yield return new WaitUntil(() => statsIn);
+
             rankStatsUI.SetPoints();
             yield return new WaitForSeconds(5f);
-            imageFaderForRankStats.PlayFadeInQueue(0, 0.5f,true,() => {rankStatsShown = false;});
-            yield return new WaitUntil(() => !rankStatsShown);
-            imageFaderForPortal.PlayFade(1,1.5f,() =>
-            {
-                gameEndPortalAnimation.button.interactable = true;
-            });
+            
+            imageFaderForRankStats.PlayFadeInQueue(0, 0.5f, true, () => statsIn = false);
+            yield return new WaitUntil(() => !statsIn);
+            
+            imageFaderForPortal.PlayFade(1, 1.5f, () => gameEndPortalAnimation.button.interactable = true);
         }
     }
 }

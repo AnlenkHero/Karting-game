@@ -9,15 +9,18 @@ namespace Kart.Project_Files.Scripts.UI.ResultScene
     {
         [SerializeField] private Image fillImage;
         [SerializeField] private TextMeshProUGUI pointsText;
-        [SerializeField] private float startFillAmount;
+        [SerializeField] [Range(0f, 1f)] private float startFillAmount;
         [SerializeField] private float fillDuration = 1f;
         private Coroutine _fillRoutine;
         
+        private static readonly Color ZeroColor = Color.red;
+        private static readonly Color FullColor = Color.green;
+        
         public void SetPoints(float points, float maxPoints)
         {
-            if (fillImage == null)
+            if (fillImage == null || pointsText == null)
             {
-                Debug.LogError("Fill Image is not assigned in PointsSlider.");
+                Debug.LogError("Fill Image or Points Text is not assigned in PointsSlider.");
                 return;
             }
 
@@ -37,13 +40,23 @@ namespace Kart.Project_Files.Scripts.UI.ResultScene
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
-                fillImage.fillAmount = Mathf.Lerp(startFill, targetFill, elapsed / duration);
-                pointsText.text = $"{(int)(fillImage.fillAmount * 100)}%";
+                float t = Mathf.Clamp01(elapsed / duration);
+                
+                float currentFill = Mathf.Lerp(startFill, targetFill, t);
+                fillImage.fillAmount = currentFill;
+                
+                int percent = Mathf.RoundToInt(currentFill * 100f);
+                pointsText.text = percent + "%";
+                
+                pointsText.color = Color.Lerp(ZeroColor, FullColor, currentFill);
+                
                 yield return null;
             }
-
+            
             fillImage.fillAmount = targetFill;
-            pointsText.text = $"{(int)(fillImage.fillAmount * 100)}%";
+            int finalPercent = Mathf.RoundToInt(targetFill * 100f);
+            pointsText.text  = finalPercent + "%";
+            pointsText.color = Color.Lerp(ZeroColor, FullColor, targetFill);
         }
     }
 }

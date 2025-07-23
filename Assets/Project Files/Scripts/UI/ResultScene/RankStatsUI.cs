@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Kart.Project_Files.Scripts.Animations.ResultScene;
 using Kart.Project_Files.Scripts.Fusion;
 using Kart.Project_Files.Scripts.GamePoints;
 using Kart.Project_Files.Scripts.Managers.Game;
@@ -12,18 +13,16 @@ namespace Kart.Project_Files.Scripts.UI.ResultScene
     {
         [SerializeField] private RaceRankStatsCalculation raceRankStatsCalculation;
         [SerializeField] private Image rankImage;
-        [SerializeField] private TextMeshProUGUI positionText;
-        [SerializeField] private TextMeshProUGUI scoredPointsText;
         [SerializeField] private TextMeshProUGUI playerNameText;
         [SerializeField] private PointsSlider pointsSlider;
+        [SerializeField] private ResultScenePositionUI resultScenePositionUI;
 
         public void SetData()
         {
             var playerPoints = GameManager.Instance.PointsTable.GetPoints(RoomPlayer.Local);
-            positionText.text = $"{GameManager.Instance.PointsTable.GetPlayerPosition(RoomPlayer.Local)}";
-            //scoredPointsText.text = $"{playerPoints/GameManager.Instance.PointsTable.MaxPointsForAllRaces * 100:0.00}%";
             playerNameText.text = $"{RoomPlayer.Local.Username.Value}";
             raceRankStatsCalculation.CalculateRaceRankStats(playerPoints, out RaceRank rank,out var sprite );
+            resultScenePositionUI.SetData();
             rankImage.sprite = sprite;
         }
 
