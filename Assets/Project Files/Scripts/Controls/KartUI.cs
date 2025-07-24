@@ -4,26 +4,25 @@ using Kart.Project_Files.Scripts.OtherNetworking;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityUtils;
 
 namespace Kart.Project_Files.Scripts.Controls
 {
     public class KartUI : NetworkBehaviour
     {
-        [Header("Player UI")] 
-        [SerializeField] private KartController kartController;
+        [Header("Player UI")] [SerializeField] private KartController kartController;
         [SerializeField] private TextMeshPro playerText;
         [SerializeField] private RawImage countryFlagImage;
         [SerializeField] private GameObject playerUIGameObject;
-
+        private bool _isUiActive;
+        
         #region LifeCycle
 
         public override void Spawned()
         {
             base.Spawned();
+            ShowPlayerUI(!HasInputAuthority);
             if (!HasInputAuthority) return;
-            ShowPlayerUI(false);
-
+            
             RPC_SetKartFlag(RoomPlayer.Local.CountryCode.Value, RoomPlayer.Local.CountryPrivacy);
         }
 
@@ -39,20 +38,25 @@ namespace Kart.Project_Files.Scripts.Controls
         [Rpc]
         private void RPC_SetKartFlag(string countryCode, bool showCountry)
         {
-            if (!countryCode.IsNullOrWhiteSpace() || !showCountry)
+            if (!showCountry || !_isUiActive)
             {
                 countryFlagImage.gameObject.SetActive(false);
                 return;
             }
-
+            
             CountryFlagLoader.LoadFlag(this, countryCode, texture2D => countryFlagImage.texture = texture2D);
         }
 
         #endregion
-        
+
         public void ShowPlayerUI(bool show)
         {
-            if (playerUIGameObject == null) return;
+            if (playerUIGameObject == null)
+            {
+                _isUiActive = false;
+                return;
+            }
+            _isUiActive = show;
             playerUIGameObject.gameObject.SetActive(show);
         }
     }

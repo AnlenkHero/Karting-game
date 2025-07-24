@@ -1,80 +1,77 @@
-﻿using System;
+﻿using System.Linq;
+using Kart.Project_Files.Scripts.Fusion;
 using Kart.Project_Files.Scripts.Managers.Game;
 using Kart.Project_Files.Scripts.ModeStrategy.LapStrategy;
 using TMPro;
-using Unity.Cinemachine;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Kart.Project_Files.Scripts.Controls
 {
     public class SpectatorController : MonoBehaviour
     {
+        public bool canSpectate;
         [SerializeField] private TextMeshProUGUI spectatorText;
+
         private KartCameraController _currentCinemachineCamera;
         private KartUI _currentKartUI;
-        private bool _canSpectate;
-        private int currentCameraIndex = 0;
+        private int _currentCameraIndex;
+        public string CurrentSpectatedPlayerId { get; private set; }
 
         private void OnEnable()
-        {
-            LapsGameModeStrategy.OnLocalPlayerFinished += SetSpectateState;
-        }
+            => LapsGameModeStrategy.OnLocalPlayerFinished += OnLocalFinished;
 
         private void OnDisable()
-        {
-            LapsGameModeStrategy.OnLocalPlayerFinished -= SetSpectateState;
-        }
+            => LapsGameModeStrategy.OnLocalPlayerFinished -= OnLocalFinished;
 
-        private void SetSpectateState()
+        private void OnLocalFinished()
         {
-            _canSpectate = true;
+            canSpectate = true;
             spectatorText.gameObject.SetActive(true);
-            SetupCamera();
+            SwitchToCamera(0);
         }
 
-        private void SetupCamera()
+        private void Update()
         {
-            if (_currentCinemachineCamera == null && GameManager.Players.Count != 0)
-            {
-                _currentCinemachineCamera = GameManager.Players[currentCameraIndex].cameraController;
-                _currentKartUI = GameManager.Players[currentCameraIndex].kartUI;
-                _currentKartUI.ShowPlayerUI(false);
-                _currentCinemachineCamera.SetupCamera();
-                spectatorText.text = $"Spectating: {GameManager.Players[currentCameraIndex].KartName}";
-            }
-        }
-
-        private void ChooseNextCamera()
-        {
-            if (GameManager.Players.Count == 0) return;
-            
-            _currentKartUI.ShowPlayerUI(true);
-            _currentCinemachineCamera.DespawnCamera();
-            
-            currentCameraIndex = (currentCameraIndex + 1) % GameManager.Players.Count;
-            
-            _currentCinemachineCamera = GameManager.Players[currentCameraIndex].cameraController;
-            _currentKartUI            = GameManager.Players[currentCameraIndex].kartUI;
-            _currentKartUI.ShowPlayerUI(false);
-            
-            _currentCinemachineCamera.SetupCamera();
-            spectatorText.text = $"Spectating: {GameManager.Players[currentCameraIndex].KartName}";
-        }
-
-        public void Update()
-        {
-            if (!_canSpectate || GameManager.Instance == null ||
+            if (!canSpectate ||
+                GameManager.Instance == null ||
                 GameManager.Instance.CurrentGameState == GameState.Finished)
             {
                 spectatorText.gameObject.SetActive(false);
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.Mouse0) || !_currentCinemachineCamera && GameManager.Players.Count != 0)
+            if (Input.GetKeyDown(KeyCode.Mouse0) && GameManager.Players.Count > 0)
             {
-                ChooseNextCamera();
+                var next = (_currentCameraIndex + 1) % GameManager.Players.Count;
+                SwitchToCamera(next);
             }
+        }
+
+        private void SwitchToCamera(int newIndex)
+        {
+            if (_currentCinemachineCamera != null)
+            {
+                _currentKartUI.ShowPlayerUI(true);
+                _currentCinemachineCamera.DespawnCamera();
+            }
+            
+            _currentCameraIndex = Mathf.Clamp(newIndex, 0, GameManager.Players.Count - 1);
+            
+            var target = GameManager.Players[_currentCameraIndex];
+            _currentCinemachineCamera = target.cameraController;
+            _currentKartUI            = target.kartUI;
+            
+            _currentKartUI.ShowPlayerUI(false);
+            SetSpectatedPlayerId(target);
+            _currentCinemachineCamera.SetupCamera();
+            
+            spectatorText.text = $"Spectating: {target.KartName}";
+        }
+
+        private void SetSpectatedPlayerId(KartController kart)
+        {
+            var rp = RoomPlayer.Players.First(p => p.Kart == kart);
+            CurrentSpectatedPlayerId = rp.Id.ToString();
         }
     }
 }

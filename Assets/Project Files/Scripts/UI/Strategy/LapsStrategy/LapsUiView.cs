@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Fusion;
+using Kart.Project_Files.Scripts.Controls;
 using Kart.Project_Files.Scripts.Extensions;
 using Kart.Project_Files.Scripts.Fusion;
 using Kart.Project_Files.Scripts.ModeStrategy.LapStrategy;
@@ -23,7 +24,7 @@ namespace Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy
         [SerializeField] private TextMeshProUGUI bestLapTimeText;
         [SerializeField] private GameObject container;
         [SerializeField] private RankGradientApplier gradientApplier;
-
+        [SerializeField] private SpectatorController spectatorController;
         private List<LapsStandingView> standings = new();
         private readonly List<LapStandings> standingsEntry = new();
 
@@ -221,13 +222,16 @@ namespace Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy
             string status)
         {
             var formatted = lastLapTime.ToRaceFormat();
+            var targetId = spectatorController.canSpectate
+                ? spectatorController.CurrentSpectatedPlayerId
+                : RoomPlayer.Local.Id.ToString();
 
-            if (RoomPlayer.Local.Id.ToString() == playerId)
+            if (playerId == targetId)
             {
-                currentLapText.text = $"LAP {lapsCompleted}";
+                currentLapText.text        = $"LAP {lapsCompleted}";
                 gradientApplier.Apply(currentRankText, rank);
-                currentRankText.text = rank.ToOrdinal();
-                currentLastLapTimeText.text = formatted;
+                currentRankText.text       = rank.ToOrdinal();
+                currentLastLapTimeText.text = lastLapTime.ToRaceFormat();
             }
 
             view.SetText(

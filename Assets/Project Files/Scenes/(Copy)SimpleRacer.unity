@@ -26760,6 +26760,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd518e90a5e14be8bf1fc630e13ed0f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canSpectate: 0
   spectatorText: {fileID: 1227183636}
 --- !u!4 &1519633749
 Transform:
@@ -30291,6 +30292,11 @@ PrefabInstance:
       propertyPath: gradientApplier
       value: 
       objectReference: {fileID: 1956212651}
+    - target: {fileID: 7183838438821633855, guid: ad61704bbcee5e840b18eb452c8e9bf8,
+        type: 3}
+      propertyPath: spectatorController
+      value: 
+      objectReference: {fileID: 1519633748}
     - target: {fileID: 7183838438821633855, guid: ad61704bbcee5e840b18eb452c8e9bf8,
         type: 3}
       propertyPath: currentLastLapTimeText
