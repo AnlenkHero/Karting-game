@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using Fusion;
+﻿using Fusion;
 using Kart.Project_Files.Scripts.Definitions;
 using Kart.Project_Files.Scripts.Fusion;
 using Kart.Project_Files.Scripts.Managers.Game;
@@ -13,6 +12,7 @@ namespace Kart.Project_Files.Scripts.TrackPackage
         [Header("Track Setup")] public TrackData trackData;
         public LapCheckpoint lapCheckpointPrefab;
         public FinishLine finishLinePrefab;
+        public Transform[] resetCheckpoints;
         [Header("Track Definition")]
         public TrackDefinition trackDefinition;
         [Header("Runtime References")] public LapCheckpoint[] checkpoints;

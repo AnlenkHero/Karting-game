@@ -15751,6 +15751,7 @@ GameObject:
   - component: {fileID: 4180998804318520742}
   - component: {fileID: 7701533514896176899}
   - component: {fileID: 4424161810850213947}
+  - component: {fileID: 6268275123953695943}
   m_Layer: 0
   m_Name: Kart
   m_TagString: Player
@@ -15988,6 +15989,8 @@ MonoBehaviour:
   - {fileID: 3854737302072727914}
   - {fileID: 3368549938626467386}
   - {fileID: 4180998804318520742}
+  - {fileID: 4424161810850213947}
+  - {fileID: 6268275123953695943}
   - {fileID: 8375450572136811825}
   - {fileID: 8044926902500211879}
   ForceRemoteRenderTimeframe: 0
@@ -16063,10 +16066,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77bc578e35f4c944dbfac274a65d8b56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isNetworkObject: 1
+  isDynamicInstantiatedObject: 1
   followObject: 0
   minimapIcon: {fileID: 0}
   nameText: 
+--- !u!114 &6268275123953695943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4227640847454813226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7388f1d474b474b8ae7c6ed8f1333ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resetKey: 114
+  holdDuration: 3
+  networkRigidbody3D: {fileID: 3854737302072727914}
+  kartController: {fileID: 5012061265976231298}
 --- !u!1 &4276915522015950635
 GameObject:
   m_ObjectHideFlags: 0
@@ -26274,6 +26293,7 @@ GameObject:
   - component: {fileID: 6017540587277468526}
   - component: {fileID: 580108760288176042}
   - component: {fileID: 5448853869957361047}
+  - component: {fileID: 6326541040035313532}
   m_Layer: 5
   m_Name: Network Debug Canvas
   m_TagString: Untagged
@@ -26364,6 +26384,18 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &6326541040035313532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5507896065622985930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4579d4e8fc2049068568e3819e29bb24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5755392577719091793
 GameObject:
   m_ObjectHideFlags: 0
@@ -26805,7 +26837,6 @@ GameObject:
   - component: {fileID: 6391984230047580878}
   - component: {fileID: 2107009819815485407}
   - component: {fileID: 3467204900170528272}
-  - component: {fileID: 2136613913069911704}
   m_Layer: 5
   m_Name: Player Status
   m_TagString: Untagged
@@ -26971,18 +27002,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 2107009819815485407}
   m_maskType: 0
---- !u!114 &2136613913069911704
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6596865736528551314}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4579d4e8fc2049068568e3819e29bb24, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &6823440320415409032
 GameObject:
   m_ObjectHideFlags: 0

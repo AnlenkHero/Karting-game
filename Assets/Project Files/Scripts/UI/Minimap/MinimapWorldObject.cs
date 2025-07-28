@@ -1,10 +1,12 @@
+using Fusion;
 using UnityEngine;
+
 
 namespace Kart.Project_Files.Scripts.UI.Minimap
 {
-    public class MinimapWorldObject : MonoBehaviour
+    public class MinimapWorldObject : NetworkBehaviour
     {
-        [SerializeField] private bool isNetworkObject;
+        [SerializeField] private bool isDynamicInstantiatedObject;
         [SerializeField] private bool followObject;
         [SerializeField] private Sprite minimapIcon;
         [SerializeField] private string nameText;
@@ -12,14 +14,12 @@ namespace Kart.Project_Files.Scripts.UI.Minimap
         public Sprite MinimapIcon => minimapIcon;
         public string NameText   => nameText;
 
-        private void OnEnable()   => TryRegisterOffline();
-        private void Start()      => TryRegisterOffline();      
-        private void OnDisable()  => TryRemove();
-        private void OnDestroy()  => TryRemove();
+        public override void Spawned()   => TryRegisterOffline();
+        public override void Despawned(NetworkRunner runner, bool hasState) => TryRemove();
 
         private void TryRegisterOffline()
         {
-            if(isNetworkObject)
+            if(isDynamicInstantiatedObject)
                 return;
             var ctrl = MinimapController.Instance;
             if (ctrl == null || !ctrl.isActiveAndEnabled)

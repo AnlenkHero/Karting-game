@@ -197,6 +197,29 @@ namespace Kart.Project_Files.Scripts.Controls
             }
         }
 
+        public void ResetSpeed()
+        {
+            if (!Object.HasStateAuthority) return;
+
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            _kartVelocity = Vector3.zero;
+            _currentSteeringAngle = 0f;
+            _steeringVelocity = 0f;
+            _brakeVelocity = 0f;
+            _driftVelocity = 0f;
+
+            foreach (AxleInfo axleInfo in axleInfos)
+            {
+                axleInfo.leftWheel.motorTorque = 0f;
+                axleInfo.rightWheel.motorTorque = 0f;
+                axleInfo.leftWheel.brakeTorque = 0f;
+                axleInfo.rightWheel.brakeTorque = 0f;
+                ResetDriftFriction(axleInfo.leftWheel);
+                ResetDriftFriction(axleInfo.rightWheel);
+            }
+        }
+
         #endregion
 
         #region Acceleration

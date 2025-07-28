@@ -49,6 +49,7 @@ namespace Kart.Bublisher._3D_Stylized_Animated_Dogs_Kit.Scripts
         private float _lastAttackEndTime = -Mathf.Infinity;
         private WaitForSeconds _pauseWait;
         private WaitForSeconds _stunWait;
+
         private enum State
         {
             Idle,
@@ -64,13 +65,14 @@ namespace Kart.Bublisher._3D_Stylized_Animated_Dogs_Kit.Scripts
         private Vector3 _moveDirection;
 
         public override void Spawned()
-        { 
+        {
+            Runner.SetIsSimulated(Object, true);
             _pauseWait = new WaitForSeconds(waypointPause);
-            _stunWait  = new WaitForSeconds(stunDuration);
+            _stunWait = new WaitForSeconds(stunDuration);
             rb.constraints = RigidbodyConstraints.FreezeRotationX
                              | RigidbodyConstraints.FreezeRotationZ
                              | RigidbodyConstraints.FreezePositionY;
-        
+
             GoToIdle();
         }
 
@@ -85,7 +87,8 @@ namespace Kart.Bublisher._3D_Stylized_Animated_Dogs_Kit.Scripts
                 var h = SOverlapResults[i].transform;
                 if (h == _lastAttackTarget) continue;
                 _currentTarget = h;
-                RpcGoToState(State.Attack);
+                if (HasStateAuthority)
+                    RpcGoToState(State.Attack);
                 break;
             }
         }
@@ -105,7 +108,8 @@ namespace Kart.Bublisher._3D_Stylized_Animated_Dogs_Kit.Scripts
                 if (dir.sqrMagnitude > 0.001f)
                 {
                     var targetRotation = Quaternion.LookRotation(dir, Vector3.up);
-                    transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+                    transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation,
+                        rotationSpeed * Time.fixedDeltaTime);
                 }
 
                 Vector3 forward = transform.forward;
@@ -137,12 +141,22 @@ namespace Kart.Bublisher._3D_Stylized_Animated_Dogs_Kit.Scripts
                 && col.gameObject.GetComponent<KartController>() != null
                 && col.relativeVelocity.sqrMagnitude >= collisionSpeedThreshold)
             {
-                RpcGoToState(State.Stunned);
+                if (HasStateAuthority)
+                    RpcGoToState(State.Stunned);
             }
         }
 
-        void GoToIdle() => RpcGoToState(State.Idle);
-        void GoToPatrol() => RpcGoToState(State.Patrol);
+        void GoToIdle()
+        {
+            if (HasStateAuthority)
+                RpcGoToState(State.Idle);
+        }
+
+        void GoToPatrol()
+        {
+            if (HasStateAuthority)
+                RpcGoToState(State.Patrol);
+        }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         void RpcGoToState(State newState)
@@ -164,7 +178,8 @@ namespace Kart.Bublisher._3D_Stylized_Animated_Dogs_Kit.Scripts
         IEnumerator IdleRoutine()
         {
             _patrolIndex = 0;
-            RpcMakeAChoice();
+            if (HasStateAuthority)
+                RpcMakeAChoice();
 
             yield return new WaitForSeconds(Random.Range(idleMinTime, idleMaxTime));
             GoToPatrol();
@@ -176,10 +191,26 @@ namespace Kart.Bublisher._3D_Stylized_Animated_Dogs_Kit.Scripts
             int choice = Random.Range(0, 5);
             switch (choice)
             {
-                case 0: Rpc_SetAnimationStateName("Breathing"); break;
-                case 1: Rpc_SetAnimationStateName("WigglingTail"); break;
-                case 2: Rpc_SetAnimationStateName("SittingStart"); break;
-                case 3: Rpc_SetAnimationStateName("EatingStart"); break;
+                case 0:
+                {
+                    if (HasStateAuthority) Rpc_SetAnimationStateName("Breathing");
+                    break;
+                }
+                case 1:
+                {
+                    if (HasStateAuthority) Rpc_SetAnimationStateName("WigglingTail");
+                    break;
+                }
+                case 2:
+                {
+                    if (HasStateAuthority) Rpc_SetAnimationStateName("SittingStart");
+                    break;
+                }
+                case 3:
+                {
+                    if (HasStateAuthority) Rpc_SetAnimationStateName("EatingStart");
+                    break;
+                }
                 default: GoToPatrol(); break;
             }
         }
@@ -192,7 +223,7 @@ namespace Kart.Bublisher._3D_Stylized_Animated_Dogs_Kit.Scripts
                 yield break;
             }
 
-            Rpc_SetAnimationStateName(_patrolIndex % 2 == 0 ? "Walking01" : "Walking02");
+            if (HasStateAuthority) Rpc_SetAnimationStateName(_patrolIndex % 2 == 0 ? "Walking01" : "Walking02");
 
             if (HasStateAuthority)
             {
@@ -208,13 +239,14 @@ namespace Kart.Bublisher._3D_Stylized_Animated_Dogs_Kit.Scripts
                 _isMoving = false;
             }
 
-            Rpc_SetAnimationStateName(Random.Range(0, 4) switch
-            {
-                0 => "Breathing",
-                1 => "WigglingTail",
-                2 => "SittingStart",
-                _ => "EatingStart"
-            });
+            if (HasStateAuthority)
+                Rpc_SetAnimationStateName(Random.Range(0, 4) switch
+                {
+                    0 => "Breathing",
+                    1 => "WigglingTail",
+                    2 => "SittingStart",
+                    _ => "EatingStart"
+                });
 
             yield return _pauseWait;
 
@@ -229,7 +261,7 @@ namespace Kart.Bublisher._3D_Stylized_Animated_Dogs_Kit.Scripts
 
         IEnumerator AttackRoutine()
         {
-            Rpc_SetAnimationStateName("Running");
+            if (HasStateAuthority) Rpc_SetAnimationStateName("Running");
 
             float timer = 0f;
             bool gotClose = false;
@@ -261,7 +293,7 @@ namespace Kart.Bublisher._3D_Stylized_Animated_Dogs_Kit.Scripts
             int barkCount = gotClose ? Random.Range(1, 4) : 1;
             for (int i = 0; i < barkCount; i++)
             {
-                Rpc_SetAnimationStateName("AngryStart");
+                if (HasStateAuthority) Rpc_SetAnimationStateName("AngryStart");
                 if (barkClip != null) audioSrc.PlayOneShot(barkClip);
                 yield return new WaitForSeconds(1f);
             }
@@ -280,7 +312,7 @@ namespace Kart.Bublisher._3D_Stylized_Animated_Dogs_Kit.Scripts
             _lastAttackEndTime = Time.time;
             _isMoving = false;
 
-            Rpc_SetAnimationStateName("SittingStart");
+            if (HasStateAuthority) Rpc_SetAnimationStateName("SittingStart");
             yield return _stunWait;
             boxCollider.isTrigger = false;
             GoToIdle();
