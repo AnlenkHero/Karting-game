@@ -1,6 +1,7 @@
 ﻿using Fusion;
 using Kart.Project_Files.Scripts.Fusion;
 using Kart.Project_Files.Scripts.OtherNetworking;
+using Kart.Project_Files.Scripts.UI.Minimap;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +14,7 @@ namespace Kart.Project_Files.Scripts.Controls
         [SerializeField] private TextMeshPro playerText;
         [SerializeField] private RawImage countryFlagImage;
         [SerializeField] private GameObject playerUIGameObject;
+        [SerializeField] private MinimapWorldObject minimapWorldObject;
         private bool _isUiActive;
         
         #region LifeCycle
@@ -22,7 +24,7 @@ namespace Kart.Project_Files.Scripts.Controls
             base.Spawned();
             ShowPlayerUI(!HasInputAuthority);
             if (!HasInputAuthority) return;
-            
+            RPC_SetMinimapWorldObject();
             RPC_SetKartFlag(RoomPlayer.Local.CountryCode.Value, RoomPlayer.Local.CountryPrivacy);
         }
 
@@ -34,7 +36,14 @@ namespace Kart.Project_Files.Scripts.Controls
         #endregion
 
         #region RPC
-
+        
+        [Rpc]
+        private void RPC_SetMinimapWorldObject()
+        {
+            minimapWorldObject.SetData(kartController.KartName);
+            minimapWorldObject.TryRegisterOnline(HasInputAuthority);
+        }
+        
         [Rpc]
         private void RPC_SetKartFlag(string countryCode, bool showCountry)
         {

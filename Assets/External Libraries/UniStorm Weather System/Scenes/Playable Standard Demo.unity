@@ -38,12 +38,12 @@ RenderSettings:
   m_ReflectionIntensity: 0.5
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -1230,7 +1230,7 @@ Terrain:
   m_StaticShadowCaster: 0
   m_IgnoreQualitySettings: 0
   m_ReflectionProbeUsage: 1
-  m_MaterialTemplate: {fileID: 10652, guid: 0000000000000000f000000000000000, type: 0}
+  m_MaterialTemplate: {fileID: 2100000, guid: 594ea882c5a793440b60ff72d896021e, type: 2}
   m_BakeLightProbesForTrees: 0
   m_PreserveTreePrototypeLayers: 0
   m_DeringLightProbesForTrees: 1
@@ -6719,7 +6719,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -7909,6 +7909,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 383ad622131337f409da350fc9cc0486, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  urpForwardRendererData: {fileID: 0}
   CustomizeQuality: 0
   ConvergenceSpeed: 75
   NearMarchSteps: 100
@@ -8806,7 +8807,21 @@ MonoBehaviour:
   EmeraldAITag: Respawn
   EmeraldAIRagdollForce: 500
   EmeraldAILightningDamage: 500
-  m_CloudShadows: {fileID: 0}
+  m_CloudShadows:
+    isEnabled: 1
+    renderPassEvent: 400
+    Fade: 0.33
+    CloudShadowTexture: {fileID: 0}
+    ShadowColor: {r: 1, g: 1, b: 1, a: 1}
+    CloudTextureScale: 0.1
+    BottomThreshold: 0
+    TopThreshold: 1
+    ShadowIntensity: 1
+    ScreenSpaceShadowsMaterial: {fileID: 0}
+    ShadowDirection: {x: 0, y: 0, z: 0}
+    m_CurrentCloudHeight: 0
+    CloudSpeed: 0
+    NormalY: 0
   m_CurrentCloudHeight: 0
   CloudShadowResolution: 1
   CloudSpeed: 5
@@ -8825,7 +8840,28 @@ MonoBehaviour:
   CurrentFogColor: {r: 0, g: 0, b: 0, a: 0}
   FogType: 0
   FogMode: 0
-  m_UniStormAtmosphericFog: {fileID: 0}
+  m_UniStormAtmosphericFog:
+    isEnabled: 1
+    renderPassEvent: 400
+    NoiseTexture: {fileID: 0}
+    Dither: 0
+    distanceFog: 1
+    useRadialDistance: 0
+    heightFog: 0
+    height: 1
+    heightDensity: 2
+    startDistance: 0
+    SunColor: {r: 1, g: 0.63529, b: 0, a: 1}
+    MoonColor: {r: 1, g: 0.63529, b: 0, a: 1}
+    TopColor: {r: 0, g: 0, b: 0, a: 0}
+    BottomColor: {r: 0, g: 0, b: 0, a: 0}
+    BlendHeight: 0.03
+    FogGradientHeight: 0.5
+    SunIntensity: 2
+    MoonIntensity: 1
+    SunFalloffIntensity: 9.4
+    SunControl: 1
+    MoonControl: 1
   UseDithering: 0
   UseRadialDistantFog: 0
   SnowAmount: 0

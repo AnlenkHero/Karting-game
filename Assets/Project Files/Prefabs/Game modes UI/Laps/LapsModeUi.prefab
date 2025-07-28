@@ -134,6 +134,13 @@ MonoBehaviour:
   standingViewPrefab: {fileID: 1690089204491118752, guid: 158ff06b184388941be09d7937f62d72,
     type: 3}
   parent: {fileID: 1571747729677927805}
+  currentLapText: {fileID: 0}
+  currentRankText: {fileID: 0}
+  currentLastLapTimeText: {fileID: 0}
+  bestLapTimeText: {fileID: 0}
+  container: {fileID: 0}
+  gradientApplier: {fileID: 0}
+  spectatorController: {fileID: 0}
 --- !u!114 &-3202573811594636775
 MonoBehaviour:
   m_ObjectHideFlags: 0

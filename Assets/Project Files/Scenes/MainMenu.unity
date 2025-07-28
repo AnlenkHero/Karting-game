@@ -2595,7 +2595,8 @@ MonoBehaviour:
   m_fontAsset: {fileID: 11400000, guid: 19373dd980dc0d142af9af8d340be780, type: 2}
   m_sharedMaterial: {fileID: 1992996737111974659, guid: 19373dd980dc0d142af9af8d340be780,
     type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 1992996737111974659, guid: 19373dd980dc0d142af9af8d340be780, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:

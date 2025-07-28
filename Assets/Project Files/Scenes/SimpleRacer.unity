@@ -22916,6 +22916,7 @@ MonoBehaviour:
     type: 3}
   finishLinePrefab: {fileID: 8469713844917265700, guid: 540569bb849c6dd458eb3bd6da8ec484,
     type: 3}
+  trackDefinition: {fileID: 0}
   checkpoints: []
   finishLine: {fileID: 0}
 --- !u!4 &1364538248
@@ -23495,10 +23496,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b863b55b03147d2996bb2721257f729, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  header: {fileID: 0}
   container: {fileID: 1721711533}
   standingPrefab: {fileID: 811920245088193586, guid: c9da0e00a840e91408df19b20b26910d,
     type: 3}
   standingsParent: {fileID: 1172854062}
+  imageFader: {fileID: 0}
+  rankGradientApplier: {fileID: 0}
+  animationDuration: 0.5
+  fadeInOutDuration: 0.5
 --- !u!4 &1377069760 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 438062, guid: e87a3acfe1e8b0642a783fab11506a12,
@@ -27823,6 +27829,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd518e90a5e14be8bf1fc630e13ed0f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canSpectate: 0
   spectatorText: {fileID: 1858282131}
 --- !u!4 &1621872738
 Transform:
