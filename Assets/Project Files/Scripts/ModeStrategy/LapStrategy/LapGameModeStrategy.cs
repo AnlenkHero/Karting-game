@@ -24,7 +24,7 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
         private bool _halfFinishTriggered;
         private float _halfFinishDeadline;
         private int _halfPlayersCount;
-        private readonly float _scoreboardChangeDelay = 5f;
+        private readonly float _scoreboardChangeDelay = 10f;
         public static event Action OnLocalPlayerFinished;
 
         #region Initializers
@@ -157,9 +157,15 @@ namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
         public void OnPlayerCrossFinishLine(KartController kart, FinishLine finishLine)
         {
             var data = _playerLapData.FirstOrDefault(x => x.player.Kart == kart);
-            if (data == null || data.hasFinished)
+            if (data == null)
             {
                 Debug.Log("PlayerLapData not found for kart: " + kart.name);
+                return;
+            }
+
+            if (data.hasFinished)
+            {
+                Debug.Log("Player has already finished: " + kart.name);
                 return;
             }
 

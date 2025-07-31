@@ -143,7 +143,7 @@ namespace Kart.Project_Files.Scripts.Managers.Game
                 RoomPlayer sessionWinner = PointsTable.GetWinner();
                 Debug.Log("Session Completed! Global Winner: " +
                           (sessionWinner != null ? sessionWinner.name : "No winner"));
-                
+                if (HasStateAuthority)
                     StartCoroutine(WaiForSceneChangeAndLoadSessionResults());
             }
             else

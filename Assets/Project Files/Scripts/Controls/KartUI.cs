@@ -24,19 +24,20 @@ namespace Kart.Project_Files.Scripts.Controls
             base.Spawned();
             ShowPlayerUI(!HasInputAuthority);
             if (!HasInputAuthority) return;
+            RPC_SetKartName();
             RPC_SetMinimapWorldObject();
             RPC_SetKartFlag(RoomPlayer.Local.CountryCode.Value, RoomPlayer.Local.CountryPrivacy);
-        }
-
-        private void Update()
-        {
-            playerText.SetText($"{kartController.KartName}");
         }
 
         #endregion
 
         #region RPC
         
+        [Rpc]
+        private void RPC_SetKartName()
+        {
+            playerText.SetText($"{kartController.KartName}");   
+        }
         [Rpc]
         private void RPC_SetMinimapWorldObject()
         {

@@ -16,12 +16,26 @@ namespace Kart.Project_Files.Scripts.Controls
         private KartUI _currentKartUI;
         private int _currentCameraIndex;
         public string CurrentSpectatedPlayerId { get; private set; }
+        private PlayerInputActions _playerInputActions;
+
+        private void Awake()
+        {
+            _playerInputActions = new PlayerInputActions();
+        }
 
         private void OnEnable()
-            => LapsGameModeStrategy.OnLocalPlayerFinished += OnLocalFinished;
+        {
+            LapsGameModeStrategy.OnLocalPlayerFinished += OnLocalFinished;
+            _playerInputActions.UI.Navigate.performed += OnNavigate;
+            _playerInputActions.Enable();
+        }
 
         private void OnDisable()
-            => LapsGameModeStrategy.OnLocalPlayerFinished -= OnLocalFinished;
+        {
+            LapsGameModeStrategy.OnLocalPlayerFinished -= OnLocalFinished;
+            _playerInputActions.UI.Navigate.performed -= OnNavigate;
+            _playerInputActions.Disable();
+        }
 
         private void OnLocalFinished()
         {
@@ -32,18 +46,29 @@ namespace Kart.Project_Files.Scripts.Controls
 
         private void Update()
         {
-            if (!canSpectate ||
-                GameManager.Instance == null ||
+            if (!canSpectate || GameManager.Instance == null ||
                 GameManager.Instance.CurrentGameState == GameState.Finished)
             {
                 spectatorText.gameObject.SetActive(false);
+            }
+        }
+
+        private void OnNavigate(UnityEngine.InputSystem.InputAction.CallbackContext context)
+        {
+            if (!canSpectate || GameManager.Instance == null ||
+                GameManager.Instance.CurrentGameState == GameState.Finished || GameManager.Players.Count == 0)
+            {
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.Mouse0) && GameManager.Players.Count > 0)
+            var direction = context.ReadValue<Vector2>();
+            if (direction.x > 0)
             {
-                var next = (_currentCameraIndex + 1) % GameManager.Players.Count;
-                SwitchToCamera(next);
+                SwitchToCamera((_currentCameraIndex + 1) % GameManager.Players.Count);
+            }
+            else if (direction.x < 0)
+            {
+                SwitchToCamera((_currentCameraIndex - 1 + GameManager.Players.Count) % GameManager.Players.Count);
             }
         }
 
@@ -54,17 +79,17 @@ namespace Kart.Project_Files.Scripts.Controls
                 _currentKartUI.ShowPlayerUI(true);
                 _currentCinemachineCamera.DespawnCamera();
             }
-            
+
             _currentCameraIndex = Mathf.Clamp(newIndex, 0, GameManager.Players.Count - 1);
-            
+
             var target = GameManager.Players[_currentCameraIndex];
             _currentCinemachineCamera = target.cameraController;
-            _currentKartUI            = target.kartUI;
-            
+            _currentKartUI = target.kartUI;
+
             _currentKartUI.ShowPlayerUI(false);
             SetSpectatedPlayerId(target);
             _currentCinemachineCamera.SetupCamera();
-            
+
             spectatorText.text = $"Spectating: {target.KartName}";
         }
 

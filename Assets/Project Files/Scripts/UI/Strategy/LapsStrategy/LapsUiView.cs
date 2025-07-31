@@ -232,6 +232,7 @@ namespace Kart.Project_Files.Scripts.UI.Strategy.LapsStrategy
                 gradientApplier.Apply(currentRankText, rank);
                 currentRankText.text       = rank.ToOrdinal();
                 currentLastLapTimeText.text = lastLapTime.ToRaceFormat();
+                Debug.Log(currentLastLapTimeText);
             }
 
             view.SetText(

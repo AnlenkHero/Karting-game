@@ -5,8 +5,8 @@ namespace Kart.Project_Files.Scripts.Fusion
 {
     public class PointsTable
     {
-        private  readonly Dictionary<RoomPlayer, float> _playerPoints = new ();
-        public  IReadOnlyDictionary<RoomPlayer, float> PlayerPoints => _playerPoints;
+        private readonly Dictionary<RoomPlayer, float> _playerPoints = new();
+        public IReadOnlyDictionary<RoomPlayer, float> PlayerPoints => _playerPoints;
 
         public float MaxPointsForAllRaces;
         
@@ -15,22 +15,22 @@ namespace Kart.Project_Files.Scripts.Fusion
             MaxPointsForAllRaces += points;
         }
         
-        public  void AddPoints(RoomPlayer player, float points)
+        public void AddPoints(RoomPlayer player, float points)
         {
-            if (player == null)
+            PruneStalePlayers();
+
+            if (player == null || player.Object == null || !player.Object.IsValid)
                 return;
 
             if (!_playerPoints.TryAdd(player, points))
-            {
                 _playerPoints[player] += points;
-            }
         }
 
         public int GetPlayerPosition(RoomPlayer player)
         {
-            if (player == null)
-                return 0;
-
+            PruneStalePlayers();
+            if (player == null) return 0;
+            
             var sortedPlayers = GetSortedPlayerPointsList()
                 .Select((entry, index) => new { Player = entry.Key, Position = index + 1 })
                 .ToList();
@@ -38,15 +38,14 @@ namespace Kart.Project_Files.Scripts.Fusion
             var playerEntry = sortedPlayers.FirstOrDefault(entry => entry.Player == player);
             return playerEntry?.Position ?? 0;
         }
-        public  float GetPoints(RoomPlayer player)
-        {
-            if (player == null)
-                return 0f;
 
-            return _playerPoints.TryGetValue(player, out float points) ? points : 0f;
+        public float GetPoints(RoomPlayer player)
+        {
+            PruneStalePlayers();
+            if (player == null) return 0f;
+            return _playerPoints.TryGetValue(player, out var v) ? v : 0f;
         }
-        
-        public  void CheckAndAddNewPlayers(IEnumerable<RoomPlayer> currentPlayers)
+        public void CheckAndAddNewPlayers(IEnumerable<RoomPlayer> currentPlayers)
         {
             foreach (var player in currentPlayers)
             {
@@ -59,16 +58,16 @@ namespace Kart.Project_Files.Scripts.Fusion
         
         public void CheckAndDeletePlayer(RoomPlayer player)
         {
-            if (_playerPoints.ContainsKey(player))
-            {
+            PruneStalePlayers();
+            if (player != null)
                 _playerPoints.Remove(player);
-            }
         }
         
-        public List<KeyValuePair<RoomPlayer, float>> GetSortedPlayerPointsList()
+        public List<KeyValuePair<RoomPlayer,float>> GetSortedPlayerPointsList()
         {
+            PruneStalePlayers();
             return _playerPoints
-                .OrderByDescending(entry => entry.Value)
+                .OrderByDescending(e => e.Value)
                 .ToList();
         }
         
@@ -82,6 +81,17 @@ namespace Kart.Project_Files.Scripts.Fusion
                 winner = kvp.Key;
             }
             return winner;
+        }
+        private void PruneStalePlayers()
+        {
+            var toRemove = _playerPoints.Keys
+                .Where(p => p == null
+                            || p.Object == null
+                            || !p.Object.IsValid)
+                .ToList();
+
+            foreach (var p in toRemove)
+                _playerPoints.Remove(p);
         }
     }
 }

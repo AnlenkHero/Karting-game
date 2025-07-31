@@ -186,13 +186,13 @@ WheelCollider:
     m_ExtremumSlip: 0.4
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 0.5
+    m_AsymptoteValue: 1
     m_Stiffness: 5
   m_SidewaysFriction:
-    m_ExtremumSlip: 0.2
+    m_ExtremumSlip: 0.4
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
-    m_AsymptoteValue: 0.75
+    m_AsymptoteValue: 1
     m_Stiffness: 10
   m_IncludeLayers:
     serializedVersion: 2
@@ -16273,7 +16273,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: -876546973899608171, guid: da8e987d5bc3c0940af617d9e0c13177,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -21336,13 +21337,13 @@ WheelCollider:
     m_ExtremumSlip: 0.4
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 0.5
+    m_AsymptoteValue: 1
     m_Stiffness: 5
   m_SidewaysFriction:
-    m_ExtremumSlip: 0.2
+    m_ExtremumSlip: 0.4
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
-    m_AsymptoteValue: 0.75
+    m_AsymptoteValue: 1
     m_Stiffness: 10
   m_IncludeLayers:
     serializedVersion: 2
@@ -26886,7 +26887,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: 2100000, guid: 023aa72d9b4b74b408683732f87f2daf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -26930,8 +26931,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Player name
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7b4825ac8d5ede6469c8b15cf69e0912, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 023aa72d9b4b74b408683732f87f2daf, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -26955,7 +26956,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 44.4
+  m_fontSize: 45.6
   m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -27188,13 +27189,13 @@ WheelCollider:
     m_ExtremumSlip: 0.4
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 0.5
+    m_AsymptoteValue: 1
     m_Stiffness: 5
   m_SidewaysFriction:
-    m_ExtremumSlip: 0.2
+    m_ExtremumSlip: 0.4
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
-    m_AsymptoteValue: 0.75
+    m_AsymptoteValue: 1
     m_Stiffness: 10
   m_IncludeLayers:
     serializedVersion: 2
@@ -32103,13 +32104,13 @@ WheelCollider:
     m_ExtremumSlip: 0.4
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 0.5
+    m_AsymptoteValue: 1
     m_Stiffness: 5
   m_SidewaysFriction:
-    m_ExtremumSlip: 0.2
+    m_ExtremumSlip: 0.4
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
-    m_AsymptoteValue: 0.75
+    m_AsymptoteValue: 1
     m_Stiffness: 10
   m_IncludeLayers:
     serializedVersion: 2
