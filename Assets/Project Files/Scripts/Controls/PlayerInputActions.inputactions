@@ -40,6 +40,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Respawn",
+                    "type": "Button",
+                    "id": "1d1bb1c8-3254-4694-acb1-d1a8e14ff0b6",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -313,7 +322,7 @@
                     "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
-                    "groups": "KeyboardOrGamepad",
+                    "groups": "KeyboardOrGamepad;Gamepad",
                     "action": "HandBrake",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -324,7 +333,7 @@
                     "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
-                    "groups": "KeyboardOrGamepad",
+                    "groups": "KeyboardOrGamepad;Keyboard&Mouse",
                     "action": "HandBrake",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -337,6 +346,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "614cbdc6-d9e2-48d9-813a-2d7d76d2731b",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Respawn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cfde3c84-8752-4fdd-8a70-c6d672d2d6c1",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Respawn",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

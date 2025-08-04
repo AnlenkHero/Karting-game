@@ -38,6 +38,10 @@ namespace Kart.Project_Files.Scripts.Controls {
         {
             throw new System.NotImplementedException();
         }
-        
+
+        public void OnRespawn(InputAction.CallbackContext context)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

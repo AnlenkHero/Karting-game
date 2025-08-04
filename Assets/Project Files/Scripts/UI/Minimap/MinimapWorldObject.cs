@@ -28,6 +28,7 @@ namespace Kart.Project_Files.Scripts.UI.Minimap
             ctrl.RegisterMinimapWorldObject(this, followObject);
         }
 
+
         public void SetData(string objectName)
         {
             nameText = objectName;

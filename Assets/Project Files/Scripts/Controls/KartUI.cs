@@ -16,7 +16,7 @@ namespace Kart.Project_Files.Scripts.Controls
         [SerializeField] private GameObject playerUIGameObject;
         [SerializeField] private MinimapWorldObject minimapWorldObject;
         private bool _isUiActive;
-        
+        public MinimapWorldObject MinimapWorldObjectRef => minimapWorldObject;
         #region LifeCycle
 
         public override void Spawned()

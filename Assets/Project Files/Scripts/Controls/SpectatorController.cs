@@ -36,12 +36,19 @@ namespace Kart.Project_Files.Scripts.Controls
             _playerInputActions.UI.Navigate.performed -= OnNavigate;
             _playerInputActions.Disable();
         }
+        
+        private void OnDestroy()
+        {
+            LapsGameModeStrategy.OnLocalPlayerFinished -= OnLocalFinished;
+            _playerInputActions.UI.Navigate.performed -= OnNavigate;
+            _playerInputActions.Disable();
+        }
 
         private void OnLocalFinished()
         {
             canSpectate = true;
             spectatorText.gameObject.SetActive(true);
-            SwitchToCamera(0);
+            SwitchToCamera((_currentCameraIndex + 1) % GameManager.Players.Count);
         }
 
         private void Update()
@@ -88,6 +95,9 @@ namespace Kart.Project_Files.Scripts.Controls
 
             _currentKartUI.ShowPlayerUI(false);
             SetSpectatedPlayerId(target);
+            MinimapController.Instance.ChangeFollowedWorldObject(
+                _currentKartUI.MinimapWorldObjectRef
+            );
             _currentCinemachineCamera.SetupCamera();
 
             spectatorText.text = $"Spectating: {target.KartName}";

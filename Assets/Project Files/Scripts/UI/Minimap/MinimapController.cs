@@ -53,8 +53,14 @@ public class MinimapController : MonoBehaviour
         CenterMapOnIcon();
     }
 
+    public void ChangeFollowedWorldObject(MinimapWorldObject worldObject)
+    {
+        if (miniMapWorldObjectsLookup.TryGetValue(worldObject, out var icon))
+            followIcon = icon;
+    }
     public void RegisterMinimapWorldObject(MinimapWorldObject miniMapWorldObject, bool followObject = false)
     {
+        RemoveMinimapWorldObject(miniMapWorldObject);
         var minimapIcon = Instantiate(minimapIconPrefab);
         minimapIcon.transform.SetParent(contentRectTransform);
         minimapIcon.transform.SetParent(contentRectTransform);
