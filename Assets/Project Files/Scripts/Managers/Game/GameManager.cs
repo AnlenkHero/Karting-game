@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Fusion;
 using Kart.Project_Files.Scripts.Animations.ResultScene;
@@ -25,6 +26,7 @@ namespace Kart.Project_Files.Scripts.Managers.Game
         public IGameModeStrategy Strategy { get; private set; }
         public GameState CurrentGameState { get; private set; }
 
+        public event Action OnGameEnded; 
 
         public override void Spawned()
         {
@@ -135,6 +137,7 @@ namespace Kart.Project_Files.Scripts.Managers.Game
         private void EndGameWithStandings()
         {
             Debug.Log("Race Ended with standings.");
+            OnGameEnded?.Invoke();
             Strategy.OnRaceFinished();
             CurrentGameState = GameState.Finished;
 
