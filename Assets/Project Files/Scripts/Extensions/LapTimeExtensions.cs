@@ -7,8 +7,15 @@ namespace Kart.Project_Files.Scripts.Extensions
     {
         public static string ToRaceFormat(this string rawLapTime)
         {
-            var normalized = rawLapTime.TrimEnd('s').Replace(',', '.');
-            if (!float.TryParse(normalized, NumberStyles.Float, CultureInfo.InvariantCulture, out var seconds))
+            if (string.IsNullOrEmpty(rawLapTime))
+                return "N/A";
+
+            var normalized = rawLapTime
+                .TrimEnd('s')
+                .Replace(',', '.');
+            if (!float.TryParse(normalized, NumberStyles.Float,
+                    CultureInfo.InvariantCulture,
+                    out var seconds))
                 return rawLapTime;
 
             var ts = TimeSpan.FromSeconds(seconds);
