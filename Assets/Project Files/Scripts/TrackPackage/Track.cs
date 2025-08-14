@@ -1,4 +1,5 @@
-﻿using Fusion;
+﻿using System;
+using Fusion;
 using Kart.Project_Files.Scripts.Definitions;
 using Kart.Project_Files.Scripts.Fusion;
 using Kart.Project_Files.Scripts.Managers.Game;
@@ -10,16 +11,16 @@ namespace Kart.Project_Files.Scripts.TrackPackage
     public class Track : NetworkBehaviour
     {
         [Header("Track Setup")] public TrackData trackData;
+        [SerializeField] private Transform lapCheckpointParent;
         public LapCheckpoint lapCheckpointPrefab;
+        public ResetCheckpoint resetCheckpointPrefab;
         public FinishLine finishLinePrefab;
-        public Transform[] resetCheckpoints;
-        [Header("Track Definition")]
-        public TrackDefinition trackDefinition;
+        public ResetCheckpoint[] resetCheckpoints;
+        [Header("Track Definition")] public TrackDefinition trackDefinition;
         [Header("Runtime References")] public LapCheckpoint[] checkpoints;
         public FinishLine finishLine;
 
-        
-        public override void  Spawned()
+        public override void Spawned()
         {
             trackDefinition = ResourceManager.Instance.tracks[GameManager.Instance.TrackListManager.CurrentTrackIndex];
             GameManager.Instance.currentTrack = this;
@@ -37,11 +38,12 @@ namespace Kart.Project_Files.Scripts.TrackPackage
             ClearExistingCheckpoints();
 
             checkpoints = new LapCheckpoint[trackData.checkpoints.Length];
+            resetCheckpoints = new ResetCheckpoint[trackData.checkpoints.Length];
 
             for (int i = 0; i < trackData.checkpoints.Length; i++)
             {
                 var data = trackData.checkpoints[i];
-                var checkpointObj = Instantiate(lapCheckpointPrefab, data.position, data.rotation, transform);
+                var checkpointObj = Instantiate(lapCheckpointPrefab, data.position, data.rotation, lapCheckpointParent);
                 checkpointObj.transform.localScale = data.scale;
                 checkpointObj.index = data.index;
                 checkpoints[i] = checkpointObj;
@@ -70,14 +72,14 @@ namespace Kart.Project_Files.Scripts.TrackPackage
 
             var prefabId = player.KartId;
             var prefab = ResourceManager.Instance.kartDefinitions[prefabId].prefab;
-            
+
             var entity = runner.Spawn(
                 prefab,
                 spawnPoint.position,
                 spawnPoint.rotation,
                 player.Object.InputAuthority
             );
-            
+
             GameLauncher.Instance.Pool.ClearPool(entity.Object);
             player.GameState = RoomPlayer.EGameState.GameCutscene;
             player.Kart = entity;
@@ -85,7 +87,7 @@ namespace Kart.Project_Files.Scripts.TrackPackage
             Debug.Log($"Spawning kart for {player.Username} as {entity.name}");
             entity.transform.name = $"Kart ({player.Username})";
         }
-        
+
         private void ClearExistingCheckpoints()
         {
             var otherCheckpoint =
@@ -101,7 +103,7 @@ namespace Kart.Project_Files.Scripts.TrackPackage
             }
 
             var otherFinishLine = FindFirstObjectByType<FinishLine>();
-            
+
             if (otherFinishLine != null)
             {
                 Destroy(otherFinishLine.gameObject);

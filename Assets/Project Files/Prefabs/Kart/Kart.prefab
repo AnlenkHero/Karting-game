@@ -15966,8 +15966,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 7, y: 3, z: 14.747528}
-  m_Center: {x: 0, y: 1.8, z: -2.8871613}
+  m_Size: {x: 7.0000563, y: 2.2599506, z: 17.767418}
+  m_Center: {x: -0.00000071424654, y: 2.1700227, z: -1.377205}
 --- !u!114 &5012061265976231298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16220,9 +16220,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   holdDuration: 3
+  autoResetOnWrongWay: 1
+  wrongWayLeadIn: 5
+  wrongWayCountdown: 3
+  faceBiasMargin: 0.12
+  faceMinDot: 0.35
+  startGraceSeconds: 0.5
+  autoResetWhenStuck: 1
+  stuckMinPlanarSpeed: 0.5
   networkRigidbody3D: {fileID: 3854737302072727914}
   kartController: {fileID: 5012061265976231298}
   resetText: {fileID: 1349444928651503662}
+  currentResetIdx: -1
 --- !u!1 &4276915522015950635
 GameObject:
   m_ObjectHideFlags: 0
@@ -35774,11 +35783,7 @@ PrefabInstance:
     - {fileID: -3966382381303944049, guid: 2513298e7868ae24e9190e29a085d4b3, type: 3}
     - {fileID: 7869873546869171050, guid: 2513298e7868ae24e9190e29a085d4b3, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1587545318839091261, guid: 2513298e7868ae24e9190e29a085d4b3,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 5689620333122105710}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2513298e7868ae24e9190e29a085d4b3, type: 3}
 --- !u!4 &4999518639953405517 stripped
 Transform:
@@ -35792,33 +35797,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 4822056452612981158}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &6116867709501014427 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1587545318839091261, guid: 2513298e7868ae24e9190e29a085d4b3,
-    type: 3}
-  m_PrefabInstance: {fileID: 4822056452612981158}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &5689620333122105710
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6116867709501014427}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 6.964494, y: 2.9195626, z: 4.7646265}
-  m_Center: {x: 0, y: -6.0038404, z: 1.373863}
 --- !u!1001 &5729782458536478895
 PrefabInstance:
   m_ObjectHideFlags: 0

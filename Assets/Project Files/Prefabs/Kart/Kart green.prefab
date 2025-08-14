@@ -2707,7 +2707,7 @@ PrefabInstance:
     - target: {fileID: 4227640847454813226, guid: cb2647bb145265c4d806118d55db42ab,
         type: 3}
       propertyPath: m_Name
-      value: Kart Green
+      value: Kart green
       objectReference: {fileID: 0}
     - target: {fileID: 5012061265976231298, guid: cb2647bb145265c4d806118d55db42ab,
         type: 3}
@@ -3568,6 +3568,31 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Tangents.Array.data[311].z
       value: NaN
+      objectReference: {fileID: 0}
+    - target: {fileID: 8129233359064257640, guid: cb2647bb145265c4d806118d55db42ab,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 7.0000563
+      objectReference: {fileID: 0}
+    - target: {fileID: 8129233359064257640, guid: cb2647bb145265c4d806118d55db42ab,
+        type: 3}
+      propertyPath: m_Size.z
+      value: 17.767418
+      objectReference: {fileID: 0}
+    - target: {fileID: 8129233359064257640, guid: cb2647bb145265c4d806118d55db42ab,
+        type: 3}
+      propertyPath: m_Center.x
+      value: -0.00000071424654
+      objectReference: {fileID: 0}
+    - target: {fileID: 8129233359064257640, guid: cb2647bb145265c4d806118d55db42ab,
+        type: 3}
+      propertyPath: m_Center.y
+      value: 2.1700227
+      objectReference: {fileID: 0}
+    - target: {fileID: 8129233359064257640, guid: cb2647bb145265c4d806118d55db42ab,
+        type: 3}
+      propertyPath: m_Center.z
+      value: -1.377205
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
