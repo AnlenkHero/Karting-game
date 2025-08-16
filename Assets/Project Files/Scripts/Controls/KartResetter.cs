@@ -4,7 +4,7 @@ using Fusion;
 using Fusion.Addons.Physics;
 using Kart.Project_Files.Scripts.Managers.Game;
 using Kart.Project_Files.Scripts.TrackPackage;
-using TMPro;
+using Kart.Project_Files.Scripts.UI.Kart;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,10 +12,10 @@ namespace Kart.Project_Files.Scripts.Controls
 {
     public class KartResetter : NetworkBehaviour
     {
-        [Header("Manual Hold-to-Reset")] 
+        [Header("Manual Hold-to-Reset")]
         [SerializeField] private float holdDuration = 3f;
 
-        [Header("Auto Wrong-Way (uses currentResetIdx)")] 
+        [Header("Auto Wrong-Way (uses currentResetIdx)")]
         [SerializeField] private bool autoResetOnWrongWay = true;
         [SerializeField] private float wrongWayLeadIn = 5f;
         [SerializeField] private float wrongWayCountdown = 3f;
@@ -23,15 +23,14 @@ namespace Kart.Project_Files.Scripts.Controls
         [SerializeField] private float faceMinDot = 0.35f;
         [SerializeField] private float startGraceSeconds = 0.5f;
 
-        [Header("Auto 'Stuck' (hint only)")] 
+        [Header("Auto 'Stuck' (hint only)")]
         [SerializeField] private bool autoResetWhenStuck = true;
         [SerializeField] private float stuckMinPlanarSpeed = 0.5f;
 
-        [Header("UI & Refs")] 
+        [Header("UI & Refs")]
         [SerializeField] private NetworkRigidbody3D networkRigidbody3D;
         [SerializeField] private KartController kartController;
-        [SerializeField] private TextMeshProUGUI resetText;
-
+        [SerializeField] private KartResetterUI resetterUI;
         [HideInInspector] public int currentResetIdx = -1;
 
         private PlayerInputActions _actions;
@@ -42,20 +41,25 @@ namespace Kart.Project_Files.Scripts.Controls
         private float _wrongLeadTimer;
         private bool _inWrongCountdown;
         private float _wrongCountdownRemain;
-
+        private bool _wrongHalfHintShown;
+        
         private float _stuckLeadTimer;
         private bool _stuckUiShown;
         private float _stuckUiStickRemain;
 
         private float _sinceSpawn;
 
+        private bool _shouldShowHint;
+        private string _lastHintText = string.Empty;
+        
         private ResetCheckpoint[] _orderedResets;
         private Dictionary<int, int> _indexToSlot;
+
+        private float HalfLeadIn => wrongWayLeadIn * 0.5f;
 
         private void Awake()
         {
             _actions = new PlayerInputActions();
-            if (resetText) resetText.gameObject.SetActive(false);
         }
 
         public override void Spawned()
@@ -65,14 +69,14 @@ namespace Kart.Project_Files.Scripts.Controls
             ResetRuntime();
         }
 
-        void OnEnable()
+        private void OnEnable()
         {
             _actions.Player.Enable();
             _actions.Player.Respawn.started += OnRespawnStarted;
             _actions.Player.Respawn.canceled += OnRespawnCanceled;
         }
 
-        void OnDisable()
+        private void OnDisable()
         {
             _actions.Player.Respawn.started -= OnRespawnStarted;
             _actions.Player.Respawn.canceled -= OnRespawnCanceled;
@@ -87,6 +91,7 @@ namespace Kart.Project_Files.Scripts.Controls
             _wrongLeadTimer = 0f;
             _inWrongCountdown = false;
             _wrongCountdownRemain = 0f;
+            _wrongHalfHintShown = false;
 
             _stuckLeadTimer = 0f;
             _stuckUiShown = false;
@@ -94,7 +99,8 @@ namespace Kart.Project_Files.Scripts.Controls
 
             _sinceSpawn = 0f;
 
-            if (resetText) resetText.gameObject.SetActive(false);
+            resetterUI?.HideHint();
+            resetterUI?.HideCountdown();
         }
 
         private void BuildResetCache()
@@ -123,8 +129,7 @@ namespace Kart.Project_Files.Scripts.Controls
             if (!Object.HasInputAuthority) return;
             _isHolding = true;
             _lastResetControl = ctx.control;
-            UpdateResetLabel();
-            if (resetText) resetText.gameObject.SetActive(true);
+            resetterUI?.HideHint();
         }
 
         private void OnRespawnCanceled(InputAction.CallbackContext _)
@@ -132,11 +137,20 @@ namespace Kart.Project_Files.Scripts.Controls
             _isHolding = false;
             _holdTimer = 0f;
 
-            if (resetText && !_inWrongCountdown && !_stuckUiShown)
-                resetText.gameObject.SetActive(false);
+            if (_inWrongCountdown) return;
+            
+            resetterUI?.HideCountdown();
+            if (_shouldShowHint)
+            {
+                resetterUI?.ShowHint(_lastHintText);
+            }
+            else
+            {
+                resetterUI?.HideHint();
+            }
         }
 
-        void Update()
+        private void Update()
         {
             if (!Object.HasInputAuthority || GameManager.Instance.CurrentGameState != GameState.Running)
                 return;
@@ -145,7 +159,7 @@ namespace Kart.Project_Files.Scripts.Controls
                 BuildResetCache();
 
             _sinceSpawn += Time.deltaTime;
-
+            
             if (_isHolding)
             {
                 _holdTimer += Time.deltaTime;
@@ -155,12 +169,12 @@ namespace Kart.Project_Files.Scripts.Controls
                     _isHolding = false;
                     if (currentResetIdx >= 0)
                         RPC_RequestReset(currentResetIdx);
+                    resetterUI?.HideHint();
                 }
                 else
                 {
-                    if (resetText && !resetText.gameObject.activeSelf)
-                        resetText.gameObject.SetActive(true);
-                    UpdateResetLabel();
+                    resetterUI?.ShowCountdown();
+                    resetterUI?.UpdateCountdown(_holdTimer, holdDuration);
                 }
             }
 
@@ -217,29 +231,33 @@ namespace Kart.Project_Files.Scripts.Controls
             if (!_inWrongCountdown)
             {
                 _wrongLeadTimer += Time.deltaTime;
-
-                if (_wrongLeadTimer < wrongWayLeadIn)
+                
+                if (_wrongLeadTimer >= HalfLeadIn && !_wrongHalfHintShown && !_isHolding)
                 {
-                    if (!_isHolding && resetText && resetText.gameObject.activeSelf)
-                        resetText.gameObject.SetActive(false);
-                    return;
+                    _shouldShowHint = true;
+                    _lastHintText = "Wrong way! Auto-reset soon";
+                    _wrongHalfHintShown = true;
+                    resetterUI?.ShowHint(_lastHintText);
                 }
-
+                
+                if (_wrongLeadTimer < wrongWayLeadIn)
+                    return;
+                
+                _shouldShowHint = false;
                 _inWrongCountdown = true;
                 _wrongCountdownRemain = wrongWayCountdown;
+                _wrongHalfHintShown = false;
+                resetterUI?.HideHint();
+                resetterUI?.ShowCountdown();
             }
-
+            
             _wrongCountdownRemain -= Time.deltaTime;
+            resetterUI?.UpdateCountdown(_wrongCountdownRemain, wrongWayCountdown);
 
-            if (!_isHolding && resetText)
-            {
-                if (!resetText.gameObject.activeSelf)
-                    resetText.gameObject.SetActive(true);
-                resetText.text = $"Wrong way! Auto-reset in {_wrongCountdownRemain:F1}s";
-            }
+            if (_wrongCountdownRemain > 0f) return;
+            
+            resetterUI?.HideCountdown();
 
-            if (!(_wrongCountdownRemain <= 0f)) return;
-            if (resetText) resetText.gameObject.SetActive(false);
             _inWrongCountdown = false;
             _wrongLeadTimer = 0f;
             _wrongCountdownRemain = 0f;
@@ -251,13 +269,20 @@ namespace Kart.Project_Files.Scripts.Controls
         private void ClearWrongWayState()
         {
             _wrongLeadTimer = 0f;
-
             bool wasCounting = _inWrongCountdown;
+
             _inWrongCountdown = false;
             _wrongCountdownRemain = 0f;
 
-            if (wasCounting && resetText && !_isHolding && !_stuckUiShown)
-                resetText.gameObject.SetActive(false);
+            if (wasCounting)
+                resetterUI?.HideCountdown();
+
+            if (_wrongHalfHintShown)
+            {
+                _wrongHalfHintShown = false;
+                if (!_isHolding && !_stuckUiShown)
+                    resetterUI?.HideHint();
+            }
         }
 
         private void TickStuckHint()
@@ -275,7 +300,6 @@ namespace Kart.Project_Files.Scripts.Controls
             }
 
             bool trying = IsTryingToMove();
-
             float planarSpeed = GetPlanarSpeed();
             bool notMoving = planarSpeed < stuckMinPlanarSpeed;
 
@@ -286,11 +310,11 @@ namespace Kart.Project_Files.Scripts.Controls
                     _stuckLeadTimer += Time.deltaTime;
                     if (_stuckLeadTimer < wrongWayLeadIn)
                     {
-                        if (!_isHolding && !_inWrongCountdown && resetText && resetText.gameObject.activeSelf)
-                            resetText.gameObject.SetActive(false);
+                        if (!_isHolding && !_inWrongCountdown)
+                            resetterUI?.HideHint();
                         return;
                     }
-
+                    
                     _stuckUiShown = true;
                     _stuckUiStickRemain = wrongWayCountdown;
                 }
@@ -299,19 +323,18 @@ namespace Kart.Project_Files.Scripts.Controls
                     _stuckUiStickRemain = wrongWayCountdown;
                 }
 
-                if (!_isHolding && !_inWrongCountdown && resetText)
-                {
-                    if (!resetText.gameObject.activeSelf)
-                        resetText.gameObject.SetActive(true);
-                    resetText.text = $"Stuck? Hold ({GetResetGlyph()}) to reset";
-                }
+                if (_isHolding || _inWrongCountdown) return;
+                _shouldShowHint = true;
+                _lastHintText = $"Stuck? Hold ({GetResetGlyph()}) to reset";
+                resetterUI?.ShowHint(_lastHintText);
             }
             else
             {
                 if (!_stuckUiShown) return;
                 _stuckUiStickRemain -= Time.deltaTime;
-                if (_stuckUiStickRemain <= 0f)
-                    ClearStuckUI(forceHide: true);
+                if (!(_stuckUiStickRemain <= 0f)) return;
+                _shouldShowHint = false;
+                ClearStuckUI(true);
             }
         }
 
@@ -323,8 +346,8 @@ namespace Kart.Project_Files.Scripts.Controls
             _stuckUiShown = false;
             _stuckUiStickRemain = 0f;
 
-            if (forceHide && wasShown && resetText && !_isHolding && !_inWrongCountdown)
-                resetText.gameObject.SetActive(false);
+            if (forceHide && wasShown && !_isHolding && !_inWrongCountdown)
+                resetterUI?.HideHint();
         }
 
         private static Vector3 PlanarNormalized(Vector3 v)
@@ -339,7 +362,7 @@ namespace Kart.Project_Files.Scripts.Controls
             if (!networkRigidbody3D) return 0f;
 
             var rb = networkRigidbody3D.Rigidbody;
-            Vector3 v = rb ? (rb.linearVelocity) : Vector3.zero;
+            Vector3 v = rb ? rb.linearVelocity : Vector3.zero;
             return new Vector2(v.x, v.z).magnitude;
         }
 
@@ -374,12 +397,7 @@ namespace Kart.Project_Files.Scripts.Controls
                     InputControlPath.HumanReadableStringOptions.OmitDevice)
                 : "Reset";
         }
-
-        private void UpdateResetLabel()
-        {
-            if (!resetText) return;
-            resetText.text = $"Hold ({GetResetGlyph()}) to Reset";
-        }
+        
 
         [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
         private void RPC_RequestReset(int resetIndex)
@@ -396,17 +414,18 @@ namespace Kart.Project_Files.Scripts.Controls
             networkRigidbody3D.Teleport(cp.position, cp.rotation);
 
             _sinceSpawn = 0f;
-
+            
             _wrongLeadTimer = 0f;
             _inWrongCountdown = false;
             _wrongCountdownRemain = 0f;
+            _wrongHalfHintShown = false;
 
             _stuckLeadTimer = 0f;
             _stuckUiShown = false;
             _stuckUiStickRemain = 0f;
 
-            if (resetText && !_isHolding)
-                resetText.gameObject.SetActive(false);
+            resetterUI?.HideHint();
+            resetterUI?.HideCountdown();
         }
     }
 }
