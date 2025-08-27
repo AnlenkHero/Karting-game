@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Fusion;
 using Fusion.Addons.Physics;
@@ -7,28 +8,30 @@ using Kart.Project_Files.Scripts.TrackPackage;
 using Kart.Project_Files.Scripts.UI.Kart;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace Kart.Project_Files.Scripts.Controls
 {
     public class KartResetter : NetworkBehaviour
     {
-        [Header("Manual Hold-to-Reset")]
-        [SerializeField] private float holdDuration = 3f;
+        [Header("Manual Hold-to-Reset")] [SerializeField]
+        private float holdDuration = 3f;
 
-        [Header("Auto Wrong-Way (uses currentResetIdx)")]
-        [SerializeField] private bool autoResetOnWrongWay = true;
+        [Header("Auto Wrong-Way (uses currentResetIdx)")] [SerializeField]
+        private bool autoResetOnWrongWay = true;
+
         [SerializeField] private float wrongWayLeadIn = 5f;
         [SerializeField] private float wrongWayCountdown = 3f;
         [SerializeField] private float faceBiasMargin = 0.12f;
         [SerializeField] private float faceMinDot = 0.35f;
         [SerializeField] private float startGraceSeconds = 0.5f;
 
-        [Header("Auto 'Stuck' (hint only)")]
-        [SerializeField] private bool autoResetWhenStuck = true;
+        [Header("Auto 'Stuck' (hint only)")] [SerializeField]
+        private bool autoResetWhenStuck = true;
+
         [SerializeField] private float stuckMinPlanarSpeed = 0.5f;
 
-        [Header("UI & Refs")]
-        [SerializeField] private NetworkRigidbody3D networkRigidbody3D;
+        [Header("UI & Refs")] [SerializeField] private NetworkRigidbody3D networkRigidbody3D;
         [SerializeField] private KartController kartController;
         [SerializeField] private KartResetterUI resetterUI;
         [HideInInspector] public int currentResetIdx = -1;
@@ -42,7 +45,7 @@ namespace Kart.Project_Files.Scripts.Controls
         private bool _inWrongCountdown;
         private float _wrongCountdownRemain;
         private bool _wrongHalfHintShown;
-        
+
         private float _stuckLeadTimer;
         private bool _stuckUiShown;
         private float _stuckUiStickRemain;
@@ -51,11 +54,14 @@ namespace Kart.Project_Files.Scripts.Controls
 
         private bool _shouldShowHint;
         private string _lastHintText = string.Empty;
-        
+
         private ResetCheckpoint[] _orderedResets;
         private Dictionary<int, int> _indexToSlot;
 
         private float HalfLeadIn => wrongWayLeadIn * 0.5f;
+        public bool isForceRespawn;
+        private float _respawnTimer;
+        private float _respawnDelay = 2f;
 
         private void Awake()
         {
@@ -138,7 +144,7 @@ namespace Kart.Project_Files.Scripts.Controls
             _holdTimer = 0f;
 
             if (_inWrongCountdown) return;
-            
+
             resetterUI?.HideCountdown();
             if (_shouldShowHint)
             {
@@ -159,7 +165,13 @@ namespace Kart.Project_Files.Scripts.Controls
                 BuildResetCache();
 
             _sinceSpawn += Time.deltaTime;
-            
+            if (isForceRespawn)
+            {
+                _respawnTimer += Time.deltaTime;
+                if (_respawnTimer >= _respawnDelay)
+                    RPC_RequestReset(currentResetIdx);
+                return;
+            }
             if (_isHolding)
             {
                 _holdTimer += Time.deltaTime;
@@ -231,7 +243,7 @@ namespace Kart.Project_Files.Scripts.Controls
             if (!_inWrongCountdown)
             {
                 _wrongLeadTimer += Time.deltaTime;
-                
+
                 if (_wrongLeadTimer >= HalfLeadIn && !_wrongHalfHintShown && !_isHolding)
                 {
                     _shouldShowHint = true;
@@ -239,10 +251,10 @@ namespace Kart.Project_Files.Scripts.Controls
                     _wrongHalfHintShown = true;
                     resetterUI?.ShowHint(_lastHintText);
                 }
-                
+
                 if (_wrongLeadTimer < wrongWayLeadIn)
                     return;
-                
+
                 _shouldShowHint = false;
                 _inWrongCountdown = true;
                 _wrongCountdownRemain = wrongWayCountdown;
@@ -250,12 +262,12 @@ namespace Kart.Project_Files.Scripts.Controls
                 resetterUI?.HideHint();
                 resetterUI?.ShowCountdown();
             }
-            
+
             _wrongCountdownRemain -= Time.deltaTime;
             resetterUI?.UpdateCountdown(_wrongCountdownRemain, wrongWayCountdown);
 
             if (_wrongCountdownRemain > 0f) return;
-            
+
             resetterUI?.HideCountdown();
 
             _inWrongCountdown = false;
@@ -314,7 +326,7 @@ namespace Kart.Project_Files.Scripts.Controls
                             resetterUI?.HideHint();
                         return;
                     }
-                    
+
                     _stuckUiShown = true;
                     _stuckUiStickRemain = wrongWayCountdown;
                 }
@@ -397,7 +409,7 @@ namespace Kart.Project_Files.Scripts.Controls
                     InputControlPath.HumanReadableStringOptions.OmitDevice)
                 : "Reset";
         }
-        
+
 
         [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
         private void RPC_RequestReset(int resetIndex)
@@ -414,7 +426,7 @@ namespace Kart.Project_Files.Scripts.Controls
             networkRigidbody3D.Teleport(cp.position, cp.rotation);
 
             _sinceSpawn = 0f;
-            
+
             _wrongLeadTimer = 0f;
             _inWrongCountdown = false;
             _wrongCountdownRemain = 0f;
@@ -424,6 +436,18 @@ namespace Kart.Project_Files.Scripts.Controls
             _stuckUiShown = false;
             _stuckUiStickRemain = 0f;
 
+            isForceRespawn = false;
+            
+            resetterUI?.HideHint();
+            resetterUI?.HideCountdown();
+        }
+
+        public void ForceRespawn()
+        { 
+            isForceRespawn = true;
+            _respawnTimer = 0f;
+            _holdTimer = 0f;
+            _isHolding = false;
             resetterUI?.HideHint();
             resetterUI?.HideCountdown();
         }

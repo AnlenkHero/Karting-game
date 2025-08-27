@@ -22912,10 +22912,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trackData: {fileID: 11400000, guid: c43408c7e65fc6b4f84af34769516ab0, type: 2}
+  lapCheckpointParent: {fileID: 0}
   lapCheckpointPrefab: {fileID: -4447866064214431351, guid: e0de95ced87d2bf47af5e0d790661a81,
     type: 3}
+  resetCheckpointPrefab: {fileID: 0}
   finishLinePrefab: {fileID: 8469713844917265700, guid: 540569bb849c6dd458eb3bd6da8ec484,
     type: 3}
+  resetCheckpoints: []
   trackDefinition: {fileID: 0}
   checkpoints: []
   finishLine: {fileID: 0}

@@ -61,7 +61,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b7f813b992430245ad61f09b0473d9f, type: 3}
   m_Name: MKGlow
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   showEditorMainBehavior: 1
   showEditorBloomBehavior: 0
   showEditorLensSurfaceBehavior: 0

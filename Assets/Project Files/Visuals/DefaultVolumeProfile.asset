@@ -167,7 +167,7 @@ MonoBehaviour:
     m_Value: 0
   isInitialized:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 1
   allowGeometryShaders:
     m_OverrideState: 1
     m_Value: 1
@@ -213,7 +213,7 @@ MonoBehaviour:
     m_Value: 7
   bloomIntensity:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 1
   allowLensSurface:
     m_OverrideState: 1
     m_Value: 0
@@ -222,13 +222,13 @@ MonoBehaviour:
     m_Value: {fileID: 0}
   lensSurfaceDirtIntensity:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 2.5
   lensSurfaceDiffractionTexture:
     m_OverrideState: 1
     m_Value: {fileID: 0}
   lensSurfaceDiffractionIntensity:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 2
   allowLensFlare:
     m_OverrideState: 1
     m_Value: 0
@@ -240,7 +240,7 @@ MonoBehaviour:
     m_Value: 10
   lensFlareGhostIntensity:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 1
   lensFlareThreshold:
     m_OverrideState: 1
     m_Value:
@@ -266,7 +266,7 @@ MonoBehaviour:
     m_Value: 2
   lensFlareHaloIntensity:
     m_OverrideState: 1
-    m_Value: 2
+    m_Value: 1
   lensFlareHaloSize:
     m_OverrideState: 1
     m_Value: 0.4
@@ -304,7 +304,7 @@ MonoBehaviour:
     m_Value: 0
   glareSample0Intensity:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 1
   glareSample0Offset:
     m_OverrideState: 1
     m_Value: 0
@@ -316,7 +316,7 @@ MonoBehaviour:
     m_Value: 45
   glareSample1Intensity:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 1
   glareSample1Offset:
     m_OverrideState: 1
     m_Value: 0
@@ -328,7 +328,7 @@ MonoBehaviour:
     m_Value: 90
   glareSample2Intensity:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 1
   glareSample2Offset:
     m_OverrideState: 1
     m_Value: 0
@@ -340,7 +340,7 @@ MonoBehaviour:
     m_Value: 135
   glareSample3Intensity:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 1
   glareSample3Offset:
     m_OverrideState: 1
     m_Value: 0

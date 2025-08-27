@@ -24,7 +24,7 @@
     "_tempCollidersAction": 1,
     "_paletteManager": {
         "_selectedPaletteIdx": 0,
-        "_selectedBrushIdx": -1,
+        "_selectedBrushIdx": 16,
         "_showBrushName": false,
         "_viewList": false,
         "_showTabsInMultipleRows": false,
@@ -194,9 +194,9 @@
         "_unsavedProfile": {
             "_moduleSizeType": 1,
             "_moduleSize": {
-                "x": 9.138435363769532,
-                "y": 3.153491973876953,
-                "z": 2.0678558349609377
+                "x": 20.000001907348634,
+                "y": 0.5,
+                "z": 9.999978065490723
             },
             "_subtractBrushOffset": false,
             "_spacing": {
@@ -506,9 +506,9 @@
         "_unsavedProfile": {
             "_moduleSizeType": 1,
             "_moduleSize": {
-                "x": 9.138435363769532,
-                "y": 3.153491973876953,
-                "z": 2.0678558349609377
+                "x": 20.000001907348634,
+                "y": 0.0,
+                "z": 9.999978065490723
             },
             "_subtractBrushOffset": false,
             "_spacing": {
@@ -4760,29 +4760,29 @@
     },
     "_snapManager": {
         "_settings": {
-            "_snappingEnabled": false,
+            "_snappingEnabled": true,
             "_snappingOn": {
                 "x": true,
                 "y": true,
                 "z": false
             },
-            "_visibleGrid": false,
+            "_visibleGrid": true,
             "_gridOn": {
                 "x": false,
                 "y": false,
                 "z": true
             },
-            "_lockedGrid": false,
-            "_boundsSnapping": false,
+            "_lockedGrid": true,
+            "_boundsSnapping": true,
             "_step": {
-                "x": 9.138435363769532,
-                "y": 3.153491973876953,
-                "z": 2.0678558349609377
+                "x": 20.000001907348634,
+                "y": 0.5,
+                "z": 9.999978065490723
             },
             "_origin": {
-                "x": 123.28739929199219,
-                "y": 0.15000057220458985,
-                "z": 380.2335510253906
+                "x": -218.72015380859376,
+                "y": 0.0,
+                "z": -126.10629272460938
             },
             "_rotation": {
                 "x": 0.0,
