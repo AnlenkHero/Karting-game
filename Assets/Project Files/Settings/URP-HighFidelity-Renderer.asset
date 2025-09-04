@@ -76,7 +76,6 @@ MonoBehaviour:
   antiFlickerMode: 0
   workflow: 0
   selectiveRenderLayerMask:
-    serializedVersion: 2
     m_Bits: 4294967295
   anamorphicRatio: 0
   lumaScale: 0.5
@@ -162,9 +161,8 @@ MonoBehaviour:
   - {fileID: -1878332245247344467}
   - {fileID: 7810164449151067432}
   - {fileID: -4238618662432613210}
-  - {fileID: -405889651669255613}
   - {fileID: 2465549735052238071}
-  m_RendererFeatureMap: adc0de57c6d2eee528a508bd2f47636ca6dc5c9fc8662dc5433a3f2683fd5dfaf7dcd8c56b643722
+  m_RendererFeatureMap: adc0de57c6d2eee528a508bd2f47636ca6dc5c9fc8662dc5f7dcd8c56b643722
   m_UseNativeRenderPass: 0
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}

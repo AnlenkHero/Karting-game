@@ -1099,7 +1099,10 @@
                     "Player",
                     "GameController",
                     "Fire",
-                    "Camera"
+                    "Camera",
+                    "PW - Nature",
+                    "PW - Prop",
+                    "PW - Building"
                 ],
                 "_slopeFilter": {
                     "_v1": 0.0,
@@ -4057,7 +4060,10 @@
                     "Player",
                     "GameController",
                     "Fire",
-                    "Camera"
+                    "Camera",
+                    "PW - Nature",
+                    "PW - Prop",
+                    "PW - Building"
                 ]
             }
         ],
@@ -4766,7 +4772,7 @@
                 "y": true,
                 "z": false
             },
-            "_visibleGrid": true,
+            "_visibleGrid": false,
             "_gridOn": {
                 "x": false,
                 "y": false,
@@ -4781,7 +4787,7 @@
             },
             "_origin": {
                 "x": -218.72015380859376,
-                "y": 0.0,
+                "y": 0.5,
                 "z": -126.10629272460938
             },
             "_rotation": {
@@ -4790,8 +4796,8 @@
                 "z": 0.0,
                 "w": 1.0
             },
-            "_showPositionHandle": true,
-            "_showRotationHandle": false,
+            "_showPositionHandle": false,
+            "_showRotationHandle": true,
             "_showScaleHandle": false,
             "_radialGridEnabled": false,
             "_radialStep": 1.0,

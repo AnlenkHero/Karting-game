@@ -40,7 +40,7 @@ MonoBehaviour:
   - index: 8
     position: {x: 93.5, y: 0, z: -500}
     rotation: {x: 0, y: 0, z: 0, w: 0}
-  - index: 7
+  - index: 9
     position: {x: 140, y: 0, z: -450}
     rotation: {x: 0, y: 0, z: 0, w: 0}
   checkpoints:

@@ -42,7 +42,7 @@ Material:
     - _ColorStrength: 0
     - _ColorThreshold: 0.4
     - _NormalStrength: 0
-    - _NormalThreshold: 0.6
+    - _NormalThreshold: 0.5
     - _OVERLAY: 1
     m_Colors:
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}

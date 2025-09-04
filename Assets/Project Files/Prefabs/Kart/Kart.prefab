@@ -16386,6 +16386,7 @@ MonoBehaviour:
   kartController: {fileID: 5012061265976231298}
   resetterUI: {fileID: 6944312387982894039}
   currentResetIdx: -1
+  isForceRespawn: 0
 --- !u!1 &4276915522015950635
 GameObject:
   m_ObjectHideFlags: 0
@@ -34008,6 +34009,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1899615180549528876}
     m_Modifications:
+    - target: {fileID: 276624710413112446, guid: a21d39e222986e845a98a37600905955,
+        type: 3}
+      propertyPath: m_Parameters.textureMode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 276624710413112446, guid: a21d39e222986e845a98a37600905955,
+        type: 3}
+      propertyPath: m_Parameters.textureScale.x
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 1548170669367030324, guid: a21d39e222986e845a98a37600905955,
         type: 3}
       propertyPath: m_Name
@@ -36149,6 +36160,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5740657412354327173}
     m_Modifications:
+    - target: {fileID: 276624710413112446, guid: a21d39e222986e845a98a37600905955,
+        type: 3}
+      propertyPath: m_Parameters.textureMode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 276624710413112446, guid: a21d39e222986e845a98a37600905955,
+        type: 3}
+      propertyPath: m_Parameters.textureScale.x
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 1548170669367030324, guid: a21d39e222986e845a98a37600905955,
         type: 3}
       propertyPath: m_Name
@@ -37163,6 +37184,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 526136312181914728}
     m_Modifications:
+    - target: {fileID: 276624710413112446, guid: a21d39e222986e845a98a37600905955,
+        type: 3}
+      propertyPath: m_Parameters.textureMode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 276624710413112446, guid: a21d39e222986e845a98a37600905955,
+        type: 3}
+      propertyPath: m_Parameters.textureScale.x
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 1548170669367030324, guid: a21d39e222986e845a98a37600905955,
         type: 3}
       propertyPath: m_Name
@@ -37243,6 +37274,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7888481073948791723}
     m_Modifications:
+    - target: {fileID: 276624710413112446, guid: a21d39e222986e845a98a37600905955,
+        type: 3}
+      propertyPath: m_Parameters.textureMode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 276624710413112446, guid: a21d39e222986e845a98a37600905955,
+        type: 3}
+      propertyPath: m_Parameters.textureScale.x
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 1548170669367030324, guid: a21d39e222986e845a98a37600905955,
         type: 3}
       propertyPath: m_Name
