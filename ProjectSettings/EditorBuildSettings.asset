@@ -6,16 +6,31 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SimpleRacerDemo.unity
+    path: Assets/EasyRoads3D scenes/scene main.unity
+    guid: ce75f594e43cda9459533dcb39d8a2af
+  - enabled: 1
+    path: Assets/Project Files/Scenes/Launch.unity
+    guid: 4f186baa6360c2b49a9c0f4777b44b0d
+  - enabled: 1
+    path: Assets/Project Files/Scenes/MainMenu.unity
+    guid: db6ed0e33c38ee74a9154fb59135dacc
+  - enabled: 1
+    path: Assets/Project Files/Scenes/SimpleRacer.unity
     guid: 4817021b6c78d6c4c95b28d5b1926bd9
   - enabled: 1
-    path: Assets/Scenes/Lobby.unity
+    path: Assets/Project Files/Scenes/Lobby.unity
     guid: b6672ef67d106284b8ad4b81ffbe0375
   - enabled: 1
-    path: Assets/Scenes/LobbyTutorial_Done.unity
+    path: Assets/Project Files/Scenes/LobbyTutorial_Done.unity
     guid: be8200a558cfff84b8ce074fa6e33558
-  - enabled: 0
-    path: Assets/Scenes/test.unity
-    guid: ec8550f4b63ac3846b99d09f91e6e231
+  - enabled: 1
+    path: Assets/Project Files/Scenes/(Copy)SimpleRacer.unity
+    guid: 7b398882b05e0be458bde392a19a8ec0
+  - enabled: 1
+    path: Assets/Project Files/Scenes/ResultScene.unity
+    guid: 1d3fd0e3d94ab6a4e8ba62936f542888
+  - enabled: 1
+    path: Assets/Project Files/Scenes/TerrainRaceTrack.unity
+    guid: e174784b3be4f6e46931acd1d64df578
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

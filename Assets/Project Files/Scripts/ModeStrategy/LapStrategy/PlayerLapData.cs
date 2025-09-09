@@ -1,0 +1,17 @@
+﻿using Kart.Project_Files.Scripts.Fusion;
+
+namespace Kart.Project_Files.Scripts.ModeStrategy.LapStrategy
+{
+    public class PlayerLapData
+    {
+        public RoomPlayer player;
+        public int currentLap;
+        public int currentCheckpoint;
+        public bool hasFinished;
+        public float finishTime;
+        public float lastCheckpointCrossTime;
+        public float lapStartTime;
+        public float lastLapTime;
+    }
+
+}

@@ -1,0 +1,181 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c392e31decaf4e60bc8bfe6db73ad87b, type: 3}
+  m_Name: Snow Hills TrackData
+  m_EditorClassIdentifier: 
+  spawnPoints:
+  - index: 0
+    position: {x: -345.52, y: 122, z: -294.2}
+    rotation: {x: 0, y: -0.5, z: 0, w: 0.8660254}
+  - index: 1
+    position: {x: -330.9, y: 122, z: -269.2}
+    rotation: {x: 0, y: -0.53729963, z: 0, w: 0.8433914}
+  - index: 2
+    position: {x: -311.3, y: 122, z: -311.8}
+    rotation: {x: 0, y: -0.5, z: 0, w: 0.8660254}
+  - index: 3
+    position: {x: -296.3, y: 122, z: -284.2}
+    rotation: {x: 0, y: -0.53729963, z: 0, w: 0.8433914}
+  - index: 4
+    position: {x: -275.3, y: 122, z: -336.2}
+    rotation: {x: 0, y: -0.43837115, z: 0, w: 0.89879405}
+  - index: 5
+    position: {x: -257.3, y: 122, z: -312.2}
+    rotation: {x: 0, y: -0.43837115, z: 0, w: 0.89879405}
+  - index: 6
+    position: {x: -234.3, y: 122, z: -367.2}
+    rotation: {x: 0, y: -0.43837115, z: 0, w: 0.89879405}
+  - index: 7
+    position: {x: -214.3, y: 122, z: -341.2}
+    rotation: {x: 0, y: -0.43837115, z: 0, w: 0.89879405}
+  - index: 8
+    position: {x: -194.3, y: 122, z: -402.2}
+    rotation: {x: 0, y: -0.40673664, z: 0, w: 0.9135454}
+  - index: 9
+    position: {x: -175.3, y: 122, z: -382.2}
+    rotation: {x: 0, y: -0.4027467, z: 0, w: 0.91531146}
+  checkpoints:
+  - index: 0
+    position: {x: -390.5924, y: 130, z: -239.0084}
+    rotation: {x: 0.007447574, y: 0.844122, z: 0.0047297487, w: 0.5360786}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 1
+    position: {x: -547.8924, y: 125, z: -165.10843}
+    rotation: {x: 0.007447574, y: 0.844122, z: 0.0047297487, w: 0.5360786}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 2
+    position: {x: -635.5924, y: 125, z: -93.10843}
+    rotation: {x: 0.005400962, y: 0.97593886, z: 0.006976138, w: 0.21786611}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 3
+    position: {x: -637.49243, y: 124, z: 81.59155}
+    rotation: {x: 0.0032266038, y: 0.99786454, z: 0.008211329, w: -0.06471913}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 4
+    position: {x: -544.99243, y: 121, z: 205.49158}
+    rotation: {x: -0.000036101814, y: 0.90331936, z: 0.00882245, w: -0.42887813}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 5
+    position: {x: -366.0924, y: 121, z: 250.29156}
+    rotation: {x: -0.0023409312, y: 0.7598107, z: 0.00850629, w: -0.65008456}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 6
+    position: {x: -166.69243, y: 125, z: 303.49158}
+    rotation: {x: -0.00063924177, y: 0.87188137, z: 0.008799335, w: -0.48963764}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 7
+    position: {x: -1.6924362, y: 139, z: 331.6916}
+    rotation: {x: -0.0063632964, y: 0.3202495, z: 0.0061110887, w: -0.9472922}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 8
+    position: {x: 83.80756, y: 136, z: 213.59155}
+    rotation: {x: -0.0028892965, y: 0.7159143, z: 0.008336001, w: -0.6981325}
+    scale: {x: 1, y: 1, z: 1}
+  - index: 9
+    position: {x: 206.40756, y: 145, z: 321.59155}
+    rotation: {x: 0.0020538722, y: 0.9791809, z: 0.008580125, w: -0.20279811}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 10
+    position: {x: 223.60757, y: 152, z: 440.6916}
+    rotation: {x: 0.004098311, y: 0.9989966, z: 0.00781286, w: 0.043908697}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 11
+    position: {x: 153.20757, y: 172, z: 575.29156}
+    rotation: {x: 0.025892066, y: 0.98206615, z: 0.01107882, w: 0.18642178}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 12
+    position: {x: 249.40756, y: 206, z: 664.1916}
+    rotation: {x: -0.0017544383, y: 0.7589068, z: -0.12423524, w: -0.6392364}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 13
+    position: {x: 343.60754, y: 230, z: 678.1916}
+    rotation: {x: -0.05765944, y: 0.7451318, z: -0.19013798, w: -0.63663304}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 14
+    position: {x: 442.30756, y: 257, z: 611.5916}
+    rotation: {x: -0.011205025, y: 0.41120946, z: -0.113013275, w: -0.9044387}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 15
+    position: {x: 488.9076, y: 263, z: 543.89154}
+    rotation: {x: -0.012118528, y: 0.24322413, z: -0.028818076, w: -0.9694662}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 16
+    position: {x: 509.4076, y: 253, z: 468.39154}
+    rotation: {x: -0.019928148, y: 0.24270909, z: 0.0023500891, w: -0.96989155}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 17
+    position: {x: 551.60754, y: 235, z: 367.09155}
+    rotation: {x: 0.07479247, y: 0.24601172, z: 0.08980892, w: -0.96219474}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 18
+    position: {x: 587.4076, y: 191, z: 245.39154}
+    rotation: {x: 0.07479247, y: 0.24601172, z: 0.08980892, w: -0.96219474}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 19
+    position: {x: 602.2076, y: 170, z: 174.49158}
+    rotation: {x: 0.07479247, y: 0.24601172, z: 0.08980892, w: -0.96219474}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 20
+    position: {x: 615.2076, y: 135, z: 61.19159}
+    rotation: {x: 0.046520006, y: -0.034486614, z: 0.10721681, w: -0.9925478}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 21
+    position: {x: 591.10754, y: 120, z: -48.508423}
+    rotation: {x: 0.057237174, y: 0.06716339, z: 0.10189927, w: -0.9908731}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 22
+    position: {x: 387.30756, y: 40, z: -134.80841}
+    rotation: {x: -0, y: 0.06132765, z: -0, w: -0.99811774}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 23
+    position: {x: 248.20757, y: 47, z: -182.10843}
+    rotation: {x: -0, y: 0.99881905, z: -0, w: -0.048585292}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 24
+    position: {x: 254.60756, y: 58.1, z: -309.40845}
+    rotation: {x: 0.042827394, y: -0, z: -0, w: 0.9990825}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 25
+    position: {x: 231.00757, y: 72.1, z: -400.20844}
+    rotation: {x: 0.041901194, y: 0.2066555, z: 0.008858645, w: 0.977476}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 26
+    position: {x: 190.50757, y: 84, z: -491.00842}
+    rotation: {x: 0.041901194, y: 0.2066555, z: 0.008858645, w: 0.977476}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 27
+    position: {x: 159.00757, y: 99.6, z: -596.5084}
+    rotation: {x: 0.041901194, y: 0.2066555, z: 0.008858645, w: 0.977476}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 28
+    position: {x: 93.80756, y: 105, z: -646.0084}
+    rotation: {x: 0.037422333, y: 0.4858495, z: 0.020826776, w: 0.87299263}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 29
+    position: {x: 7.5075684, y: 115, z: -659.5084}
+    rotation: {x: 0.030903459, y: 0.6916943, z: 0.02965067, w: 0.7209194}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 30
+    position: {x: -88.09244, y: 120, z: -588.2084}
+    rotation: {x: 0.032759633, y: 0.9500579, z: -0.018696519, w: 0.30978563}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 31
+    position: {x: -130.89244, y: 125, z: -481.30844}
+    rotation: {x: 0.032759633, y: 0.9500579, z: -0.018696519, w: 0.30978563}
+    scale: {x: 100, y: 30, z: 20}
+  - index: 32
+    position: {x: -222.59242, y: 130, z: -355.80844}
+    rotation: {x: 0.030731658, y: 0.9144257, z: -0.021870492, w: 0.40299243}
+    scale: {x: 100, y: 30, z: 20}
+  finishLinePosition: {x: -303.0924, y: 135.1, z: -297.90845}
+  finishLineRotation: {x: -0, y: -0.5, z: -0, w: 0.8660254}
+  finishLineScale: {x: 100, y: 35, z: 20}

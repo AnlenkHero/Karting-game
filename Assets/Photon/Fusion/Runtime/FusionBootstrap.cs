@@ -658,7 +658,7 @@ namespace Fusion {
         Address        = address,
         Scene          = sceneInfo,
         SessionName    = DefaultRoomName,
-        OnGameStarted    = onGameStarted,
+        OnGameStarted  = onGameStarted,
         SceneManager   = sceneManager,
         Updater        = updater,
         ObjectProvider = objectProvider,

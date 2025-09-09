@@ -1,7 +1,7 @@
 {
     "Version": 1,
     "TypeId": "NetworkProjectConfig",
-    "PeerMode": 1,
+    "PeerMode": 0,
     "LagCompensation": {
         "Enabled": false,
         "HitboxBufferLengthInMs": 200,
@@ -10,14 +10,14 @@
     },
     "EnqueueIncompleteSynchronousSpawns": false,
     "InvokeRenderInBatchMode": true,
-    "NetworkIdIsObjectName": false,
+    "NetworkIdIsObjectName": true,
     "HideNetworkObjectInactivityGuard": false,
     "AllowClientServerModesInWebGL": false,
     "Simulation": {
         "InputDataWordCount": 0,
         "ReplicationFeatures": 1,
         "InputTransferMode": 0,
-        "SimulationUpdateTimeMode": 1,
+        "SimulationUpdateTimeMode": 0,
         "PlayerCount": 10,
         "TickRateSelection": {
             "Client": 64,
