@@ -111,19 +111,19 @@ MonoBehaviour:
   - index: 11
     position: {x: 370.9, y: 5.22, z: 671.3}
     rotation: {x: -0, y: 0.6994092, z: -0, w: 0.71472144}
-    scale: {x: 99.42, y: 10.5, z: 18.06}
+    scale: {x: 285, y: 10.5, z: 18.06}
   - index: 10
     position: {x: 266.6, y: 5.22, z: 667.3}
     rotation: {x: -0, y: 0.69978654, z: -0, w: 0.7143521}
-    scale: {x: 99.42, y: 10.5, z: 18.06}
+    scale: {x: 285, y: 10.5, z: 18.06}
   - index: 9
     position: {x: 201.6, y: 5.22, z: 668.1}
     rotation: {x: -0, y: 0.59639347, z: -0, w: 0.80269223}
-    scale: {x: 99.42, y: 10.5, z: 18.06}
+    scale: {x: 285, y: 10.5, z: 18.06}
   - index: 8
-    position: {x: 117.7, y: 5.22, z: 595.5}
-    rotation: {x: 0, y: 0, z: 0, w: 1}
-    scale: {x: 99.42, y: 10.5, z: 18.06}
+    position: {x: 146.7, y: 5.22, z: 578.6}
+    rotation: {x: 0, y: 0.26120374, z: 0, w: 0.9652837}
+    scale: {x: 177.4, y: 10.5, z: 18.06}
   - index: 7
     position: {x: 117.7, y: 5.22, z: 489.9}
     rotation: {x: 0, y: 0, z: 0, w: 1}
