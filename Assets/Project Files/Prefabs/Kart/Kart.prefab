@@ -252,10 +252,10 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 1.5
   m_SuspensionSpring:
-    spring: 35000
-    damper: 4500
+    spring: 15000
+    damper: 1000
     targetPosition: 0.5
-  m_SuspensionDistance: 0.01
+  m_SuspensionDistance: 0.1
   m_ForceAppPointDistance: 0
   m_Mass: 100
   m_WheelDampingRate: 0.25
@@ -16207,8 +16207,8 @@ MonoBehaviour:
   gravityMultiplierForAirborne: 5
   airControlMultiplier: 0.5
   collisionImpulseFactor: 50
-  maxBankAngle: 5
-  bankSpeed: 2
+  maxBankAngle: 0
+  bankSpeed: 0
   frictionMultiplier: 1
   slowdownMultiplier: 1
   steeringSensitivityMultiplier: 1
@@ -16386,6 +16386,8 @@ MonoBehaviour:
   kartController: {fileID: 5012061265976231298}
   resetterUI: {fileID: 6944312387982894039}
   currentResetIdx: -1
+  autoResetWhenAirborne: 1
+  airborneResetSeconds: 5
   isForceRespawn: 0
 --- !u!1 &4276915522015950635
 GameObject:
@@ -21627,10 +21629,10 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 1.5
   m_SuspensionSpring:
-    spring: 35000
-    damper: 4500
+    spring: 15000
+    damper: 1000
     targetPosition: 0.5
-  m_SuspensionDistance: 0.01
+  m_SuspensionDistance: 0.1
   m_ForceAppPointDistance: 0
   m_Mass: 100
   m_WheelDampingRate: 0.25
@@ -27669,10 +27671,10 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 1.1
   m_SuspensionSpring:
-    spring: 35000
-    damper: 4500
+    spring: 15000
+    damper: 1000
     targetPosition: 0.5
-  m_SuspensionDistance: 0.01
+  m_SuspensionDistance: 0.1
   m_ForceAppPointDistance: 0
   m_Mass: 100
   m_WheelDampingRate: 0.25
@@ -32686,10 +32688,10 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 1.1
   m_SuspensionSpring:
-    spring: 35000
-    damper: 4500
+    spring: 15000
+    damper: 1000
     targetPosition: 0.5
-  m_SuspensionDistance: 0.01
+  m_SuspensionDistance: 0.1
   m_ForceAppPointDistance: 0
   m_Mass: 100
   m_WheelDampingRate: 0.25

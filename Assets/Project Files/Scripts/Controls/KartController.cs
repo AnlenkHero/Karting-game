@@ -357,12 +357,12 @@ namespace Kart.Project_Files.Scripts.Controls
         private void HandleBrakesAndDrift(AxleInfo axleInfo)
         {
             if (!axleInfo.motor) return;
-
-            if (_input.IsDriftPressed)
+            
+            if (_input.IsDriftPressed && IsGrounded())
             {
                 rb.constraints = RigidbodyConstraints.FreezeRotationX;
-                HandleHandbrake();
-                ApplyHandbrakeToWheels(axleInfo);
+                HandleHandbrake();                 
+                ApplyHandbrakeToWheels(axleInfo);  
             }
             else
             {
@@ -389,6 +389,8 @@ namespace Kart.Project_Files.Scripts.Controls
 
         private void HandleHandbrake()
         {
+            if (!IsGrounded()) return;
+            
             Vector3 forwardDirection =
                 new Vector3((rb.rotation * Vector3.forward).x, 0f, (rb.rotation * Vector3.forward).z).normalized;
             Vector3 currentVelocity = rb.linearVelocity;
@@ -453,6 +455,16 @@ namespace Kart.Project_Files.Scripts.Controls
             float downForceFactor = Mathf.Max(speedFactor, lateralG / lateralGScale);
             rb.AddForce(-(rb.rotation * Vector3.up) * (downForce * rb.mass * downForceFactor));
         }
+        
+        public void ApplyPushForce(Vector3 force)
+        {
+            if (rb != null)
+            {
+                rb.AddForce(force, ForceMode.Acceleration);
+            }
+        }
+
+
 
         #endregion
 

@@ -35,7 +35,12 @@ namespace Kart.Project_Files.Scripts.Controls
         [SerializeField] private KartController kartController;
         [SerializeField] private KartResetterUI resetterUI;
         [HideInInspector] public int currentResetIdx = -1;
+        
+        [Header("Auto Airborne (uses currentResetIdx)")]
+        [SerializeField] private bool autoResetWhenAirborne = true;
+        [SerializeField] private float airborneResetSeconds = 5f;
 
+        private float _airborneTimer;
         private PlayerInputActions _actions;
         private bool _isHolding;
         private float _holdTimer;
@@ -104,7 +109,8 @@ namespace Kart.Project_Files.Scripts.Controls
             _stuckUiStickRemain = 0f;
 
             _sinceSpawn = 0f;
-
+            _airborneTimer = 0f;     
+            
             resetterUI?.HideHint();
             resetterUI?.HideCountdown();
         }
@@ -193,6 +199,7 @@ namespace Kart.Project_Files.Scripts.Controls
             if (_orderedResets == null || _indexToSlot == null) return;
             if (autoResetOnWrongWay) TickWrongWayAuto();
             if (autoResetWhenStuck) TickStuckHint();
+            if (autoResetWhenAirborne) TickAirborneAuto();
         }
 
         private void TickWrongWayAuto()
@@ -276,6 +283,51 @@ namespace Kart.Project_Files.Scripts.Controls
 
             if (currentResetIdx >= 0)
                 RPC_RequestReset(currentResetIdx);
+        }
+
+        private void TickAirborneAuto()
+        {
+
+            if (_sinceSpawn < startGraceSeconds || currentResetIdx < 0 || !kartController.canDrive)
+            {
+                _airborneTimer = 0f;
+                return;
+            }
+
+
+            if (!kartController.IsGrounded())
+            {
+                _airborneTimer += Time.deltaTime;
+
+
+                if (!_isHolding && !_inWrongCountdown && _airborneTimer > 2f)
+                {
+                    _shouldShowHint = true;
+                    _lastHintText = $"Airborne too long… auto-reset in {(airborneResetSeconds - _airborneTimer):0.0}s";
+                    resetterUI?.ShowHint(_lastHintText);
+                }
+
+                if (_airborneTimer >= airborneResetSeconds)
+                {
+                    _airborneTimer = 0f;
+                    if (currentResetIdx >= 0)
+                    {
+                        resetterUI?.HideHint();
+                        resetterUI?.HideCountdown();
+                        RPC_RequestReset(currentResetIdx);
+                    }
+                }
+            }
+            else
+            {
+                _airborneTimer = 0f;
+                
+                if (!_isHolding && !_inWrongCountdown && !_stuckUiShown)
+                {
+                    _shouldShowHint = false;
+                    resetterUI?.HideHint();
+                }
+            }
         }
 
         private void ClearWrongWayState()
